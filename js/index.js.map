@@ -1,0 +1,1 @@
+{"version":3,"sources":["/projects/nodejs/botbuilder/abot_stringdist/src/../src/index.ts"],"names":[],"mappings":";;AACA,mCAAmC;AAC1B,wBAAM","file":"index.js","sourcesContent":["\r\nimport * as MongoQ from './mongoq';\r\nexport { MongoQ };\r\nimport * as SentenceParser from './sentenceparser';"],"sourceRoot":"ABC"}

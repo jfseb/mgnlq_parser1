@@ -1,0 +1,302 @@
+'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
+const mgnlq_model_1 = require("mgnlq_model");
+const debug = require("debugf");
+const debuglog = debug('mongoq');
+const chevrotain = require("chevrotain");
+const AST = require("./ast");
+var createToken = chevrotain.createToken;
+var Lexer = chevrotain.Lexer;
+var Parser = chevrotain.Parser;
+const mongoose = require("mongoose");
+const process = require("process");
+process.on("unhandledRejection", function handleWarning(reason, promise) {
+    console.log("[PROCESS] Unhandled Promise Rejection");
+    console.log("- - - - - - - - - - - - - - - - - - -");
+    console.log(reason);
+    console.log('');
+});
+function makeMongoName(s) {
+    return s.replace(/[^a-zA-Z0-9]/g, '_');
+}
+exports.makeMongoName = makeMongoName;
+var mongodb = process.env.ABOT_MONGODB || "testmodel";
+mongoose.Promise = global.Promise;
+var db = mongoose.connection;
+class MongoBridge {
+    constructor(model) {
+        this._model = model;
+    }
+    mongoooseDomainToDomain(mgdomain) {
+        var domain = undefined;
+        debug('searching for .............## ' + mgdomain);
+        this._model.domains.every(d => {
+            // console.log("here we go "  + mgdomain + " " + makeMongoName(d));
+            debug("here we go " + mgdomain + " " + makeMongoName(d));
+            if (makeMongoName(d) === makeMongoName(mgdomain)) {
+                domain = d;
+                debug('got one ' + d);
+                return false;
+            }
+            return true;
+        });
+        return domain;
+    }
+    makeSchema(mgdomain) {
+        debug('makeSchema for ' + mgdomain);
+        // console.log('makeschema ' + mgdomain);
+        var domain = this.mongoooseDomainToDomain(mgdomain);
+        console.log(' domain ' + domain);
+        console.log(JSON.stringify(this._model.domains.join("\n")));
+        var cats = mgnlq_model_1.Model.getCategoriesForDomain(this._model, domain);
+        var res = {};
+        cats.forEach(cat => {
+            res[makeMongoName(cat)] = { type: String };
+        });
+        return new mongoose.Schema(res);
+    }
+}
+exports.MongoBridge = MongoBridge;
+exports.talking = new Promise(function (resolve, reject) {
+    db.on('error', console.error.bind(console, 'connection error:'));
+    db.once('open', function () {
+        // we're connected!
+        debug('here model names : ' + db.modelNames());
+        resolve();
+        debug('now model names : ' + db.modelNames());
+        debug('done');
+    });
+});
+exports.talking.catch((err) => {
+    console.log(err);
+});
+class ModelHandle {
+    constructor(theModel) {
+        this._theModel = theModel;
+        this._mgBridge = new MongoBridge(theModel);
+        this._models = {};
+        this._schemas = {};
+    }
+    query(mgdomain, query) {
+        var that = this;
+        debuglog('query ' + mgdomain + ' >>' + JSON.stringify(query, undefined, 2));
+        return getDBConnection().then(() => {
+            return new Promise(function (resolve, reject) {
+                exports.talking.then(() => {
+                    debug('constructing model');
+                    if (!that._models[mgdomain] && mongoose.modelNames().indexOf(mgdomain) >= 0) {
+                        // console.log('try1');
+                        that._models[mgdomain] = mongoose.model(mgdomain);
+                        //  console.log('try2');
+                        that._schemas[mgdomain] = mongoose.model(mgdomain).schema;
+                    }
+                    if (!that._models[mgdomain]) {
+                        that._schemas[mgdomain] = that._mgBridge.makeSchema(mgdomain);
+                        mongoose.modelNames();
+                        that._models[mgdomain] = mongoose.model(mgdomain, that._schemas[mgdomain]);
+                    }
+                    //  console.log('running stuff')
+                    // db.fioriboms.aggregate([ { $match : {}}, { $group: { _id : { a : '$BSPName', b : '$AppKey' } , BSPName : { $first : '$BSPName'} , AppKey : { $first : '$AppKey' }}},{ $project: { _id : 0, BSPName : 1 }}], { cursor : {  batchSize : 0}});
+                    var model = that._models[mgdomain];
+                    //  console.log('here model ' + model);
+                    //  model.collection.count({}, function(err,number) {
+                    //  console.log("counted " + number + " members in collection");
+                    //  });
+                    //   console.log(JSON.stringify(query, undefined,2));
+                    model.collection.count({}, function (a) { console.log('lets count' + a); });
+                    var resq = model.collection.aggregate(query);
+                    if (resq) {
+                        resq.toArray().then((res) => {
+                            //   console.log("here the result" + JSON.stringify(res));
+                            resolve(res);
+                            //db.close();
+                        }).catch((err) => {
+                            console.error(err);
+                            db.close();
+                        });
+                    }
+                    else {
+                        console.log('connection closed?');
+                    }
+                });
+            });
+        });
+    }
+}
+exports.ModelHandle = ModelHandle;
+function incHash(hsh, key) {
+    hsh[key] = (hsh[key] || 0) + 1;
+}
+/**
+ * given a Sentence, obtain the domain for it
+ * @param theModel
+ * @param sentence
+ */
+function getDomainForSentence(theModel, sentence) {
+    // this is sloppy and bad
+    var res = {};
+    var o = 0xFFFFFFF;
+    sentence.forEach(w => {
+        if (w.rule.wordType === mgnlq_model_1.IFModel.WORDTYPE.CATEGORY) {
+            o = o & w.rule.bitSentenceAnd;
+            mgnlq_model_1.Model.getDomainsForCategory(theModel, w.matchedString).forEach(d => {
+                incHash(res, d);
+            });
+        }
+        if (w.rule.wordType === mgnlq_model_1.IFModel.WORDTYPE.FACT) {
+            o = o & w.rule.bitSentenceAnd;
+            //   console.log(`${w.rule.bitindex} ${w.bitindex} ${w.rule.bitSentenceAnd} ${o} `);
+            mgnlq_model_1.Model.getDomainsForCategory(theModel, w.category).forEach(d => {
+                incHash(res, d);
+            });
+        }
+    });
+    var domains = mgnlq_model_1.Model.getDomainsForBitField(theModel, o);
+    if (domains.length !== 1) {
+        throw new Error('more than one domain: "' + domains.join('", "') + '"');
+    }
+    return {
+        domain: domains[0],
+        collectionName: makeMongoName(domains[0])
+    };
+}
+exports.getDomainForSentence = getDomainForSentence;
+;
+const mQ = require("./ast2MQuery");
+;
+;
+function fuseAndOrderResults(res) {
+    var all = [];
+    debug(JSON.stringify(res));
+    res.forEach(res1 => {
+        res1.records.forEach(rec => {
+            var r2 = undefined;
+            r2 = {
+                record: rec,
+                sentence: res1.sentence,
+                categories: Object.keys(rec),
+                result: Object.keys(rec).map(key => rec[key]),
+                _ranking: 1
+            };
+            all.push(r2);
+        });
+    });
+    return all;
+}
+exports.fuseAndOrderResults = fuseAndOrderResults;
+/*
+sentence: ISentence;
+  record: IRecord;
+  categories: string[];
+  result: string[];
+  _ranking: number;
+*/
+var mongoConnPromise = undefined;
+function getDBConnection() {
+    if (!mongoConnPromise) {
+        mongoConnPromise = new Promise(function (resolve, reject) {
+            mongoose.connect('mongodb://localhost/' + mongodb).then(() => {
+                resolve(mongoose.connection);
+            });
+        });
+    }
+    return mongoConnPromise;
+}
+const SentenceParser = require("./sentenceparser");
+;
+;
+function prepareQueries(query, theModel) {
+    debuglog(`here query: ${query}`);
+    var r = SentenceParser.parseSentenceToAsts(query, theModel, {}); // words);
+    var res = Object.assign({}, r);
+    r.domains = [];
+    res.queries = res.asts.map((astnode, index) => {
+        var sentence = r.sentences[index];
+        debuglog(() => `return  ast [${index}]:` + AST.astToText(astnode));
+        if (!astnode) {
+            debuglog(() => JSON.stringify(` empty node for ${index} ` + JSON.stringify(r.errors[index], undefined, 2)));
+            return undefined;
+        }
+        var nodeFieldList = astnode.children[0].children[0];
+        var nodeFilter = astnode.children[1];
+        var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, theModel);
+        var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, sentence, theModel);
+        var columnsReverseMap = mQ.makeMongoColumnsFromAst(nodeFieldList, sentence, theModel);
+        var group = mQ.makeMongoGroupFromAst(nodeFieldList, sentence, theModel);
+        //   console.log(' query: ' + JSON.stringify(r)); // how to get domain?
+        var domainPick = getDomainForSentence(theModel, sentence);
+        r.domains[index] = domainPick.domain;
+        // test.equal(domain, 'FioriBOM',' got domain');
+        var query = [match, group, proj];
+        debug(` mongo query for collection ${domainPick.collectionName} : ` + JSON.stringify(query, undefined, 2));
+        return {
+            domain: domainPick.domain,
+            collectionName: domainPick.collectionName,
+            columns: columnsReverseMap.columns,
+            reverseMap: columnsReverseMap.reverseMap,
+            query: query
+        };
+    });
+    return res;
+}
+exports.prepareQueries = prepareQueries;
+function mergeResults(r) {
+    return r;
+}
+exports.mergeResults = mergeResults;
+function query(query, theModel) {
+    var handle = new ModelHandle(theModel);
+    return queryInternal(query, theModel, handle);
+}
+exports.query = query;
+function remapRecord(rec, columns, reverseMap) {
+    var r = {};
+    Object.keys(rec).forEach(key => {
+        var targetKey = reverseMap[key] || key;
+        r[targetKey] = rec[key];
+    });
+    return columns.map(c => r[c]);
+}
+exports.remapRecord = remapRecord;
+;
+function remapResult(res, columns, reverseMap) {
+    return res.map(record => remapRecord(record, columns, reverseMap));
+}
+exports.remapResult = remapResult;
+function queryInternal(query, theModel, handle) {
+    var r = prepareQueries(query, theModel);
+    var aPromises = r.queries.map((query, index) => {
+        debuglog(() => `query {$index} prepared for domain ` + query && query.domain);
+        if (query === undefined) {
+            return {
+                sentence: r.sentences[index],
+                columns: [],
+                results: []
+            };
+        }
+        return handle.query(query.domain, query.query).then(res => {
+            //console.log('db returned' + res);
+            var resClean = remapResult(res, r.queries[index].columns, query.reverseMap);
+            return {
+                sentence: r.sentences[index],
+                columns: r.queries[index].columns,
+                results: resClean
+            };
+        });
+    });
+    var u = Promise.all(aPromises);
+    var k = u.then(aRes => {
+        //   console.log("***here results of all queries " + JSON.stringify(aRes, undefined, 2));
+        var queryresults = mergeResults(aRes);
+        var res2 = {
+            queryresults: queryresults,
+            errors: r.errors,
+            tokens: r.tokens,
+        };
+        return res2;
+    });
+    return k;
+}
+exports.queryInternal = queryInternal;
+
+//# sourceMappingURL=mongoq.js.map
