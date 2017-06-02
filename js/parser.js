@@ -174,7 +174,7 @@ function SelectParser(input) {
             filter = n;
         }
         else if (inop) {
-            filter.children = filter.children.unshift(inop);
+            filter.children.unshift(inop);
         }
         var dom = (filterDom || [])[1];
         if (dom) {

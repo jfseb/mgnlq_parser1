@@ -216,10 +216,13 @@ export function parseSentenceToAsts(s : string, model : IFModel.IModels, words :
       });
       return ast;
     } catch (e) {
+      debuglog(()=>' here the error ' + Object.keys(e));
       res2.errors = res2.errors || [];
+      debuglog('parse error ' + e.toString());
+
       res2.errors[index] = {
         err_code : ERR_PARSE_ERROR,
-        text : e.toString()
+        text : e.toString().split(',\"token\":')[0]
       }  as IFErBase.IERError;
     }
     return undefined;

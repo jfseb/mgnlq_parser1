@@ -63,7 +63,7 @@ gulp.task('tsc', ['makeToken'], function () {
         return 'ABC';
       },
       mapSources: function(src) {
-        console.log('here we remap' + src);
+        //console.log('here we remap' + src);
         return '/projects/nodejs/botbuilder/fdevstart/' + src;
       }}
       )) // ,  { sourceRoot: './' } ))

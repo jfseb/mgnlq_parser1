@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // based on: http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance
 // and:  http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
+const debugf = require("debugf");
+const _ = require("lodash");
+const debuglog = debugf('ast');
 var ASTNodeType;
 (function (ASTNodeType) {
     ASTNodeType[ASTNodeType["BINOP"] = 0] = "BINOP";
@@ -124,15 +127,21 @@ function makePrefix(prefix, indent) {
 function astToText(node, indent, prefix) {
     prefix = prefix || 0;
     indent = indent || 2;
+    debuglog(() => JSON.stringify(node, undefined, 2));
     var sprefix = makePrefix(prefix, indent);
     var index = getIndex(node);
     var ln = node ? `${typeToString(node.type)} ${index}` : '(undefined)';
     if (!node) {
         return sprefix + node + "\n";
     }
-    if (node.children) {
+    if (node.children && typeof node.children.length === "number") {
         var schildren = node.children.map(c => astToText(c, indent, prefix + 1));
         return sprefix + ln + `(${schildren.length})` + '\n' + schildren.join('');
+    }
+    else {
+        if (node.children && !_.isArray(node.children)) {
+            throw new Error('weird children node' + node.children);
+        }
     }
     return sprefix + ln + "\n";
 }

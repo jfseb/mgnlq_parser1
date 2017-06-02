@@ -86,8 +86,8 @@ export class MongoBridge {
     debug('makeSchema for ' + mgdomain);
    // console.log('makeschema ' + mgdomain);
     var domain = this.mongoooseDomainToDomain(mgdomain);
-    console.log(' domain ' + domain);
-    console.log(JSON.stringify(this._model.domains.join("\n")));
+    debuglog(()=> ' domain ' + domain);
+    debuglog(()=> ` all domains ` + this._model.domains.join("; "));
     var cats = Model.getCategoriesForDomain(this._model, domain);
     var res = {};
     cats.forEach(cat => {
@@ -99,7 +99,7 @@ export class MongoBridge {
 
 
 
-
+/*
 export var talking = new Promise(function(resolve, reject) {
   db.on('error', console.error.bind(console, 'connection error:'));
   db.once('open', function () {
@@ -114,58 +114,63 @@ export var talking = new Promise(function(resolve, reject) {
 talking.catch((err) => {
   console.log(err);
 });
+*/
 
 export class ModelHandle {
   _theModel : IFModel.IModels;
   _mgBridge : MongoBridge;
-  _schemas : { [key: string] : mongoose.Schema};
-  _models : {[key : string] : mongoose.Model<any> };
+  _mongoose : mongoose.Mongoose;
   constructor(theModel: IFModel.IModels) {
     this._theModel = theModel;
+    this._mongoose = this._theModel.mongoHandle && this._theModel.mongoHandle.mongoose;
     this._mgBridge = new MongoBridge(theModel);
-    this._models = {};
-    this._schemas = {};
   }
-  query(mgdomain : string, query : any) : Promise<any> {
+  query(domain : string, query : any) : Promise<any> {
     var that = this;
-    debuglog('query ' + mgdomain + ' >>' + JSON.stringify(query, undefined, 2));
-    return getDBConnection().then(() =>{
+    var mgmodelname = Model.getMongooseModelNameForDomain(this._theModel,domain);4
+    debuglog('query ' + domain + ' >>' + JSON.stringify(query, undefined, 2));
+    return getDBConnection(this._mongoose).then((mongoose) =>{
+
       return new Promise(function(resolve, reject) {
-        talking.then(() => {
-          debug('constructing model');
-          if(!that._models[mgdomain] && mongoose.modelNames().indexOf(mgdomain) >= 0) {
-          // console.log('try1');
-            that._models[mgdomain] = mongoose.model(mgdomain);
-          //  console.log('try2');
-            that._schemas[mgdomain] = mongoose.model(mgdomain).schema;
+       Promise.resolve(1).then(() => {
+          debuglog('constructing model for ' + mgmodelname);
+          if(that._theModel.mongoHandle.mongoose.modelNames().indexOf(mgmodelname) < 0) {
+            throw new Error(` ${domain} / ${mgmodelname} is not a present model `);
           }
+          var model = that._theModel.mongoHandle.mongoose.model(mgmodelname);
+          //
+          // console.log('try1');
+          //  that._models[mgdomain] = mongoose.model(mgdomain);
+          //  console.log('try2');
+          //  that._schemas[mgdomain] = mongoose.model(mgdomain).schema;
+  //}
+        /*
           if(!that._models[mgdomain]) {
             that._schemas[mgdomain] = that._mgBridge.makeSchema(mgdomain);
-            mongoose.modelNames();
+            that._mongoose.modelNames();
             that._models[mgdomain] = mongoose.model(mgdomain,that._schemas[mgdomain]);
           }
+         */
         //  console.log('running stuff')
       // db.fioriboms.aggregate([ { $match : {}}, { $group: { _id : { a : '$BSPName', b : '$AppKey' } , BSPName : { $first : '$BSPName'} , AppKey : { $first : '$AppKey' }}},{ $project: { _id : 0, BSPName : 1 }}], { cursor : {  batchSize : 0}});
-            var model = that._models[mgdomain];
+            //var model = that._models[mgdomain];
           //  console.log('here model ' + model);
           //  model.collection.count({}, function(err,number) {
             //  console.log("counted " + number + " members in collection");
           //  });
         //   console.log(JSON.stringify(query, undefined,2));
-            model.collection.count({}, function(a) { console.log('lets count' + a); });
-            var resq = model.collection.aggregate(query)
-            if(resq) {
-              resq.toArray().then((res) =>{
+          /*  model.collection.count({}, function(a) {
+              debuglog('lets count' + a); });
+            */
+            console.log('here model ' + Object.keys(model));
+            var resq = model.aggregate(query).then( (res) => {
           //   console.log("here the result" + JSON.stringify(res));
               resolve(res);
               //db.close();
             }).catch((err) => {
               console.error(err);
               db.close();
-            })
-            } else {
-              console.log('connection closed?');
-            }
+            });
           });
       });
     })
@@ -258,7 +263,12 @@ export function fuseAndOrderResults(res : SRes[]) : IFErBase.IWhatIsTupelAnswer[
   */
 var mongoConnPromise = undefined as Promise<mongoose.Connection>;
 
-function getDBConnection() : Promise<mongoose.Connection> {
+function getDBConnection(mongooseHndl : mongoose.Mongoose) : Promise<mongoose.Connection> {
+  if(mongooseHndl ){
+    debuglog('assuming present handle');
+    // we assume we are connected
+    return Promise.resolve(mongooseHndl.connection);
+  }
   if(!mongoConnPromise) {
      mongoConnPromise =  new Promise(function(resolve, reject) {
       mongoose.connect('mongodb://localhost/' + mongodb).then(() => {
@@ -305,7 +315,7 @@ export function prepareQueries(query : string, theModel: IFModel.IModels) : IPre
     r.domains[index] = domainPick.domain;
    // test.equal(domain, 'FioriBOM',' got domain');
     var query = [ match, group, proj ];
-    debug(` mongo query for collection ${domainPick.collectionName} : ` + JSON.stringify(query, undefined, 2));
+    debuglog(` mongo query for collection ${domainPick.collectionName} : ` + JSON.stringify(query, undefined, 2));
     return {
       domain : domainPick.domain,
       collectionName : domainPick.collectionName,
@@ -328,7 +338,7 @@ export function mergeResults(r : QResult[]) {
 
 export function query(query : string, theModel : IFModel.IModels) : Promise<IProcessedMongoAnswers> {
   var handle = new ModelHandle(theModel);
-  return queryInternal(query, theModel,handle);
+  return queryInternal(query, theModel , handle);
 }
 
 export type IReverseMap = { [key : string] : string};
@@ -348,11 +358,11 @@ export function remapResult(res, columns: string[], reverseMap : IReverseMap)  :
   );
 }
 
-export function queryInternal(query : string, theModel : IFModel.IModels, handle: ModelHandle ) :
+export function queryInternal(querystring : string, theModel : IFModel.IModels, handle: ModelHandle ) :
   Promise<IProcessedMongoAnswers> {
-    var r =  prepareQueries(query, theModel);
+    var r =  prepareQueries(querystring, theModel);
     var aPromises = r.queries.map( (query, index)  => {
-      debuglog(() => `query {$index} prepared for domain ` + query && query.domain);
+      debuglog(() => `query ${index} prepared for domain ` + (query && query.domain));
       if(query === undefined) {
         return  {
            sentence : r.sentences[index],

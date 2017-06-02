@@ -10,6 +10,8 @@ var debuglog = require('debug')('sentenceparser.nunit');
 
 var mgnlq_er = require('mgnlq_er');
 
+var Sentence = mgnlq_er.Sentence;
+
 var Erbase = mgnlq_er.ErBase;
 
 // const utils = require('abot_utils')
@@ -45,15 +47,15 @@ exports.testTokenizeStringOrbitWhatis = function (test) {
 exports.testTokenizeCatCatCat = function (test) {
   test.expect(1);
   Model.loadModels(mongooseMock).then((theModel) => {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicationComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT' ]);
+    test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT']);
     test.done();
     Model.releaseModel(theModel);
   });
@@ -70,10 +72,10 @@ exports.testTokenizeCatCatCatParse = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT' ]);
+    test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
-  // /test.deepEqual(parsingResult, {})
-  //console.log('here the ouptut ' + JSON.stringify(Ast.dumpNodeNice(parsingResult),undefined,2));
+    // /test.deepEqual(parsingResult, {})
+    //console.log('here the ouptut ' + JSON.stringify(Ast.dumpNodeNice(parsingResult),undefined,2));
     test.deepEqual(Ast.dumpNodeNice(parsingResult),
       {
         'type': 'BINOP',
@@ -157,7 +159,7 @@ exports.testTokenizeCatCatCatParse = function (test) {
           }
         ]
       }
-  );
+    );
     test.done();
     Model.releaseModel(theModel);
   });
@@ -176,13 +178,13 @@ exports.testTokenizeCatCatCatParseText = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT' ]);
+    test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
-  // /test.deepEqual(parsingResult, {})
- // console.log('\n' + Ast.astToText(parsingResult));
+    // /test.deepEqual(parsingResult, {})
+    // console.log('\n' + Ast.astToText(parsingResult));
     test.deepEqual(Ast.astToText(parsingResult),
-    'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
-  );
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
+    );
     test.done();
     Model.releaseModel(theModel);
   });
@@ -197,29 +199,29 @@ exports.testTokenizeDomain = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['domain', 'DOM' ]);
+    test.deepEqual(sStrings, ['domain', 'DOM']);
     test.done();
     Model.releaseModel(theModel);
   });
 };
 
-exports.testParseInDomain= function (test) {
+exports.testParseInDomain = function (test) {
   test.expect(2);
   Model.loadModels(mongooseMock).then((theModel) => {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
     var s = 'SemanticObject, SemanticAction in domain FioriBOM';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'CAT', 'in', 'domain', 'DOM' ]);
+    test.deepEqual(sStrings, ['CAT', 'CAT', 'in', 'domain', 'DOM']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
-  // /test.deepEqual(parsingResult, {})
- // console.log('\n' + Ast.astToText(parsingResult));
+    // /test.deepEqual(parsingResult, {})
+    // console.log('\n' + Ast.astToText(parsingResult));
     test.deepEqual(Ast.astToText(parsingResult),
-  'BINOP -1(3)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  undefined\n  DOM 4\n' );
+      'BINOP -1(3)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  undefined\n  DOM 4\n');
     test.done();
     Model.releaseModel(theModel);
   });
@@ -229,21 +231,75 @@ exports.testParseInDomain= function (test) {
 exports.testParseEndingWith = function (test) {
   test.expect(2);
   Model.loadModels(mongooseMock).then((theModel) => {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
     var s = 'SemanticObject ending with element';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'ending with', 'ANY' ]);
+    test.deepEqual(sStrings, ['CAT', 'ending with', 'ANY']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
-  // /test.deepEqual(parsingResult, {})
- // console.log('\n' + Ast.astToText(parsingResult));
+    // /test.deepEqual(parsingResult, {})
+    // console.log('\n' + Ast.astToText(parsingResult));
     test.deepEqual(Ast.astToText(parsingResult),
-    'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEndsWith 1(2)\n      CAT 0\n      ANY 2\n'
-  );
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEndsWith 1(2)\n      CAT 0\n      ANY 2\n'
+    );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+
+
+exports.testcategoriesStartingWith = function (test) {
+  test.expect(8);
+  Model.loadModels(mongooseMock).then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
+    var s = 'categories starting with "elem" in domain IUPAC';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    //  test.deepEqual(Ast.astToText(parsingResult),
+    //  'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEndsWith 1(2)\n      CAT 0\n      ANY 2\n'
+    var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
+    test.deepEqual(r.sentences.length, 9, 'sentence length');
+    test.deepEqual(r.asts.length, 9, 'asts length');
+    test.deepEqual(r.errors.length, 9, 'error');
+    test.deepEqual(r.asts.map((r, index) => (r) ? index : undefined).filter(a => a !== undefined).join('-'), '0-2', 'asts');
+    test.deepEqual(r.errors.map((r, index) => (r) ? index : undefined).filter(a => a !== undefined).join('-'), '1-3-4-5-6-7-8', 'asts');
+    debuglog(r.sentences[0]);
+    test.deepEqual(Sentence.simplifyStringsWithBitIndex(r.sentences[0]).join('\n'),
+      'categories=>category/category C16\nstarting with=>starting with/operator/2 O256\nelem=>elem/any A4096\nin=>in/filler I256\ndomain=>domain/category C16\nIUPAC=>IUPAC/domain F16'
+     , 'sentence');
+  /*  test.deepEqual(r.asts[0],
+      [
+        {
+          'err_code': 'NO_KNOWN_WORD',
+          'text': 'I do not understand "UI5".',
+          'context': {
+            'tokens': [
+              'semanticObject',
+              'SemanticAction',
+              'BSPName',
+              'with',
+              'UI5'
+            ],
+            'token': 'UI5',
+            'index': 4
+          }
+        }
+      ]
+    );
+    */
+    test.deepEqual(Ast.astToText(r.asts[0]),
+     //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+     'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CAT 4\n      FACT 5\n', 'ast flat');
+    test.deepEqual(Ast.astToText(r.asts[2]),
+     'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+     //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 5\n'
+     , 'ast 2 flat');
     test.done();
     Model.releaseModel(theModel);
   });
@@ -253,13 +309,15 @@ exports.testParseEndingWith = function (test) {
 exports.testparseSentenceToAstsCatCatCatParseText = function (test) {
   test.expect(1);
   Model.loadModels(mongooseMock).then((theModel) => {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
-    var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
+    var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(Ast.astToText(r.asts[0]),
-    'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
-  );
+   //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
+
+     'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
+    );
     test.done();
     Model.releaseModel(theModel);
   });
@@ -269,13 +327,13 @@ exports.testparseSentenceToAstsCatCatCatParseText = function (test) {
 exports.testparseSentenceStartingWith = function (test) {
   test.expect(1);
   Model.loadModels(mongooseMock).then((theModel) => {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
     var s = 'SemanticObject, SemanticAction with SemanticObject starting with Sup';
-    var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
+    var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(Ast.astToText(r.asts[0]),
-   'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  LIST -1(1)\n    OPStartsWith 4(2)\n      CAT 3\n      ANY 5\n'
-  );
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  LIST -1(1)\n    OPStartsWith 4(2)\n      CAT 3\n      ANY 5\n'
+    );
     test.done();
     Model.releaseModel(theModel);
   });
@@ -285,10 +343,10 @@ exports.testparseSentenceStartingWith = function (test) {
 exports.testparseSentenceToAstssError = function (test) {
   test.expect(1);
   Model.loadModels(mongooseMock).then((theModel) => {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
     var s = 'semanticObject, SemanticAction, BSPName with UI5';
-    var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
+    var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(r.errors,
       [
         {
@@ -307,7 +365,7 @@ exports.testparseSentenceToAstssError = function (test) {
           }
         }
       ]
-  );
+    );
     test.done();
     Model.releaseModel(theModel);
   });

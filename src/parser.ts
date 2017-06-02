@@ -199,12 +199,11 @@ function SelectParser(input) {
        var filter = (filterDom || [])[0];
 
        if(!filter && inop) {
-
           var n =  AST.makeNode(NT.LIST);
           n.children = [inop];
           filter = n;
        } else if(inop) {
-          filter.children = filter.children.unshift(inop);
+          filter.children.unshift(inop);
        }
 
        var dom = (filterDom || [])[1];

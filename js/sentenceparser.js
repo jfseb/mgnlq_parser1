@@ -194,10 +194,12 @@ function parseSentenceToAsts(s, model, words) {
             return ast;
         }
         catch (e) {
+            debuglog(() => ' here the error ' + Object.keys(e));
             res2.errors = res2.errors || [];
+            debuglog('parse error ' + e.toString());
             res2.errors[index] = {
                 err_code: exports.ERR_PARSE_ERROR,
-                text: e.toString()
+                text: e.toString().split(',\"token\":')[0]
             };
         }
         return undefined;

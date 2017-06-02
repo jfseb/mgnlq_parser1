@@ -3,8 +3,12 @@
 // based on: http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance
 // and:  http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
 
+import * as debugf from 'debugf';
+import * as _ from 'lodash';
+const debuglog = debugf('ast');
+
 export enum ASTNodeType {
-  BINOP,
+  BINOP, //0
   OP,
   OPEqIn,
   OPContains,
@@ -18,7 +22,7 @@ export enum ASTNodeType {
   CAT,
   CATPH,
   FACT,
-  LIST,
+  LIST, //14
   ANY,
   DOM
 }
@@ -139,15 +143,20 @@ function makePrefix(prefix : number, indent : number) {
 export function astToText(node : ASTNode, indent? : number, prefix? : number) {
   prefix = prefix || 0;
   indent = indent || 2;
+  debuglog(() => JSON.stringify(node,undefined,2));
   var sprefix = makePrefix(prefix, indent);
   var index =  getIndex(node);
   var ln =  node ?  `${typeToString(node.type)} ${index}` : '(undefined)';
   if (!node) {
     return sprefix + node + "\n";
   }
-  if(node.children) {
-    var schildren = node.children.map(c => astToText(c,indent,prefix+1));
-    return sprefix + ln + `(${schildren.length})` + '\n' + schildren.join('');
+  if(node.children && typeof node.children.length === "number") {
+      var schildren = node.children.map(c => astToText(c,indent,prefix+1));
+      return sprefix + ln + `(${schildren.length})` + '\n' + schildren.join('');
+  } else {
+    if(node.children && !_.isArray(node.children)) {
+      throw new Error('weird children node' + node.children);
+    }
   }
   return sprefix + ln + "\n";
 }
