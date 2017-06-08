@@ -98,6 +98,7 @@ function makeMongoMatchFromAst(node, sentence, theModel) {
             res = addFilterToMatch(res, cat, { $regex: new RegExp(`^${fact.toLowerCase()}`, "i") });
         }
         else if (n.type === ast_1.ASTNodeType.OPEndsWith) {
+            debuglog(() => '!!!!adding regex with expression ' + fact.toLowerCase());
             res = addFilterToMatch(res, cat, { $regex: new RegExp(`${fact.toLowerCase()}$`, "i") });
         }
         else if (n.type === ast_1.ASTNodeType.OPContains) {

@@ -12,14 +12,12 @@ const Model = require('mgnlq_model').Model;
 
 //var theModel = Model.loadModels(modelpath);
 
-var mongooseMock = require('mongoose_record_replay').instrumentMongoose(require('mongoose'),
-  'node_modules/mgnlq_testmodel_replay/mgrecrep/',
-  'REPLAY');
+var getModel = require('mgnlq_testmodel_replay').getTestModel;
 
 var words = {};
 
 exports.testMakeMongoDomain = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var mongoBridge = new mongoQ.MongoBridge(theModel);
     var res = mongoBridge.mongoooseDomainToDomain('FioriBOM');
     test.equal(res, 'FioriBOM', 'bad result');
@@ -34,7 +32,7 @@ process.on('unhandledRejection', function (err) {
 });
 
 exports.testMakeQuery = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var r = mongoQ.prepareQueries('\'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052',
       theModel);
     test.deepEqual(r.queries, [{
@@ -73,7 +71,7 @@ exports.testMakeQuery = function (test) {
 };
 
 exports.testMakeQuerySimple = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var r = mongoQ.prepareQueries('object name', theModel);
     test.deepEqual(r.queries,
       [{
@@ -99,7 +97,7 @@ exports.testMakeQuerySimple = function (test) {
 };
 
 exports.testMakeQueryDoubleConstraint = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var r = mongoQ.prepareQueries('AppNAme with AppNAme starting with "Sup" AppNAme containing Obj',
       theModel);
     test.deepEqual(r.queries,
@@ -134,7 +132,7 @@ exports.testMakeQueryDoubleConstraint = function (test) {
 
 
 exports.testMakeQueryStartingWith2 = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var r = mongoQ.prepareQueries('SemanticAction with SemanticAction starting with "Sup"',
       theModel);
     test.deepEqual(r.queries,
@@ -180,7 +178,7 @@ exports.testMakeQueryStartingWith2 = function (test) {
 
 
 exports.testMakeQueryStartingWith = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var r = mongoQ.prepareQueries('SemanticAction starting with "Sup"',
       theModel);
     test.deepEqual(r.queries,
@@ -228,7 +226,7 @@ exports.testMakeQueryStartingWith = function (test) {
 
 
 exports.testMakeQueryContaining = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var r = mongoQ.prepareQueries('UI5Component containing "DYN"',
       theModel);
     debug(JSON.stringify(r, undefined, 2));
@@ -273,7 +271,7 @@ exports.testMakeQueryContaining = function (test) {
 };
 
 exports.testMakeQueryContainsFact = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var r = mongoQ.prepareQueries('element names for element name containing rium 10',
       theModel);
     test.deepEqual(r.queries,
@@ -374,7 +372,7 @@ var FakeHandle = function (result) {
 };
 
 exports.testQueryInternal = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var handle = new FakeHandle([{ 'object_name': 'abc' }]);
     mongoQ.queryInternal('object name', theModel, handle).then(res => {
       test.deepEqual(res.queryresults,
@@ -425,7 +423,7 @@ exports.testQueryInternal = function (test) {
 };
 
 exports.testMakeQuery2 = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     var node = r.asts[0];
@@ -453,7 +451,7 @@ exports.testMakeQuery2 = function (test) {
 };
 
 exports.testGetDomainsForSentence = function (test) {
-  Model.loadModels(mongooseMock).then((theModel) => {
+  getModel().then((theModel) => {
     var s = 'SemanticObject';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     var domain = mongoQ.getDomainForSentence(theModel, r.sentences[0]);

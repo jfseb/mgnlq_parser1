@@ -10,9 +10,11 @@ var debug = require('debug')('ast2MQuery');
 const Model = require('mgnlq_model').Model;
 
 
-var mongoose = require('mongoose_record_replay').instrumentMongoose(require('mongoose'),
-  'node_modules/mgnlq_testmodel_replay/mgrecrep/',
-  'REPLAY');
+var getModel = require('mgnlq_testmodel_replay').getTestModel;
+
+//var mongoose = require('mongoose_record_replay').instrumentMongoose(require('mongoose'),
+//  'node_modules/mgnlq_testmodel_replay/mgrecrep/',
+//  'RECORD');
 
 process.on('unhandledRejection', function onError(err) {
   console.log(err);
@@ -20,9 +22,9 @@ process.on('unhandledRejection', function onError(err) {
   throw err;
 });
 
-function getModel() {
-  return Model.loadModels(mongoose);
-}
+//function getModel() {
+//  return Model.loadModels(mongoose);
+//}
 
 function releaseModel(theModel) {
   Model.releaseModel(theModel);
@@ -125,6 +127,28 @@ exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
     releaseModel(theModel);
   });
 };
+
+
+exports.testMakeMongoQueryEndingWith = function (test) {
+  getModel().then( (theModel) => {
+  // debuglog(JSON.stringify(ifr, undefined, 2))
+  // console.log(theModel.mRules)
+    var s = 'domains ending with ABC';
+    var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
+    var node = r.asts[0];
+    var nodeFieldList = node.children[0].children[0];
+    var nodeFilter = node.children[1];
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], theModel);
+    test.deepEqual(match ,{ '$match': { domain: { '$regex': /abc$/i } } });
+    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0], theModel);
+    test.deepEqual(proj ,{ '$project': { _id: 0, domain: 1 } });
+    var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], theModel);
+    test.deepEqual(group , { '$group': { _id: { domain: '$domain' }, domain: { '$first': '$domain' } } }   , 'group');
+    test.done();
+    releaseModel(theModel);
+  });
+};
+
 
 exports.testMakeProjection = function (test) {
   var proj  = mQ.makeMongoProjection(

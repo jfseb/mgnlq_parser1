@@ -162,7 +162,7 @@ export class ModelHandle {
           /*  model.collection.count({}, function(a) {
               debuglog('lets count' + a); });
             */
-            console.log('here model ' + Object.keys(model));
+            debuglog(()=>'here model ' + Object.keys(model));
             var resq = model.aggregate(query).then( (res) => {
           //   console.log("here the result" + JSON.stringify(res));
               resolve(res);
@@ -212,6 +212,9 @@ export function getDomainForSentence(theModel: IFModel.IModels, sentence : IFErB
   var domains = Model.getDomainsForBitField(theModel,o);
   if(domains.length !== 1) {
     throw new Error('more than one domain: "' + domains.join('", "') + '"');
+  }
+  if(!domains[0]) {
+    console.log('query without a domain : ' + Sentence.dumpNiceArr([sentence]));
   }
   return {
     domain : domains[0],

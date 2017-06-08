@@ -115,6 +115,7 @@ export function makeMongoMatchFromAst(node : AST.ASTNode, sentence : IFErBase.IS
     } else if( n.type === NT.OPStartsWith) {
            res = addFilterToMatch(res,cat, { $regex : new RegExp(`^${fact.toLowerCase()}`,"i") });
     } else if( n.type === NT.OPEndsWith) {
+          debuglog(()=>'!!!!adding regex with expression ' + fact.toLowerCase()  );
           res = addFilterToMatch(res,cat,{ $regex : new RegExp(`${fact.toLowerCase()}$`,"i") });
     }
     else if( n.type === NT.OPContains) {

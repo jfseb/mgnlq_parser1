@@ -12,6 +12,7 @@ import * as SelectParser from './parser';
 
 const debuglog = debug('sentenceparser');
 
+import * as FormatError from './formaterror';
 import * as chevrotain from 'chevrotain';
 import * as AST from './ast';
 
@@ -186,7 +187,10 @@ function parse(tokens : any[], startrule : string) {
   const parser = new SelectParser.SelectParser(tokens);
   var res = parser[startrule]();
    if (parser.errors.length > 0) {
-    throw new Error('parsing error in  input' + JSON.stringify(parser.errors));
+    debuglog(() => 'parsing error in  input:' + JSON.stringify(parser.errors,undefined,2));
+    var u = new Error(parser.errors[0]);
+    (u as any).error_obj = parser.errors[0];
+    throw u;
   }
   return res;
 }
@@ -200,14 +204,16 @@ export declare const ERR_PARSE_ERROR = "PARSE_ERROR";
 
 export function parseSentenceToAsts(s : string, model : IFModel.IModels, words : any) : IParsedSentences {
   var res = ErBase.processString(s, model.rules, words);
-  debuglog(function() { 'res > ' + JSON.stringify(res, undefined, 2)});
+  debuglog(() =>'res > ' + JSON.stringify(res, undefined, 2));
   var res2 = Object.assign({}, res) as IParsedSentences;
+  res2.errors = res2.errors || [];
   res2.asts = res.sentences.map((sentence, index) => {
+    res2.errors[index] = false;
     var lexingResult = getLexer().tokenize(sentence);
     debuglog( () => {
       var sStrings = lexingResult.map((t, indext) =>  `[${indext}] ${t.image} (${t.bearer && t.bearer.matchedString || JSON.stringify(sentence[index][t.startIndex])})` );
-      return 'tokens: #' + index + '...\n' + sStrings.join('\n');}
-    );
+      return 'tokens: #' + index + '...\n' + sStrings.join('\n');
+    });
     //test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT' ]);
     try {
       var ast = parse(lexingResult, 'catListOpMore');
@@ -216,7 +222,9 @@ export function parseSentenceToAsts(s : string, model : IFModel.IModels, words :
       });
       return ast;
     } catch (e) {
-      debuglog(()=>' here the error ' + Object.keys(e));
+      debuglog(()=> 'error  ' + JSON.stringify(e.error_obj,undefined,2));
+      debuglog(()=> ' sentence : ' + Sentence.dumpNice(sentence));
+      var e2 = FormatError.formatError(e.error_obj,sentence);
       res2.errors = res2.errors || [];
       debuglog('parse error ' + e.toString());
 

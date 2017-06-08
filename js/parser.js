@@ -237,7 +237,12 @@ function SelectParser(input) {
     this.selectClause = $.RULE("categoryList", function () {
         var r = [];
         $.AT_LEAST_ONE(() => {
-            $.OPTION(() => { $.CONSUME(tokens_1.Tokens.Comma); });
+            $.OPTION(() => {
+                //$.CONSUME(T.Comma);
+                $.OR([{ ALT: () => $.CONSUME(tokens_1.Tokens.Comma) },
+                    { ALT: () => $.CONSUME(tokens_1.Tokens.and) },
+                ]);
+            });
             r.push(AST.makeNodeForCat($.CONSUME(tokens_1.Tokens.ACategory)));
         });
         /*
@@ -323,11 +328,12 @@ function SelectParser(input) {
     this.commaAndListFilter = $.RULE("commaAndListFilter", function () {
         var r = [$.SUBRULE($.catFact)];
         $.MANY(() => {
-            $.OPTION(() => $.CONSUME(tokens_1.Tokens.Comma));
-            /* $.OR( [
-              { ALT: function() { $.CONSUME(Comma); }},
-              { ALT: function() { $.CONSUME(And); }}
-            ]); */
+            $.OPTION(() => 
+            //$.CONSUME(T.Comma));
+            $.OR([
+                { ALT: function () { $.CONSUME(tokens_1.Tokens.Comma); } },
+                { ALT: function () { $.CONSUME(tokens_1.Tokens.with); } }
+            ]));
             r.push($.SUBRULE2($.catFact));
         });
         //onsole.log("here producing" + JSON.stringify(n));

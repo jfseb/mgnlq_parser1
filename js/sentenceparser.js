@@ -6,6 +6,7 @@ const mgnlq_er_1 = require("mgnlq_er");
 const debug = require("debugf");
 const SelectParser = require("./parser");
 const debuglog = debug('sentenceparser');
+const FormatError = require("./formaterror");
 const chevrotain = require("chevrotain");
 const AST = require("./ast");
 var createToken = chevrotain.createToken;
@@ -169,7 +170,10 @@ function parse(tokens, startrule) {
     const parser = new SelectParser.SelectParser(tokens);
     var res = parser[startrule]();
     if (parser.errors.length > 0) {
-        throw new Error('parsing error in  input' + JSON.stringify(parser.errors));
+        debuglog(() => 'parsing error in  input:' + JSON.stringify(parser.errors, undefined, 2));
+        var u = new Error(parser.errors[0]);
+        u.error_obj = parser.errors[0];
+        throw u;
     }
     return res;
 }
@@ -177,9 +181,11 @@ exports.parse = parse;
 ;
 function parseSentenceToAsts(s, model, words) {
     var res = mgnlq_er_1.ErBase.processString(s, model.rules, words);
-    debuglog(function () { 'res > ' + JSON.stringify(res, undefined, 2); });
+    debuglog(() => 'res > ' + JSON.stringify(res, undefined, 2));
     var res2 = Object.assign({}, res);
+    res2.errors = res2.errors || [];
     res2.asts = res.sentences.map((sentence, index) => {
+        res2.errors[index] = false;
         var lexingResult = getLexer().tokenize(sentence);
         debuglog(() => {
             var sStrings = lexingResult.map((t, indext) => `[${indext}] ${t.image} (${t.bearer && t.bearer.matchedString || JSON.stringify(sentence[index][t.startIndex])})`);
@@ -194,7 +200,9 @@ function parseSentenceToAsts(s, model, words) {
             return ast;
         }
         catch (e) {
-            debuglog(() => ' here the error ' + Object.keys(e));
+            debuglog(() => 'error  ' + JSON.stringify(e.error_obj, undefined, 2));
+            debuglog(() => ' sentence : ' + mgnlq_er_1.Sentence.dumpNice(sentence));
+            var e2 = FormatError.formatError(e.error_obj, sentence);
             res2.errors = res2.errors || [];
             debuglog('parse error ' + e.toString());
             res2.errors[index] = {

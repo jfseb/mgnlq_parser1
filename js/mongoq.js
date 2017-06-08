@@ -1,5 +1,8 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+// based on: http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance
+// and:  http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
+const mgnlq_er_1 = require("mgnlq_er");
 const mgnlq_model_1 = require("mgnlq_model");
 const debug = require("debugf");
 const debuglog = debug('mongoq');
@@ -116,7 +119,7 @@ class ModelHandle {
                     /*  model.collection.count({}, function(a) {
                         debuglog('lets count' + a); });
                       */
-                    console.log('here model ' + Object.keys(model));
+                    debuglog(() => 'here model ' + Object.keys(model));
                     var resq = model.aggregate(query).then((res) => {
                         //   console.log("here the result" + JSON.stringify(res));
                         resolve(res);
@@ -161,6 +164,9 @@ function getDomainForSentence(theModel, sentence) {
     var domains = mgnlq_model_1.Model.getDomainsForBitField(theModel, o);
     if (domains.length !== 1) {
         throw new Error('more than one domain: "' + domains.join('", "') + '"');
+    }
+    if (!domains[0]) {
+        console.log('query without a domain : ' + mgnlq_er_1.Sentence.dumpNiceArr([sentence]));
     }
     return {
         domain: domains[0],
