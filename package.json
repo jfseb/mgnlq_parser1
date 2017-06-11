@@ -7,6 +7,7 @@
   "scripts": {
     "build": "gulp && tsc",
     "test": "gulp test",
+    "version" : "npm show mgnlq_parser1@* version",
     "coverage": "./node_modules/.bin/nyc --source-map false nodeunit test",
     "coverreportplain": "./node_modules/.bin/nyc --source-map false report --reporter=text-lcov ",
     "coveralls": "./node_modules/.bin/nyc --source-map false report --reporter=text-lcov | coveralls"

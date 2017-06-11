@@ -1,8 +1,12 @@
 node_modules
+*.tgz
+*.bak
+**/*.bak
 docs
 logs
 src
 test
+
 
 tsconfig.json
 README.md
@@ -10,12 +14,8 @@ README.md
 .npmignore
 .gitignore
 .travis.yml
-guplfile.js
+gulpfile.js
 **/*.map
 *.bak
 gen2
 
-gen_cov
-js_cov
-info.lcov
-logs
