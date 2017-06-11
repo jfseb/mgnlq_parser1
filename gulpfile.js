@@ -101,9 +101,6 @@ gulp.task('clean:models', function () {
 });
 
 
-var newer = require('gulp-newer');
-const babel = require('gulp-babel');
-
 gulp.task('clean', ['clean:models']);
 
 
@@ -115,47 +112,8 @@ gulp.task('doc', ['test'], function (cb) {
     .pipe(jsdoc(cb));
 });
 
-var imgSrc = 'src/**/*.js';
-//var imgDest = 'gen';
-var imgDest2 = 'gen2';
 
 
-// compile standard sources with babel,
-// as the coverage input requires this
-//
-gulp.task('babel2', ['tsc2'], function () {
-  // Add the newer pipe to pass through newer images only
-  return gulp.src([imgSrc])
-    .pipe(newer(imgDest2))
-    .pipe(babel({
-      comments: true,
-      presets: ['es2015']
-    }))
-    .pipe(gulp.dest('gen2'));
-});
-
-
-
-/**
- * compile tsc (including srcmaps)
- * @input srcDir
- * @output genDir
- */
-gulp.task('tsc2', function () {
-  var tsProject = ts.createProject('tsconfig.json', { inlineSourceMap: false });
-  var tsResult = tsProject.src() // gulp.src('lib/*.ts')
-    .pipe(sourcemaps.init()) // This means sourcemaps will be generated
-    .pipe(tsProject());
-
-  return tsResult.js
-    .pipe(babel({
-      comments: true,
-      presets: ['es2015']
-    }))
-    // .pipe( ... ) // You can use other plugins that also support gulp-sourcemaps
-    .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
-    .pipe(gulp.dest('gen2'));
-});
 
 // gulp.task('copyInputFilterRules', ['tsc', 'babel'], function () {
 //  return gulp.src([
