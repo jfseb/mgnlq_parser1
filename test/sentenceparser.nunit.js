@@ -324,11 +324,11 @@ exports.testcategoriesStartingWith = function (test) {
     //  test.deepEqual(Ast.astToText(parsingResult),
     //  'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEndsWith 1(2)\n      CAT 0\n      ANY 2\n'
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    test.deepEqual(r.sentences.length, 9, 'sentence length');
-    test.deepEqual(r.asts.length, 9, 'asts length');
-    test.deepEqual(r.errors.length, 9, 'error');
+    test.deepEqual(r.sentences.length, 6, 'sentence length');
+    test.deepEqual(r.asts.length, 6, 'asts length');
+    test.deepEqual(r.errors.length, 6, 'error');
     test.deepEqual(r.asts.map((r, index) => (r) ? index : undefined).filter(a => a !== undefined).join('-'), '0-2', 'asts');
-    test.deepEqual(r.errors.map((r, index) => (r) ? index : undefined).filter(a => a !== undefined).join('-'), '1-3-4-5-6-7-8', 'asts');
+    test.deepEqual(r.errors.map((r, index) => (r) ? index : undefined).filter(a => a !== undefined).join('-'), '1-3-4-5', 'asts');
     debuglog(r.sentences[0]);
     test.deepEqual(Sentence.simplifyStringsWithBitIndex(r.sentences[0]).join('\n'),
       'categories=>category/category C16\nstarting with=>starting with/operator/2 O256\nelem=>elem/any A4096\nin=>in/filler I256\ndomain=>domain/category C16\nIUPAC=>IUPAC/domain F16'
@@ -377,6 +377,26 @@ exports.testparseSentenceToAstsCatCatCatParseText = function (test) {
    //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
 
      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
+    );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+
+
+exports.testparseCategoriesInDomainAlias = function (test) {
+  test.expect(1);
+  getModel().then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
+    var s = 'categories in  Fiori BOM';
+    var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
+    debuglog(()=> JSON.stringify(r));
+
+    test.deepEqual(Ast.astToText(r.asts[0]),
+   //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 2\n'
     );
     test.done();
     Model.releaseModel(theModel);

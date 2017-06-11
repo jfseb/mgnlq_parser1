@@ -4,7 +4,7 @@
 // and:  http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
 
 import { ErBase as ErBase, Sentence as Sentence, IFErBase as IFErBase } from 'mgnlq_er';
-import { IFModel as IFModel , Model as Model} from 'mgnlq_model';
+import { IFModel as IFModel , Model as Model, MongoMap as MongoMap } from 'mgnlq_model';
 
 import * as debug from 'debugf';
 
@@ -26,6 +26,18 @@ import { ASTNodeType as NT} from './ast';
 import * as mongoose from 'mongoose';
 
 import * as process from 'process';
+
+
+
+export function JSONStringify(obj: any): string {
+    function customSer(key, value) {
+        if (value instanceof RegExp)
+            return ( value.toString());
+        else
+            return value;
+    }
+    return JSON.stringify(obj, customSer, 2);
+}
 
 process.on(
 
@@ -188,7 +200,8 @@ function incHash(hsh, key) {
  */
 export function getDomainForSentence(theModel: IFModel.IModels, sentence : IFErBase.ISentence) : {
   domain : string,
-  collectionName : string
+  collectionName : string,
+  modelName : string
 }
 {
   // this is sloppy and bad
@@ -218,7 +231,8 @@ export function getDomainForSentence(theModel: IFModel.IModels, sentence : IFErB
   }
   return {
     domain : domains[0],
-    collectionName : makeMongoName(domains[0])
+    collectionName : Model.getMongoCollectionNameForDomain(theModel, domains[0]),
+    modelName :  Model.getModelNameForDomain(theModel.mongoHandle, domains[0])
   }
 };
 
@@ -295,6 +309,27 @@ export interface IPreparedQuery extends SentenceParser.IParsedSentences {
   queries : IQuery[]
 };
 
+export function makeAggregateFromAst(astnode : AST.ASTNode, sentence : IFModel.IWord[], mongoMap : IFModel.CatMongoMap) {
+    var nodeFieldList = astnode.children[0].children[0];
+    var nodeFilter = astnode.children[1];
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
+// TODO: be better than full unwind, use only relelvant categories!
+    var unwind = MongoMap.unwindsForNonterminalArrays(mongoMap);
+    var head = [match] as any[];
+    if(unwind.length) {
+      head = head.concat(unwind);
+      head.push(match);
+    }
+    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, sentence, mongoMap);
+    var sort = mQ.makeMongoSortFromAst(nodeFieldList, sentence, mongoMap);
+    var columnsReverseMap= mQ.makeMongoColumnsFromAst(nodeFieldList, sentence, mongoMap);
+    var group = mQ.makeMongoGroupFromAst(nodeFieldList, sentence, mongoMap);
+    //   console.log(' query: ' + JSON.stringify(r)); // how to get domain?
+   // test.equal(domain, 'FioriBOM',' got domain');
+    var query = head.concat( [group, proj, sort] );
+    return { query : query, columnsReverseMap : columnsReverseMap };
+}
+
 export function prepareQueries(query : string, theModel: IFModel.IModels) : IPreparedQuery {
   debuglog(`here query: ${query}`);
   var r = SentenceParser.parseSentenceToAsts(query,theModel,{}); // words);
@@ -307,18 +342,31 @@ export function prepareQueries(query : string, theModel: IFModel.IModels) : IPre
       debuglog(() => JSON.stringify(` empty node for ${index} ` + JSON.stringify(r.errors[index],undefined,2) ) );
       return undefined;
     }
+    var domainPick = getDomainForSentence(theModel, sentence);
+    debuglog(()=> ' domainPick: ' + JSON.stringify(domainPick, undefined,2));
+
+    var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.collectionName];
+    var res =  makeAggregateFromAst(astnode, sentence, mongoMap);
+    var query = res.query;
+    var columnsReverseMap = res.columnsReverseMap;
+/*
     var nodeFieldList = astnode.children[0].children[0];
     var nodeFilter = astnode.children[1];
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, theModel);
-    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, sentence, theModel);
-    var columnsReverseMap= mQ.makeMongoColumnsFromAst(nodeFieldList, sentence,theModel);
-    var group = mQ.makeMongoGroupFromAst(nodeFieldList, sentence, theModel);
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
+
+// TODO: be better than full unwind, use only relelvant categories!
+      var MongomMap = MongoMap.unwindsForNonterminalArrays(mongoMap);
+
+    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, sentence, mongoMap);
+    var columnsReverseMap= mQ.makeMongoColumnsFromAst(nodeFieldList, sentence, mongoMap);
+    var group = mQ.makeMongoGroupFromAst(nodeFieldList, sentence, mongoMap);
     //   console.log(' query: ' + JSON.stringify(r)); // how to get domain?
-    var domainPick = getDomainForSentence(theModel, sentence);
-    r.domains[index] = domainPick.domain;
    // test.equal(domain, 'FioriBOM',' got domain');
     var query = [ match, group, proj ];
-    debuglog(` mongo query for collection ${domainPick.collectionName} : ` + JSON.stringify(query, undefined, 2));
+  */
+    r.domains[index] = domainPick.domain;
+    debuglog(()=>` mongo query for collection ${domainPick.collectionName} : ` + JSONStringify(query));
+    debuglog(()=>` columnmap ` + JSON.stringify(columnsReverseMap, undefined,2));
     return {
       domain : domainPick.domain,
       collectionName : domainPick.collectionName,

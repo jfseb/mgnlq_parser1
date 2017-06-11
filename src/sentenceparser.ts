@@ -101,42 +101,37 @@ export function makeToken(t : IFErBase.IWord, index : number, T : any ) {
   if (!t.rule) {
     throw new Error("Token without rule " + JSON.stringify(t));
   }
-  //console.log(Object.keys(T).join("\n"));
   if (t.rule.wordType === IFModel.WORDTYPE.CATEGORY) {
     return { image : "CAT",  startOffset : index, bearer : t, tokenType : T["ACategory"].tokenType };
   };
   if (t.rule.wordType === 'F') {
-    //console.log(JSON.stringify(t));
     return { image : "FACT",  startOffset : index, bearer : t, tokenType : T["AFact"].tokenType };
   }
   if (t.rule.wordType === 'D') {
-    //console.log(JSON.stringify(t));
     return { image : "DOM",  startOffset : index, bearer : t, tokenType : T["ADomain"].tokenType };
   }
   if (t.rule.wordType === 'A') {
-    //console.log(JSON.stringify(t));
     return { image : "ANY",  startOffset : index, bearer : t, tokenType : T["AnANY"].tokenType };
   }
   if (t.rule.wordType === 'M') {
-    //console.log(JSON.stringify(t));
     var tlc = t.matchedString.toLowerCase();
     var tlcClean = tlc.replace(/ /g,'_');
-    //console.log(">" + tlcClean + "<");
-    //console.log(Object.keys(T).indexOf("domain"));
-    //console.log(">>>" + JSON.stringify(T["domain"]));
-    //console.log("> token >>" + JSON.stringify(T[tlcClean]));
+    //debulog(">" + tlcClean + "<");
+    //debulog(Object.keys(T).indexOf("domain"));
+    //debulog(">>>" + JSON.stringify(T["domain"]));
+    //debulog("> token >>" + JSON.stringify(T[tlcClean]));
     if (!T[tlcClean]) {
-      //console.log(Object.keys(T).join('\" \"'));
+      //debuglog(Object.keys(T).join('\" \"'));
       throw new Error("unknown token of type M with " + t.matchedString);
     }
-    //console.log(" here we go" + typeof T["domain"]);
+    //debuglog(" here we go" + typeof T["domain"]);
     return { image : t.matchedString, bearer : t, startOffset : index, tokenType : T["domain"].tokenType };
   }
   if (t.rule.wordType === 'O') {
     var tlc = t.matchedString.toLowerCase();
     var tlcClean = tlc.replace(/ /g,'_');
     if (!T[tlcClean]) {
-      console.log(Object.keys(T).join('\" \"'));
+      debuglog(Object.keys(T).join('\" \"'));
       throw new Error("unknown token of type O with " + t.matchedString);
       //process.exit(-1);
     }
@@ -145,7 +140,7 @@ export function makeToken(t : IFErBase.IWord, index : number, T : any ) {
   if (t.rule.wordType === 'I') {
     var tlc = t.matchedString.toLowerCase();
     if (!T[tlc]) {
-      console.log("unknown token of type I with " + t.matchedString);
+      debuglog("unknown token of type I with " + t.matchedString);
       process.exit(-1);
     }
     return { image : t.matchedString, bearer : t, startOffset : index, tokenType : T[tlc].tokenType };
@@ -155,7 +150,7 @@ export function makeToken(t : IFErBase.IWord, index : number, T : any ) {
 
 class XLexer {
    tokenize = function(sentence : IFErBase.ISentence) : any[]  {
-    // console.log(JSON.stringify(sentence));
+    // debuglog(JSON.stringify(sentence));
     return sentence.map( (t,index) => {
          var u =  makeToken(t, index, T);
         debuglog("produced nr   " + index + " > " + JSON.stringify(u));

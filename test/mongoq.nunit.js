@@ -5,7 +5,7 @@ var mongoQ = require(root + '/mongoq.js');
 
 var SentenceParser = require(root + '/sentenceparser.js');
 
-var debug = require('debug')('mongoq.nunit');
+var debuglog = require('debug')('mongoq.nunit');
 const Model = require('mgnlq_model').Model;
 
 //var modelpath = process.env.ABOT_MODELPATH || undefined;
@@ -37,7 +37,7 @@ exports.testMakeQuery = function (test) {
       theModel);
     test.deepEqual(r.queries, [{
       domain: 'FioriBOM',
-      collectionName: 'FioriBOM',
+      collectionName: 'fioriapps',
       columns: ['SemanticObject', 'SemanticAction', 'BSPName', 'ApplicationComponent'],
       reverseMap: {},
       query: [{ '$match': { ApplicationComponent: 'CO-FIO', appId: 'W0052' } },
@@ -63,7 +63,16 @@ exports.testMakeQuery = function (test) {
             BSPName: 1,
             ApplicationComponent: 1
           }
-        }]
+        },
+        {
+          '$sort': {
+            SemanticObject: 1,
+            SemanticAction: 1,
+            BSPName: 1,
+            ApplicationComponent: 1
+          }
+        }
+      ]
     }]);
     test.done();
     Model.releaseModel(theModel);
@@ -76,7 +85,7 @@ exports.testMakeQuerySimple = function (test) {
     test.deepEqual(r.queries,
       [{
         domain: 'Cosmos',
-        collectionName: 'Cosmos',
+        collectionName: 'cosmos',
         columns: ['object name'],
         reverseMap: { 'object_name': 'object name' },
         query: [{ '$match': {} },
@@ -86,7 +95,8 @@ exports.testMakeQuerySimple = function (test) {
               'object_name': { '$first': '$object_name' }
             }
           },
-        { '$project': { _id: 0, 'object_name': 1 } }
+        { '$project': { _id: 0, 'object_name': 1 } },
+        { '$sort': { object_name: 1 } }
         ]
       },
         undefined]
@@ -103,7 +113,7 @@ exports.testMakeQueryDoubleConstraint = function (test) {
     test.deepEqual(r.queries,
       [{
         domain: 'FioriBOM',
-        collectionName: 'FioriBOM',
+        collectionName: 'fioriapps',
         columns: ['AppName'],
         reverseMap: {},
         query:
@@ -122,7 +132,8 @@ exports.testMakeQueryDoubleConstraint = function (test) {
             AppName: { '$first': '$AppName' }
           }
         },
-        { '$project': { _id: 0, AppName: 1 } }]
+        { '$project': { _id: 0, AppName: 1 } },
+        { '$sort': { AppName: 1 } }]
       },
         undefined]);
     test.done();
@@ -139,7 +150,7 @@ exports.testMakeQueryStartingWith2 = function (test) {
       [
         {
           domain: 'FioriBOM',
-          collectionName: 'FioriBOM',
+          collectionName: 'fioriapps',
           columns: ['SemanticAction'],
           reverseMap: {},
           query:
@@ -151,11 +162,12 @@ exports.testMakeQueryStartingWith2 = function (test) {
                 SemanticAction: { '$first': '$SemanticAction' }
               }
             },
-        { '$project': { _id: 0, SemanticAction: 1 } }]
+          { '$project': { _id: 0, SemanticAction: 1 } },
+          { '$sort': { SemanticAction: 1 } }]
         },
         {
           domain: 'Fiori Backend Catalogs',
-          collectionName: 'Fiori_Backend_Catalogs',
+          collectionName: 'fioribecatalogs',
           columns: ['SemanticAction'],
           reverseMap: {},
           query:
@@ -167,7 +179,8 @@ exports.testMakeQueryStartingWith2 = function (test) {
                 SemanticAction: { '$first': '$SemanticAction' }
               }
             },
-        { '$project': { _id: 0, SemanticAction: 1 } }]
+          { '$project': { _id: 0, SemanticAction: 1 } },
+          { '$sort': { SemanticAction: 1 } }]
         },
         undefined]
     );
@@ -185,7 +198,7 @@ exports.testMakeQueryStartingWith = function (test) {
       [
         {
           domain: 'FioriBOM',
-          collectionName: 'FioriBOM',
+          collectionName: 'fioriapps',
           columns: ['SemanticAction'],
           reverseMap: {},
           query:
@@ -197,12 +210,14 @@ exports.testMakeQueryStartingWith = function (test) {
                 SemanticAction: { '$first': '$SemanticAction' }
               }
             },
-        { '$project': { _id: 0, SemanticAction: 1 } }]
+          { '$project': { _id: 0, SemanticAction: 1 } },
+          { '$sort': { SemanticAction: 1 } }
+          ]
         },
 
         {
           domain: 'Fiori Backend Catalogs',
-          collectionName: 'Fiori_Backend_Catalogs',
+          collectionName: 'fioribecatalogs',
           columns: ['SemanticAction'],
           reverseMap: {},
           query:
@@ -214,7 +229,9 @@ exports.testMakeQueryStartingWith = function (test) {
                 SemanticAction: { '$first': '$SemanticAction' }
               }
             },
-        { '$project': { _id: 0, SemanticAction: 1 } }]
+          { '$project': { _id: 0, SemanticAction: 1 } },
+          { '$sort': { SemanticAction: 1 } }
+          ]
         },
         undefined
       ]
@@ -229,41 +246,66 @@ exports.testMakeQueryContaining = function (test) {
   getModel().then((theModel) => {
     var r = mongoQ.prepareQueries('UI5Component containing "DYN"',
       theModel);
-    debug(JSON.stringify(r, undefined, 2));
-    test.deepEqual(r.queries,
-      [
+    debuglog(() => JSON.stringify(r, undefined, 2));
+
+
+    var expected = [{
+      domain: 'FioriBOM',
+      collectionName: 'fioriapps',
+      columns: ['ApplicationComponent'],
+      reverseMap: {},
+      query:
+      [{ '$match': { ApplicationComponent: { '$regex': /dyn/i } } },
         {
-          domain: 'FioriBOM',
-          collectionName: 'FioriBOM',
-          columns: ['ApplicationComponent'],
-          reverseMap: {},
-          query:
-          [{ '$match': { ApplicationComponent: { '$regex': /dyn/i } } },
-            {
-              '$group':
-              {
-                _id: { ApplicationComponent: '$ApplicationComponent' },
-                ApplicationComponent: { '$first': '$ApplicationComponent' }
-              }
-            },
-          { '$project': { _id: 0, ApplicationComponent: 1 } }]
+          '$group':
+          {
+            _id: { ApplicationComponent: '$ApplicationComponent' },
+            ApplicationComponent: { '$first': '$ApplicationComponent' }
+          }
         },
+      { '$project': { _id: 0, ApplicationComponent: 1 } },
+      { '$sort': { ApplicationComponent: 1 } }]
+    },
+    {
+      domain: 'Fiori Backend Catalogs',
+      collectionName: 'fioribecatalogs',
+      columns: ['ApplicationComponent'],
+      reverseMap: {},
+      query:
+      [{ '$match': { ApplicationComponent: { '$regex': /dyn/i } } },
         {
-          domain: 'FioriBOM',
-          collectionName: 'FioriBOM',
-          columns: ['ArtifactId'],
-          reverseMap: {},
-          query:
-          [{ '$match': { ArtifactId: { '$regex': /dyn/i } } },
-            {
-              '$group':
-              {
-                _id: { ArtifactId: '$ArtifactId' },
-                ArtifactId: { '$first': '$ArtifactId' }
-              }
-            },
-          { '$project': { _id: 0, ArtifactId: 1 } }]
-        }]
+          '$group':
+          {
+            _id: { ApplicationComponent: '$ApplicationComponent' },
+            ApplicationComponent: { '$first': '$ApplicationComponent' }
+          }
+        },
+      { '$project': { _id: 0, ApplicationComponent: 1 } },
+      { '$sort': { ApplicationComponent: 1 } }]
+    },
+      undefined,
+    {
+      domain: 'FioriBOM',
+      collectionName: 'fioriapps',
+      columns: ['ArtifactId'],
+      reverseMap: {},
+      query:
+      [{ '$match': { ArtifactId: { '$regex': /dyn/i } } },
+        {
+          '$group':
+          {
+            _id: { ArtifactId: '$ArtifactId' },
+            ArtifactId: { '$first': '$ArtifactId' }
+          }
+        },
+      { '$project': { _id: 0, ArtifactId: 1 } },
+      { '$sort': { ArtifactId: 1 } }]
+    },
+      undefined];
+    test.deepEqual(r.queries[0], expected[0]);
+    test.deepEqual(r.queries[2], expected[2]);
+    test.deepEqual(r.queries,
+      expected
     );
     test.done();
     Model.releaseModel(theModel);
@@ -277,7 +319,7 @@ exports.testMakeQueryContainsFact = function (test) {
     test.deepEqual(r.queries,
       [{
         domain: 'IUPAC',
-        collectionName: 'IUPAC',
+        collectionName: 'iupacs',
         columns: ['element name'],
         reverseMap: { element_name: 'element name' },
         query:
@@ -289,11 +331,12 @@ exports.testMakeQueryContainsFact = function (test) {
               element_name: { '$first': '$element_name' }
             }
           },
-        { '$project': { _id: 0, element_name: 1 } }]
+        { '$project': { _id: 0, element_name: 1 } },
+        { '$sort': { element_name: 1 } }]
       },
       {
         domain: 'IUPAC',
-        collectionName: 'IUPAC',
+        collectionName: 'iupacs',
         columns: ['element name'],
         reverseMap: { element_name: 'element name' },
         query:
@@ -312,11 +355,12 @@ exports.testMakeQueryContainsFact = function (test) {
             element_name: { '$first': '$element_name' }
           }
         },
-        { '$project': { _id: 0, element_name: 1 } }]
+        { '$project': { _id: 0, element_name: 1 } },
+        { '$sort': { element_name: 1 } }]
       },
       {
         domain: 'IUPAC',
-        collectionName: 'IUPAC',
+        collectionName: 'iupacs',
         columns: ['element number'],
         reverseMap: { element_number: 'element number' },
         query:
@@ -328,11 +372,12 @@ exports.testMakeQueryContainsFact = function (test) {
               element_number: { '$first': '$element_number' }
             }
           },
-        { '$project': { _id: 0, element_number: 1 } }]
+        { '$project': { _id: 0, element_number: 1 } },
+        { '$sort': { element_number: 1 } }]
       },
       {
         domain: 'IUPAC',
-        collectionName: 'IUPAC',
+        collectionName: 'iupacs',
         columns: ['element number'],
         reverseMap: { element_number: 'element number' },
         query:
@@ -351,7 +396,8 @@ exports.testMakeQueryContainsFact = function (test) {
             element_number: { '$first': '$element_number' }
           }
         },
-        { '$project': { _id: 0, element_number: 1 } }]
+        { '$project': { _id: 0, element_number: 1 } },
+        { '$sort': { element_number: 1 } }]
       }]
     );
     test.done();
@@ -377,43 +423,55 @@ exports.testQueryInternal = function (test) {
     mongoQ.queryInternal('object name', theModel, handle).then(res => {
       test.deepEqual(res.queryresults,
         [
-          { sentence:
-          [ { string: 'object name',
-            matchedString: 'object name',
-            category: 'category',
-            rule:
-            { category: 'category',
+          {
+            sentence:
+            [{
+              string: 'object name',
               matchedString: 'object name',
-              type: 0,
-              word: 'object name',
-              lowercaseword: 'object name',
-              bitindex: 1,
-              wordType: 'C',
-              bitSentenceAnd: 1,
-              _ranking: 0.95 },
-            _ranking: 0.95,
-            span: 2 } ],
-            columns: [ 'object name' ],
-            results: [ [ 'abc' ] ] },
-          { sentence:
-          [ { string: 'object name',
-            matchedString: 'object name',
-            category: 'category',
-            rule:
-            { category: 'category',
-              matchedString: 'object name',
-              type: 0,
-              word: 'object name',
-              bitindex: 16,
-              bitSentenceAnd: 16,
-              exactOnly: false,
-              wordType: 'F',
+              category: 'category',
+              rule:
+              {
+                category: 'category',
+                matchedString: 'object name',
+                type: 0,
+                word: 'object name',
+                lowercaseword: 'object name',
+                bitindex: 1,
+                wordType: 'C',
+                bitSentenceAnd: 1,
+                _ranking: 0.95
+              },
               _ranking: 0.95,
-              lowercaseword: 'object name' },
-            _ranking: 0.95,
-            span: 2 } ],
+              span: 2
+            }],
+            columns: ['object name'],
+            results: [['abc']]
+          },
+          {
+            sentence:
+            [{
+              string: 'object name',
+              matchedString: 'object name',
+              category: 'category',
+              rule:
+              {
+                category: 'category',
+                matchedString: 'object name',
+                type: 0,
+                word: 'object name',
+                bitindex: 16,
+                bitSentenceAnd: 16,
+                exactOnly: false,
+                wordType: 'F',
+                _ranking: 0.95,
+                lowercaseword: 'object name'
+              },
+              _ranking: 0.95,
+              span: 2
+            }],
             columns: [],
-            results: [] } ]
+            results: []
+          }]
 
       );
       test.done();
@@ -429,11 +487,15 @@ exports.testMakeQuery2 = function (test) {
     var node = r.asts[0];
     var nodeFieldList = node.children[0].children[0];
     var nodeFilter = node.children[1];
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], theModel);
+    var domainPick = mongoQ.getDomainForSentence(theModel, r.sentences[0]);
+    var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], mongoMap);
     test.deepEqual(match, { $match: { ApplicationComponent: 'CO-FIO', appId: 'W0052', 'TechnicalCatalog': 'SAP_TC_FIN_CO_COMMON' } });
-    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0], theModel);
+    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0], mongoMap);
     test.deepEqual(proj, { $project: { _id: 0, SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } });
-    var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], theModel);
+    var sort = mQ.makeMongoSortFromAst(nodeFieldList, r.sentences[0], mongoMap);
+    test.deepEqual(sort, { $sort: { SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } });
+    var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], mongoMap);
     test.deepEqual(group, {
       $group: {
         _id: { SemanticObject: '$SemanticObject', SemanticAction: '$SemanticAction', BSPName: '$BSPName', ApplicationComponent: '$ApplicationComponent' },
@@ -441,10 +503,107 @@ exports.testMakeQuery2 = function (test) {
       }
     });
     // console.log(JSON.stringify(r)); // how to get domain?
-    var domain = mongoQ.getDomainForSentence(theModel, r.sentences[0]);
-    test.deepEqual(domain, { collectionName: 'FioriBOM', domain: 'FioriBOM' }, ' got domain');
+    var domain = mongoQ.getDomainForSentence(theModel, r.sentences[0], mongoMap);
+    test.deepEqual(domain, { collectionName: 'fioriapps', domain: 'FioriBOM', modelName: 'fioriapps' }, ' got domain');
     var query = [match, group, proj];
-    debug(query);
+    debuglog(() => query);
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+
+exports.testCategoriesInBOM = function (test) {
+  getModel().then((theModel) => {
+    var s = 'categories in  Fiori BOM';
+    var r = mongoQ.prepareQueries(s, theModel);
+    debuglog(() => JSON.stringify(r, undefined, 2));
+    var query0 = r.queries[0];
+    test.deepEqual(r.queries.length, 2);
+    test.deepEqual(r.queries.filter(q => !!q).length, 1);
+    test.deepEqual(query0.query,
+      [{ '$match': { domain: 'FioriBOM' } },
+      { '$unwind': { path: '$_categories', preserveNullAndEmptyArrays: true } },
+      { '$match': { domain: 'FioriBOM' } },
+        {
+          '$group':
+          {
+            _id: { _categories: '$_categories' },
+            _categories: { '$first': '$_categories' }
+          }
+        },
+      { '$project': { _id: 0, category: '$_categories.category' } },
+      { '$sort': { category: 1 } }]
+    );
+    test.deepEqual(query0.columns,
+      ['category']
+    );
+    test.deepEqual(query0.reverseMap,
+      {}
+    );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+
+
+exports.testPrepareQuery2 = function (test) {
+  getModel().then((theModel) => {
+    var s = 'categories starting with elem';
+    var r = mongoQ.prepareQueries(s, theModel);
+    var query0 = r.queries[0];
+
+    test.deepEqual(query0.query,
+      [
+        {
+          '$match': {
+            '_categories.category': {
+              '$regex': /^elem/i
+            }
+          }
+        },
+        {
+          '$unwind': {
+            'path': '$_categories',
+            'preserveNullAndEmptyArrays': true
+          }
+        },
+        {
+          '$match': {
+            '_categories.category': {
+              '$regex': /^elem/i
+            }
+          }
+        },
+        {
+          '$group': {
+            '_id': {
+              '_categories': '$_categories'
+            },
+            '_categories': {
+              '$first': '$_categories'
+            }
+          }
+        },
+        {
+          '$project': {
+            '_id': 0,
+            'category': '$_categories.category'
+          }
+        },
+        {
+          '$sort': {
+            'category': 1
+          }
+        }
+      ]);
+    test.deepEqual(query0.columns,
+      ['category']
+    );
+    test.deepEqual(query0.reverseMap,
+      {}
+    );
     test.done();
     Model.releaseModel(theModel);
   });
@@ -455,11 +614,12 @@ exports.testGetDomainsForSentence = function (test) {
     var s = 'SemanticObject';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     var domain = mongoQ.getDomainForSentence(theModel, r.sentences[0]);
-    test.deepEqual(domain, { domain: 'FioriBOM', collectionName: 'FioriBOM' }, ' got domain');
+    test.deepEqual(domain, { domain: 'FioriBOM', collectionName: 'fioriapps', modelName: 'fioriapps' }, ' got domain');
     var domain2 = mongoQ.getDomainForSentence(theModel, r.sentences[1]);
     test.deepEqual(domain2, {
       domain: 'Fiori Backend Catalogs',
-      collectionName: 'Fiori_Backend_Catalogs'
+      collectionName: 'fioribecatalogs',
+      modelName: 'fioribecatalogs'
     }, ' got domain');
     test.done();
     Model.releaseModel(theModel);

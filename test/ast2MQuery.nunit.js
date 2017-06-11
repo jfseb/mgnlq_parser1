@@ -5,8 +5,9 @@ var root = (process.env.FSD_COVERAGE) ? '../js_cov' : '../js';
 var mQ = require(root + '/ast2MQuery.js');
 var SentenceParser = require(root + '/sentenceparser.js');
 
+var mongoQ = require('../js/mongoq.js');
 
-var debug = require('debug')('ast2MQuery');
+var debuglog = require('debugf')('ast2MQuery');
 const Model = require('mgnlq_model').Model;
 
 
@@ -39,8 +40,8 @@ exports.testGetCategoryForNodePairEasy = function(test) {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
     var u = r.asts[0];
-    debug(JSON.stringify(r.asts[0].children[1].children[0].children[0], undefined,2));
-    debug(JSON.stringify(r.asts[0].children[1].children[0].children[1], undefined,2));
+    debuglog(JSON.stringify(r.asts[0].children[1].children[0].children[0], undefined,2));
+    debuglog(JSON.stringify(r.asts[0].children[1].children[0].children[1], undefined,2));
     var nodeCat = u.children[1].children[0].children[0];
     var nodeFact = u.children[1].children[0].children[1];
     var cat = mQ.getCategoryForNodePair(nodeCat, nodeFact,  r.sentences[0]);
@@ -55,8 +56,8 @@ exports.testGetCategoryForNodePairNoCat = function(test) {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
     var u = r.asts[0];
-    debug(JSON.stringify(r.asts[0].children[1].children[2], undefined,2));
-    debug(JSON.stringify(r.asts[0].children[1].children[2], undefined,2));
+    debuglog(()=>JSON.stringify(r.asts[0].children[1].children[2], undefined,2));
+    debuglog(()=>JSON.stringify(r.asts[0].children[1].children[2], undefined,2));
     var nodeCat = u.children[1].children[2].children[0];
     var nodeFact = u.children[1].children[2].children[1];
     var cat = mQ.getCategoryForNodePair(nodeCat, nodeFact,  r.sentences[0]);
@@ -72,8 +73,8 @@ exports.testGetCategoryForNodeOk = function(test) {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
     var u = r.asts[0];
-    debug(JSON.stringify(r.asts[0].children[1].children[0].children[0], undefined,2));
-    debug(JSON.stringify(r.asts[0].children[1].children[0].children[1], undefined,2));
+    debuglog(()=>JSON.stringify(r.asts[0].children[1].children[0].children[0], undefined,2));
+    debuglog(()=> JSON.stringify(r.asts[0].children[1].children[0].children[1], undefined,2));
     var nodeCat = u.children[1].children[0].children[0];
     var cat =  mQ.getCategoryForNode(nodeCat,  r.sentences[0]);
     test.equals(cat, 'ApplicationComponent');
@@ -89,8 +90,8 @@ exports.testGetCategoryForNodeThrows = function(test) {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
     var u = r.asts[0];
-    debug(JSON.stringify(r.asts[0].children[1].children[0].children[0], undefined,2));
-    debug(JSON.stringify(r.asts[0].children[1].children[0].children[1], undefined,2));
+    debuglog(()=>JSON.stringify(r.asts[0].children[1].children[0].children[0], undefined,2));
+    debuglog(()=>JSON.stringify(r.asts[0].children[1].children[0].children[1], undefined,2));
     var nodeCat = u.children[1];
     try {
       mQ.getCategoryForNode(nodeCat,  r.sentences[0]);
@@ -113,15 +114,45 @@ exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
     var node = r.asts[0];
     var nodeFieldList = node.children[0].children[0];
     var nodeFilter = node.children[1];
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], theModel);
+    var sentence = r.sentences[0];
+    var domainPick = mongoQ.getDomainForSentence(theModel, sentence);
+    debuglog(() => Object.keys(theModel.mongoHandle.mongoMaps).join('\n'));
+    debuglog(() =>'collectionname ' + domainPick.collectionName);
+    var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
     test.deepEqual(match , { $match : { ApplicationComponent : 'CO-FIO', appId : 'W0052', 'TechnicalCatalog' : 'SAP_TC_FIN_CO_COMMON' }});
-    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0], theModel);
+    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0], mongoMap);
     test.deepEqual(proj , { $project: { _id: 0, SemanticObject : 1, SemanticAction : 1, BSPName : 1, ApplicationComponent : 1 }});
-    var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], theModel);
+    var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], mongoMap);
     test.deepEqual(group , { $group: {
       _id:  { SemanticObject : '$SemanticObject', SemanticAction : '$SemanticAction', BSPName : '$BSPName' , ApplicationComponent : '$ApplicationComponent' }
     ,
       SemanticObject :{ $first: '$SemanticObject'}, SemanticAction : { $first: '$SemanticAction'}, BSPName : { $first: '$BSPName'} , ApplicationComponent : { $first: '$ApplicationComponent'}
+    }});
+    test.done();
+    releaseModel(theModel);
+  });
+};
+
+
+exports.testAstToMQueryMultiArray = function (test) {
+  getModel().then( (theModel) => {
+  // debuglog(JSON.stringify(ifr, undefined, 2))
+  // console.log(theModel.mRules)
+    var s = 'categories starting with elem';
+    var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
+    var node = r.asts[0];
+    var nodeFieldList = node.children[0].children[0];
+    var nodeFilter = node.children[1];
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], theModel.mongoHandle.mongoMaps['metamodels']);
+    test.deepEqual(match , { $match : { '_categories.category' : { '$regex': /^elem/i } }});
+    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0],  theModel.mongoHandle.mongoMaps['metamodels']);
+    test.deepEqual(proj , { $project: { _id: 0, 'category' : '$_categories.category' }});
+    var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], theModel.mongoHandle.mongoMaps['metamodels']);
+    test.deepEqual(group , { $group: {
+      _id:  { _categories : '$_categories' }
+    ,
+      _categories :{ $first: '$_categories'}
     }});
     test.done();
     releaseModel(theModel);
@@ -138,11 +169,15 @@ exports.testMakeMongoQueryEndingWith = function (test) {
     var node = r.asts[0];
     var nodeFieldList = node.children[0].children[0];
     var nodeFilter = node.children[1];
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], theModel);
+    var sentence = r.sentences[0];
+    var domainPick = mongoQ.getDomainForSentence(theModel, sentence);
+    var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
+
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
     test.deepEqual(match ,{ '$match': { domain: { '$regex': /abc$/i } } });
-    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0], theModel);
+    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, sentence, mongoMap);
     test.deepEqual(proj ,{ '$project': { _id: 0, domain: 1 } });
-    var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], theModel);
+    var group = mQ.makeMongoGroupFromAst(nodeFieldList, sentence, mongoMap);
     test.deepEqual(group , { '$group': { _id: { domain: '$domain' }, domain: { '$first': '$domain' } } }   , 'group');
     test.done();
     releaseModel(theModel);
@@ -223,7 +258,10 @@ exports.testMakeMongoReverseMapFromAst = function (test) {
     var s = 'object name';
     var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
     var u = r.asts[0].children[0].children[0];
-    var reverseMap = mQ.makeMongoColumnsFromAst(u,r.sentences[0],theModel);
+    var sentence = r.sentences[0];
+    var domainPick = mongoQ.getDomainForSentence(theModel, sentence);
+    var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
+    var reverseMap = mQ.makeMongoColumnsFromAst(u, sentence, mongoMap);
     test.deepEqual(reverseMap,  { columns: ['object name'], reverseMap :{ 'object_name' : 'object name' }});
     test.done();
     releaseModel(theModel);

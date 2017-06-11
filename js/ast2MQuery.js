@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const debug = require("debugf");
+const mgnlq_model_1 = require("mgnlq_model");
 const debuglog = debug('ast2MQuery');
 const chevrotain = require("chevrotain");
 const AST = require("./ast");
@@ -54,7 +55,8 @@ function getFactForNode(nodeFact, sentence) {
 exports.getFactForNode = getFactForNode;
 ;
 function makeMongoName(s) {
-    return s.replace(/[^a-zA-Z0-9]/g, '_');
+    return mgnlq_model_1.MongoMap.makeMongoNameLC(s);
+    //return s.replace(/[^a-zA-Z0-9]/g,'_');
 }
 exports.makeMongoName = makeMongoName;
 function makeFilterObj(cat, filter) {
@@ -77,7 +79,7 @@ function addFilterToMatch(res, cat, filter) {
 }
 exports.addFilterToMatch = addFilterToMatch;
 ;
-function makeMongoMatchFromAst(node, sentence, theModel) {
+function makeMongoMatchFromAst(node, sentence, mongoMap) {
     debug(AST.astToText(node));
     //console.log("making mongo match " + AST.astToText(node));
     if (!node) {
@@ -88,21 +90,25 @@ function makeMongoMatchFromAst(node, sentence, theModel) {
     }
     var res = {};
     node.children.forEach(n => {
-        var cat = getCategoryForNodePair(n.children[0], n.children[1], sentence);
-        cat = makeMongoName(cat);
+        var category = getCategoryForNodePair(n.children[0], n.children[1], sentence);
+        //console.log('here is the domain ' + mongodomain);
+        //console.log('here is the domain ' + Object.keys(theModel.mongoHandle.mongoMaps).join("\n"));
+        //console.log(JSON.stringify(theModel.mongoHandle.mongoMaps[mongodomain], undefined,2));
+        var mongocatfullpath = mongoMap[category].fullpath; // Model.getMongoosePath(theModel, category); //makeMongoName(cat);
+        debuglog(() => `here is the fullpath for ${category} is ${mongocatfullpath} `);
         var fact = getFactForNode(n.children[1], sentence);
         if (n.type === ast_1.ASTNodeType.OPEqIn) {
-            res = addFilterToMatch(res, cat, fact);
+            res = addFilterToMatch(res, mongocatfullpath, fact);
         }
         else if (n.type === ast_1.ASTNodeType.OPStartsWith) {
-            res = addFilterToMatch(res, cat, { $regex: new RegExp(`^${fact.toLowerCase()}`, "i") });
+            res = addFilterToMatch(res, mongocatfullpath, { $regex: new RegExp(`^${fact.toLowerCase()}`, "i") });
         }
         else if (n.type === ast_1.ASTNodeType.OPEndsWith) {
             debuglog(() => '!!!!adding regex with expression ' + fact.toLowerCase());
-            res = addFilterToMatch(res, cat, { $regex: new RegExp(`${fact.toLowerCase()}$`, "i") });
+            res = addFilterToMatch(res, mongocatfullpath, { $regex: new RegExp(`${fact.toLowerCase()}$`, "i") });
         }
         else if (n.type === ast_1.ASTNodeType.OPContains) {
-            res = addFilterToMatch(res, cat, { $regex: new RegExp(`${fact.toLowerCase()}`, "i") });
+            res = addFilterToMatch(res, mongocatfullpath, { $regex: new RegExp(`${fact.toLowerCase()}`, "i") });
         }
         else {
             throw new Error('Expected nodetype NT.OPEqIn but was ' + n.type);
@@ -111,21 +117,24 @@ function makeMongoMatchFromAst(node, sentence, theModel) {
     return { $match: res };
 }
 exports.makeMongoMatchFromAst = makeMongoMatchFromAst;
-function makeMongoGroupFromAst(node, sentence, theModel) {
+function makeMongoGroupFromAst(node, sentence, mongoMap) {
     debug(AST.astToText(node));
     if (node.type !== ast_1.ASTNodeType.LIST) {
         throw new Error('expected different nodetype ' + node.type);
     }
     var res = {};
-    node.children.forEach(n => {
+    var categories = node.children.map(n => {
         if (n.type === ast_1.ASTNodeType.CAT) {
-            var cat = getCategoryForNode(n, sentence);
-            cat = makeMongoName(cat);
-            res[cat] = '$' + cat;
+            var category = getCategoryForNode(n, sentence);
+            return category;
         }
         else {
             throw new Error(`Expected nodetype ${new AST.NodeType(ast_1.ASTNodeType.CAT).toString()} but was ${new AST.NodeType(n.type).toString()}`);
         }
+    });
+    categories.forEach(category => {
+        var mongocatfullpath = mgnlq_model_1.MongoMap.getFirstSegment(mongoMap[category].paths); // Model.getMongoosePath(theModel, category); //makeMongoName(cat);
+        res[mongocatfullpath] = '$' + mongocatfullpath;
     });
     var r1 = { $group: Object.assign({ _id: Object.assign({}, res) }, {}) };
     var firstX = {};
@@ -134,7 +143,7 @@ function makeMongoGroupFromAst(node, sentence, theModel) {
     return r1;
 }
 exports.makeMongoGroupFromAst = makeMongoGroupFromAst;
-function makeMongoColumnsFromAst(node, sentence, theModel) {
+function makeMongoColumnsFromAst(node, sentence, mongoMap) {
     debug(AST.astToText(node));
     if (node.type !== ast_1.ASTNodeType.LIST) {
         throw new Error('expected different nodetype ' + node.type);
@@ -143,11 +152,11 @@ function makeMongoColumnsFromAst(node, sentence, theModel) {
         reverseMap: {} };
     node.children.forEach(n => {
         if (n.type === ast_1.ASTNodeType.CAT) {
-            var cat = getCategoryForNode(n, sentence);
-            res.columns.push(cat);
-            var catmongo = makeMongoName(cat);
-            if (cat !== catmongo) {
-                res.reverseMap[catmongo] = cat;
+            var category = getCategoryForNode(n, sentence);
+            res.columns.push(category);
+            var catmongo = mgnlq_model_1.MongoMap.getShortProjectedName(mongoMap, category);
+            if (category !== catmongo) {
+                res.reverseMap[catmongo] = category;
             }
         }
         else {
@@ -157,17 +166,23 @@ function makeMongoColumnsFromAst(node, sentence, theModel) {
     return res;
 }
 exports.makeMongoColumnsFromAst = makeMongoColumnsFromAst;
-function makeMongoProjectionFromAst(node, sentence, theModel) {
+function makeMongoProjectionFromAst(node, sentence, mongoMap) {
     debug(AST.astToText(node));
     if (node.type !== ast_1.ASTNodeType.LIST) {
         throw new Error('expected different nodetype ' + node.type);
     }
     var res = { _id: 0 };
-    node.children.forEach(n => {
+    node.children.map(n => {
         if (n.type === ast_1.ASTNodeType.CAT) {
-            var cat = getCategoryForNode(n, sentence);
-            cat = makeMongoName(cat);
-            res[cat] = 1;
+            var category = getCategoryForNode(n, sentence);
+            var mongocatfullpath = mongoMap[category].fullpath; //makeMongoName(cat);
+            var shortName = mgnlq_model_1.MongoMap.getShortProjectedName(mongoMap, category);
+            if (shortName === mongocatfullpath) {
+                res[mongocatfullpath] = 1;
+            }
+            else {
+                res[shortName] = "$" + mongocatfullpath;
+            }
         }
         else {
             throw new Error(`Expected nodetype ${new AST.NodeType(ast_1.ASTNodeType.CAT).toString()} but was ${new AST.NodeType(n.type).toString()}`);
@@ -176,6 +191,25 @@ function makeMongoProjectionFromAst(node, sentence, theModel) {
     return { $project: res };
 }
 exports.makeMongoProjectionFromAst = makeMongoProjectionFromAst;
+function makeMongoSortFromAst(node, sentence, mongoMap) {
+    debug(AST.astToText(node));
+    if (node.type !== ast_1.ASTNodeType.LIST) {
+        throw new Error('expected different nodetype ' + node.type);
+    }
+    var res = {};
+    node.children.map(n => {
+        if (n.type === ast_1.ASTNodeType.CAT) {
+            var category = getCategoryForNode(n, sentence);
+            var shortName = mgnlq_model_1.MongoMap.getShortProjectedName(mongoMap, category);
+            res[shortName] = 1;
+        }
+        else {
+            throw new Error(`Expected nodetype ${new AST.NodeType(ast_1.ASTNodeType.CAT).toString()} but was ${new AST.NodeType(n.type).toString()}`);
+        }
+    });
+    return { $sort: res };
+}
+exports.makeMongoSortFromAst = makeMongoSortFromAst;
 function makeMongoMatchF(filters) {
     var res = { $match: {} };
     //console.log('is match \n');
