@@ -13,6 +13,9 @@ function run() {
     var val = tok[name];
     debug(' got ' + name + ' '  + val);
     if (typeof val === 'string') {
+      if (val !== val.toLowerCase()) {
+        return { name : name, value : val , respectCase : true };
+      }
       return { name : name, value : val };
     } else {
       return { name : name, value : val.value, pattern : val.pattern, order : val.order || 0 };
@@ -59,7 +62,11 @@ function run() {
     var tokName = tok.name.replace(/ /g,'_');
     tok.niceName = tokName;
     var alignPattern = (tok.pattern || tok.value).replace(/ /g, '_');
-    return `var T${tokName} = createToken({name: "${tokName}", pattern: /${escapeRegex(alignPattern)}/i });`;
+    if(!tok.respectCase) {
+      return `var T${tokName} = createToken({name: "${tokName}", pattern: /${escapeRegex(alignPattern)}/i });`;
+    } else {
+      return `var T${tokName} = createToken({name: "${tokName}", pattern: /${escapeRegex(alignPattern)}/ });`;
+    }
   });
 
   var tokendefinitions = tokenstrings.join('\n');

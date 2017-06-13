@@ -173,7 +173,8 @@ function SelectParser(input) {
       $.OR([
         {ALT: function() { return AST.makeNodeForToken(NT.OPFirst, $.CONSUME(T.first));}},
         {ALT: function() { return AST.makeNodeForToken(NT.OPOldest, $.CONSUME(T.oldest));}},
-        {ALT: function() { return AST.makeNodeForToken(NT.OPNewest,$.CONSUME(T.latest))}}
+        {ALT: function() { return AST.makeNodeForToken(NT.OPNewest,$.CONSUME(T.latest));}},
+        {ALT: function() { return AST.makeNodeForToken(NT.OPNewest,$.CONSUME(T.newest));}}
       ])
     });
 

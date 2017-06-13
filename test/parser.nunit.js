@@ -39,13 +39,76 @@ describe /DDF/DDEL_MON;
 
 
 exports.testOpCat = function (test) {
-  [ 'First', 'Newest', 'Oldest', 'All'].forEach(function() {
-    var inputText = 'First';
-    parseInput(inputText,'opCat');
+  [ 'First', 'latest', 'newest', 'Oldest'].forEach(function(op) {
+    var inputText = op;
+    try {
+      parseInput(inputText,'opCat');
+    } catch(e) {
+      console.log(e);
+      test.equal(1,0);
+    }
     test.equal(1,1);
   });
   test.done();
 };
+
+exports.test_filterEntry = function (test) {
+  [ 'in', 'with', 'for', 'relating'].forEach(function(op) {
+    var inputText = op;
+    try {
+      parseInput(inputText,'filterEntry');
+    } catch(e) {
+      console.log(e);
+      test.equal(1,0);
+    }
+    test.equal(1,1);
+  });
+  test.done();
+};
+
+
+exports.test_CatFilterDOM = function (test) {
+  [ 'in', 'with', 'for', 'relating'].forEach(function(op) {
+    var inputText = op + ' DOM in FACT';
+    try {
+      parseInput(inputText,'catFilter');
+    } catch(e) {
+      console.log(e);
+      test.equal(1,0);
+    }
+    test.equal(1,1);
+  });
+  test.done();
+};
+
+exports.test_CatFilterDOMmultiFact = function (test) {
+  [ 'in', 'with', 'for', 'relating'].forEach(function(op) {
+    var inputText = op + ' DOM in FACT, FACT';
+    try {
+      parseInput(inputText,'catFilter');
+    } catch(e) {
+      console.log(e);
+      test.equal(1,0);
+    }
+    test.equal(1,1);
+  });
+  test.done();
+};
+
+exports.test_CatFilterDOM2 = function (test) {
+  [ 'in', 'with', 'for', 'relating' ].forEach(function(op) {
+    var inputText = op + ' domain DOM';
+    try {
+      parseInput(inputText,'catFilter');
+    } catch(e) {
+      console.log(e);
+      test.equal(1,0);
+    }
+    test.equal(1,1);
+  });
+  test.done();
+};
+
 
 
 exports.testUnarySetOp = function (test) {
@@ -58,15 +121,27 @@ exports.testUnarySetOp = function (test) {
 };
 
 
-
 exports.testCatListMore = function (test) {
-  [ 'First', 'Newest', 'Oldest', 'All'].forEach(function() {
-    var inputText = 'First CAT, CAT, CAT';
+  [ 'First', 'Newest', 'Oldest', 'All'].forEach(function(op) {
+    var inputText = 'CAT, CAT, CAT';
     parseInput(inputText,'catListOpMore');
     test.equal(1,1);
   });
   test.done();
 };
+
+
+exports.test_inDomain = function (test) {
+  [ 'in', 'Newest', 'Oldest', 'All'].forEach(function() {
+    var inputText = 'in domain DOM';
+   // var lexingResult = Parser.SelectLexer.tokenize(inputText);
+   // console.log(JSON.stringify(lexingResult,undefined,2));
+    parseInput(inputText,'inDomain');
+    test.equal(1,1);
+  });
+  test.done();
+};
+
 
 
 exports.testCatListMoreInFact = function (test) {

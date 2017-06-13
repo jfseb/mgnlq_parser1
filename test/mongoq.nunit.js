@@ -625,3 +625,83 @@ exports.testGetDomainsForSentence = function (test) {
     Model.releaseModel(theModel);
   });
 };
+
+
+
+exports.testGetDomainsForSentence = function (test) {
+  getModel().then((theModel) => {
+    var s = 'SemanticObject';
+    var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
+    var domain = mongoQ.getDomainForSentence(theModel, r.sentences[0]);
+    test.deepEqual(domain, { domain: 'FioriBOM', collectionName: 'fioriapps', modelName: 'fioriapps' }, ' got domain');
+    var domain2 = mongoQ.getDomainForSentence(theModel, r.sentences[1]);
+    test.deepEqual(domain2, {
+      domain: 'Fiori Backend Catalogs',
+      collectionName: 'fioribecatalogs',
+      modelName: 'fioribecatalogs'
+    }, ' got domain');
+    mongoQ.query('SemanticObject', theModel).then((res) => {
+      test.deepEqual(res.queryresults[0].results,
+        [
+          [
+            null
+          ],
+          [
+            ''
+          ],
+          [
+            'ApplicationJob'
+          ],
+          [
+            'ComplianceAlerts'
+          ],
+          [
+            'EWMProduct'
+          ],
+          [
+            'GLAccount'
+          ],
+          [
+            'MRPMaterial'
+          ],
+          [
+            'ProductLabel'
+          ],
+          [
+            'Project'
+          ],
+          [
+            'Supplier'
+          ],
+          [
+            'TaxReport'
+          ],
+          [
+            'WBSElement'
+          ]
+        ]);
+
+      test.deepEqual(res.queryresults[1].results, [
+        [
+          'Customer'
+        ],
+        [
+          'Document'
+        ],
+        [
+          'TaxReport'
+        ],
+        [
+          'VisitList'
+        ],
+        [
+          'WBSElement'
+        ]
+      ]);
+
+      test.done();
+      Model.releaseModel(theModel);
+    });
+  });
+};
+

@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chevrotain = require("chevrotain");
 var createToken = chevrotain.createToken;
-var TACategory = createToken({ name: "ACategory", pattern: /CAT/i });
-var TADomain = createToken({ name: "ADomain", pattern: /DOM/i });
-var TAFact = createToken({ name: "AFact", pattern: /FACT/i });
+var TACategory = createToken({ name: "ACategory", pattern: /CAT/ });
+var TADomain = createToken({ name: "ADomain", pattern: /DOM/ });
+var TAFact = createToken({ name: "AFact", pattern: /FACT/ });
 var Tall = createToken({ name: "all", pattern: /all/i });
-var TAnANY = createToken({ name: "AnANY", pattern: /AnANY/i });
+var TAnANY = createToken({ name: "AnANY", pattern: /AnANY/ });
 var Tand = createToken({ name: "and", pattern: /and/i });
 var Tany = createToken({ name: "any", pattern: /any/i });
 var Tat = createToken({ name: "at", pattern: /at/i });
