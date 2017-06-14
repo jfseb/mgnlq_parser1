@@ -94,6 +94,7 @@ export class MongoBridge {
     return domain;
   }
 
+/*
   makeSchema(mgdomain : string)  : mongoose.Schema {
     debug('makeSchema for ' + mgdomain);
    // console.log('makeschema ' + mgdomain);
@@ -107,6 +108,7 @@ export class MongoBridge {
     })
     return new mongoose.Schema(res);
   }
+  */
 }
 
 
@@ -251,7 +253,7 @@ export interface QResult {
   results : string[][]
 };
 
-
+/*
 export function fuseAndOrderResults(res : SRes[]) : IFErBase.IWhatIsTupelAnswer[] {
   var all = [];
   debug(JSON.stringify(res));
@@ -271,6 +273,8 @@ export function fuseAndOrderResults(res : SRes[]) : IFErBase.IWhatIsTupelAnswer[
   );
   return all;
 }
+*/
+
   /*
  sentence: ISentence;
     record: IRecord;
@@ -278,7 +282,7 @@ export function fuseAndOrderResults(res : SRes[]) : IFErBase.IWhatIsTupelAnswer[
     result: string[];
     _ranking: number;
   */
-var mongoConnPromise = undefined as Promise<mongoose.Connection>;
+//var mongoConnPromise = undefined as Promise<mongoose.Connection>;
 
 function getDBConnection(mongooseHndl : mongoose.Mongoose) : Promise<mongoose.Connection> {
   if(mongooseHndl ){
@@ -286,6 +290,8 @@ function getDBConnection(mongooseHndl : mongoose.Mongoose) : Promise<mongoose.Co
     // we assume we are connected
     return Promise.resolve(mongooseHndl.connection);
   }
+  throw Error('how is this gonna work');
+  /*
   if(!mongoConnPromise) {
      mongoConnPromise =  new Promise(function(resolve, reject) {
       mongoose.connect('mongodb://localhost/' + mongodb).then(() => {
@@ -294,6 +300,7 @@ function getDBConnection(mongooseHndl : mongoose.Mongoose) : Promise<mongoose.Co
     });
   }
   return mongoConnPromise;
+  */
 }
 
 import * as SentenceParser from './sentenceparser';

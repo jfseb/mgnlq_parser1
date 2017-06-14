@@ -55,19 +55,6 @@ class MongoBridge {
         });
         return domain;
     }
-    makeSchema(mgdomain) {
-        debug('makeSchema for ' + mgdomain);
-        // console.log('makeschema ' + mgdomain);
-        var domain = this.mongoooseDomainToDomain(mgdomain);
-        debuglog(() => ' domain ' + domain);
-        debuglog(() => ` all domains ` + this._model.domains.join("; "));
-        var cats = mgnlq_model_1.Model.getCategoriesForDomain(this._model, domain);
-        var res = {};
-        cats.forEach(cat => {
-            res[makeMongoName(cat)] = { type: String };
-        });
-        return new mongoose.Schema(res);
-    }
 }
 exports.MongoBridge = MongoBridge;
 /*
@@ -189,25 +176,27 @@ exports.getDomainForSentence = getDomainForSentence;
 const mQ = require("./ast2MQuery");
 ;
 ;
-function fuseAndOrderResults(res) {
-    var all = [];
-    debug(JSON.stringify(res));
-    res.forEach(res1 => {
-        res1.records.forEach(rec => {
-            var r2 = undefined;
-            r2 = {
-                record: rec,
-                sentence: res1.sentence,
-                categories: Object.keys(rec),
-                result: Object.keys(rec).map(key => rec[key]),
-                _ranking: 1
-            };
-            all.push(r2);
-        });
-    });
-    return all;
+/*
+export function fuseAndOrderResults(res : SRes[]) : IFErBase.IWhatIsTupelAnswer[] {
+  var all = [];
+  debug(JSON.stringify(res));
+  res.forEach(res1 => {
+    res1.records.forEach(rec => {
+      var r2 = undefined as IFErBase.IWhatIsTupelAnswer;
+      r2 = {
+        record : rec,
+        sentence : res1.sentence,
+        categories: Object.keys(rec),
+        result: Object.keys(rec).map(key => rec[key]),
+        _ranking : 1
+      };
+      all.push(r2);
+    })
+  }
+  );
+  return all;
 }
-exports.fuseAndOrderResults = fuseAndOrderResults;
+*/
 /*
 sentence: ISentence;
   record: IRecord;
@@ -215,21 +204,24 @@ sentence: ISentence;
   result: string[];
   _ranking: number;
 */
-var mongoConnPromise = undefined;
+//var mongoConnPromise = undefined as Promise<mongoose.Connection>;
 function getDBConnection(mongooseHndl) {
     if (mongooseHndl) {
         debuglog('assuming present handle');
         // we assume we are connected
         return Promise.resolve(mongooseHndl.connection);
     }
-    if (!mongoConnPromise) {
-        mongoConnPromise = new Promise(function (resolve, reject) {
-            mongoose.connect('mongodb://localhost/' + mongodb).then(() => {
-                resolve(mongoose.connection);
-            });
+    throw Error('how is this gonna work');
+    /*
+    if(!mongoConnPromise) {
+       mongoConnPromise =  new Promise(function(resolve, reject) {
+        mongoose.connect('mongodb://localhost/' + mongodb).then(() => {
+          resolve(mongoose.connection);
         });
+      });
     }
     return mongoConnPromise;
+    */
 }
 const SentenceParser = require("./sentenceparser");
 ;
