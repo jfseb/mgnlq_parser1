@@ -127,20 +127,24 @@ function SelectParser(input) {
         var resFieldList = $.SUBRULE($.fieldList);
         return resFieldList;
     });
-    this.inDomain = $.RULE('inDomain', () => {
-        $.CONSUME(tokens_1.Tokens.in);
-        $.CONSUME(tokens_1.Tokens.domain);
-        $.CONSUME(tokens_1.Tokens.ADomain);
-    });
-    this.selectStatement = $.RULE("selectStatement", function () {
-        $.SUBRULE($.selectClause);
-        $.SUBRULE($.fromClause);
-        $.OPTION(function () {
-            $.SUBRULE($.whereClause);
+    /*
+        this.inDomain = $.RULE('inDomain', () => {
+          $.CONSUME(T.in);
+          $.CONSUME(T.domain);
+          $.CONSUME(T.ADomain);
         });
-        //console.log('returning');
-        return { a: 123 };
-    });
+    */
+    /*
+        this.selectStatement = $.RULE("selectStatement", function () {
+          $.SUBRULE($.selectClause)
+          $.SUBRULE($.fromClause)
+          $.OPTION(function () {
+            $.SUBRULE($.whereClause)
+          });
+          //console.log('returning');
+          return { a: 123 };
+        });
+    */
     this.allClause = $.RULE('allClause', function () {
         $.SUBRULE($.catListOpMore);
     });
@@ -463,24 +467,27 @@ function SelectParser(input) {
     //  lowest precedence thus it is first in the rule chain
     // The precedence of binary expressions is determined by how far down the Parse Tree
     // The binary expression appears.
-    $.RULE("filterExpression", function () {
+    /*
+    $.RULE("filterExpression", function() {
         var value, op, rhsVal;
+
         // parsing part
         value = $.SUBRULE($.catSetExpression);
-        $.OR([{ ALT: function () {
-                    $.AT_LEAST_ON(function () {
-                        // consuming 'AdditionOperator' will consume either Plus or Minus as they are subclasses of AdditionOperator
-                        op = $.SUBRULE1($.binaryValOp);
-                        //  the index "2" in SUBRULE2 is needed to identify the unique position in the grammar during runtime
-                        rhsVal = $.CONSUME(tokens_1.Tokens.AFact);
-                        // TODO logical expr
-                    });
-                    return value;
-                } },
-            { ALT: function () { $.CONSUME2(tokens_1.Tokens.AFact); }
-            }
+        $.OR([ { ALT: function() {
+          $.AT_LEAST_O(function() {
+              // consuming 'AdditionOperator' will consume either Plus or Minus as they are subclasses of AdditionOperator
+              op = $.SUBRULE1($.binaryValOp);
+              //  the index "2" in SUBRULE2 is needed to identify the unique position in the grammar during runtime
+              rhsVal = $.CONSUME(T.AFact);
+              // TODO logical expr
+          });
+          return value;
+        }},
+        { ALT: function() { $.CONSUME2(T.AFact); }
+        }
         ]);
     });
+    */
     /*
         $.RULE("xatomicExpression", function() {
             return $.OR([
@@ -492,35 +499,44 @@ function SelectParser(input) {
             ]);
         });
     */
-    $.RULE("parenthesisExpression", function () {
-        var expValue;
-        $.CONSUME(tokens_1.Tokens.LParen);
-        expValue = $.SUBRULE($.expression);
-        $.CONSUME(tokens_1.Tokens.RParen);
-        return expValue;
-    });
-    this.selectClause = $.RULE("selectClause", function () {
-        $.CONSUME(tokens_1.Tokens.select);
-        $.AT_LEAST_ONE_SEP({
-            SEP: tokens_1.Tokens.Comma, DEF: function () {
-                $.CONSUME(tokens_1.Tokens.Identifier);
-            }
+    /*
+        $.RULE("parenthesisExpression", function() {
+            var expValue;
+            $.CONSUME(T.LParen);
+            expValue = $.SUBRULE($.expression);
+            $.CONSUME(T.RParen);
+            return expValue
         });
-        return { b: 445 };
-    });
-    this.fromClause = $.RULE("fromClause", function () {
-        $.CONSUME(tokens_1.Tokens.from);
-        $.CONSUME(tokens_1.Tokens.Identifier);
-        // example:
-        // replace the contents of this rule with the commented out lines
-        // below to implement multiple tables to select from (implicit join).
-        // $.CONSUME(From);
-        // $.AT_LEAST_ONE_SEP({
-        //   SEP: Comma, DEF: function () {
-        //     $.CONSUME(Identifier);
-        //   }
-        // });
-    });
+    */
+    /*
+    
+        this.selectClause = $.RULE("selectClause", function () {
+          $.CONSUME(T.select);
+          $.AT_LEAST_ONE_SEP({
+            SEP: T.Comma, DEF: function () {
+              $.CONSUME(T.Identifier);
+            }
+          });
+          return { b: 445 };
+        });
+    */
+    /*
+        this.fromClause = $.RULE("fromClause", function () {
+          $.CONSUME(T.from);
+          $.CONSUME(T.Identifier);
+    
+          // example:
+          // replace the contents of this rule with the commented out lines
+          // below to implement multiple tables to select from (implicit join).
+    
+          // $.CONSUME(From);
+          // $.AT_LEAST_ONE_SEP({
+          //   SEP: Comma, DEF: function () {
+          //     $.CONSUME(Identifier);
+          //   }
+          // });
+        });
+    */
     this.fieldList = $.RULE("fieldList", function () {
         var res = [];
         $.AT_LEAST_ONE_SEP({
@@ -532,29 +548,37 @@ function SelectParser(input) {
         });
         return res;
     });
-    this.whereClause = $.RULE("whereClause", function () {
-        $.CONSUME(tokens_1.Tokens.where);
-        $.SUBRULE($.expression);
-    });
-    this.expression = $.RULE("expression", function () {
-        $.SUBRULE($.atomicExpression);
-        $.SUBRULE($.relationalOperator);
-        $.SUBRULE2($.atomicExpression); // note the '2' suffix to distinguish
-        // from the 'SUBRULE(atomicExpression)'
-        // 2 lines above.
-    });
-    this.atomicExpression = $.RULE("atomicExpression", function () {
-        $.OR([
-            { ALT: function () { $.CONSUME(tokens_1.Tokens.Integer); } },
-            { ALT: function () { $.CONSUME(tokens_1.Tokens.Identifier); } }
-        ]);
-    });
-    this.relationalOperator = $.RULE("relationalOperator", function () {
-        $.OR([
-            { ALT: function () { $.CONSUME(tokens_1.Tokens.GT); } },
-            { ALT: function () { $.CONSUME(tokens_1.Tokens.LT); } }
-        ]);
-    });
+    /*
+        this.whereClause = $.RULE("whereClause", function () {
+          $.CONSUME(T.where)
+          $.SUBRULE($.expression)
+        });
+    
+    
+        this.expression = $.RULE("expression", function () {
+          $.SUBRULE($.atomicExpression);
+          $.SUBRULE($.relationalOperator);
+          $.SUBRULE2($.atomicExpression); // note the '2' suffix to distinguish
+                          // from the 'SUBRULE(atomicExpression)'
+                          // 2 lines above.
+        });
+    
+    
+        this.atomicExpression = $.RULE("atomicExpression", function () {
+          $.OR([
+            {ALT: function () { $.CONSUME(T.Integer)}},
+            {ALT: function () { $.CONSUME(T.Identifier)}}
+          ]);
+        });
+    
+    
+        this.relationalOperator = $.RULE("relationalOperator", function () {
+          $.OR([
+            {ALT: function () { $.CONSUME(T.GT)}},
+            {ALT: function () { $.CONSUME(T.LT)}}
+          ]);
+        });
+    */
     // very important to call this after all the rules have been defined.
     // otherwise the parser may not work correctly as it will lack information
     // derived during the self analysis phase.

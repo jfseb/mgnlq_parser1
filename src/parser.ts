@@ -147,12 +147,14 @@ function SelectParser(input) {
       return resFieldList;
     });
 
+/*
     this.inDomain = $.RULE('inDomain', () => {
-        $.CONSUME(T.in);
+      $.CONSUME(T.in);
       $.CONSUME(T.domain);
-         $.CONSUME(T.ADomain);
+      $.CONSUME(T.ADomain);
     });
-
+*/
+/*
     this.selectStatement = $.RULE("selectStatement", function () {
       $.SUBRULE($.selectClause)
       $.SUBRULE($.fromClause)
@@ -162,7 +164,7 @@ function SelectParser(input) {
       //console.log('returning');
       return { a: 123 };
     });
-
+*/
 
     this.allClause = $.RULE('allClause', function() {
       $.SUBRULE($.catListOpMore);
@@ -515,13 +517,15 @@ function SelectParser(input) {
     //  lowest precedence thus it is first in the rule chain
     // The precedence of binary expressions is determined by how far down the Parse Tree
     // The binary expression appears.
+
+    /*
     $.RULE("filterExpression", function() {
         var value, op, rhsVal;
 
         // parsing part
         value = $.SUBRULE($.catSetExpression);
         $.OR([ { ALT: function() {
-          $.AT_LEAST_ON(function() {
+          $.AT_LEAST_O(function() {
               // consuming 'AdditionOperator' will consume either Plus or Minus as they are subclasses of AdditionOperator
               op = $.SUBRULE1($.binaryValOp);
               //  the index "2" in SUBRULE2 is needed to identify the unique position in the grammar during runtime
@@ -534,6 +538,7 @@ function SelectParser(input) {
         }
         ]);
     });
+    */
 
 /*
     $.RULE("xatomicExpression", function() {
@@ -547,6 +552,7 @@ function SelectParser(input) {
     });
 */
 
+/*
     $.RULE("parenthesisExpression", function() {
         var expValue;
         $.CONSUME(T.LParen);
@@ -554,8 +560,8 @@ function SelectParser(input) {
         $.CONSUME(T.RParen);
         return expValue
     });
-
-
+*/
+/*
 
     this.selectClause = $.RULE("selectClause", function () {
       $.CONSUME(T.select);
@@ -566,8 +572,9 @@ function SelectParser(input) {
       });
       return { b: 445 };
     });
+*/
 
-
+/*
     this.fromClause = $.RULE("fromClause", function () {
       $.CONSUME(T.from);
       $.CONSUME(T.Identifier);
@@ -583,7 +590,7 @@ function SelectParser(input) {
       //   }
       // });
     });
-
+*/
 
     this.fieldList = $.RULE("fieldList", function () {
       var res = [];
@@ -597,7 +604,7 @@ function SelectParser(input) {
       return res;
     });
 
-
+/*
     this.whereClause = $.RULE("whereClause", function () {
       $.CONSUME(T.where)
       $.SUBRULE($.expression)
@@ -627,7 +634,7 @@ function SelectParser(input) {
         {ALT: function () { $.CONSUME(T.LT)}}
       ]);
     });
-
+*/
     // very important to call this after all the rules have been defined.
     // otherwise the parser may not work correctly as it will lack information
     // derived during the self analysis phase.

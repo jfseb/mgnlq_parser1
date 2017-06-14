@@ -112,7 +112,7 @@ exports.test_CatFilterDOM2 = function (test) {
 
 
 exports.testUnarySetOp = function (test) {
-  [ 'All', 'First', 'Newest', 'Oldest','Any',  'Last', 'Every', 'All', 'At least one', 'Every'].forEach(function(val) {
+  [ 'All', 'First', 'Newest', 'Oldest','Any', 'Latest', 'Last', 'Every', 'All', 'At least one', 'Every'].forEach(function(val) {
     var inputText = `${val}`;
     parseInput(inputText,'unarySetOp');
     test.equal(1,1, 'for ' + val);
@@ -203,6 +203,42 @@ exports.testCatListMoreInFactCFCFFnocomma = function (test) {
   var inputText = 'CAT CAT CAT CAT with CAT FACT CAT FACT FACT';
   parseInput(inputText,'catListOpMore');
   test.equal(1,1);
+  test.done();
+};
+
+
+exports.testCatSEtExpression = function (test) {
+  var inputText = 'latest CAT';
+  parseInput(inputText,'catSetExpression');
+  test.equal(1,1);
+  test.done();
+};
+
+/*
+
+exports.testCatListMoreCATequalsFact = function (test) {
+  var inputText = 'CAT equals FACT';
+  parseInput(inputText,'filterExpression');
+  test.equal(1,1);
+  test.done();
+};
+
+/*
+exports.testCatListMoreCATisFact = function (test) {
+  var inputText = 'CAT is FACT';
+  parseInput(inputText,'filterExpression');
+  test.equal(1,1);
+  test.done();
+};*/
+
+
+
+exports.testCatListMoreInFaommaABC = function (test) {
+  ['contains', 'containing', 'ends_with', 'ending_with', 'starts_with', 'starting_with'].forEach((op)=> {
+    var inputText = `CAT CAT CAT CAT with CAT FACT CAT ${op} FACT FACT`;
+    parseInput(inputText,'catListOpMore');
+    test.equal(1,1);
+  });
   test.done();
 };
 
