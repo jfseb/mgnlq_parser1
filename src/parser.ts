@@ -271,7 +271,7 @@ function SelectParser(input) {
         return [filter, dom];
     });
 
-    this.selectClause = $.RULE("categoryList", function () {
+    this.categoryList = $.RULE("categoryList", function () {
       var r = [];
       $.AT_LEAST_ONE( () => {
         $.OPTION( () => {
@@ -509,11 +509,12 @@ function SelectParser(input) {
 
 /// Where  First (CAT  GE  X  )
 
+/*
     $.RULE("catSetExpression", function() {
       $.OPTION($.SUBRULE($.unarySetOp));
       $.CONSUME(T.ACategory);
     })
-
+*/
     //  lowest precedence thus it is first in the rule chain
     // The precedence of binary expressions is determined by how far down the Parse Tree
     // The binary expression appears.

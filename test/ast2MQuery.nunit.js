@@ -33,6 +33,12 @@ function releaseModel(theModel) {
 
 
 
+exports.testGetCategoryForNodePairEasy = function(test) {
+  var r = mQ.makeMongoName('abc DEF');
+  test.equals(r, 'abc_def');
+  test.done();
+};
+
 var words = {};
 
 exports.testGetCategoryForNodePairEasy = function(test) {
@@ -106,6 +112,7 @@ exports.testGetCategoryForNodeThrows = function(test) {
 
 
 exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
+  test.expect(7);
   getModel().then( (theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   // console.log(theModel.mRules)
@@ -124,6 +131,41 @@ exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
     var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0], mongoMap);
     test.deepEqual(proj , { $project: { _id: 0, SemanticObject : 1, SemanticAction : 1, BSPName : 1, ApplicationComponent : 1 }});
     var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], mongoMap);
+
+    /* test bad nodetypes*/
+    var nodeNoList = node;
+    try {
+      mQ.makeMongoSortFromAst(nodeNoList,r.sentences[0],mongoMap);
+      test.equal(1,0);
+    } catch(e) {
+      test.equal(1,1);
+    }
+
+    try {
+      mQ.makeMongoGroupFromAst(nodeNoList,r.sentences[0],mongoMap);
+      test.equal(1,0);
+    } catch(e) {
+      test.equal(1,1);
+    }
+
+    try {
+      mQ.makeMongoMatchFromAst(nodeNoList,r.sentences[0],mongoMap);
+      test.equal(1,0);
+    } catch(e) {
+      test.equal(1,1);
+    }
+
+
+    try {
+      mQ.makeMongoColumnsFromAst(nodeNoList,r.sentences[0],mongoMap);
+      test.equal(1,0);
+    } catch(e) {
+      test.equal(1,1);
+    }
+
+
+
+
     test.deepEqual(group , { $group: {
       _id:  { SemanticObject : '$SemanticObject', SemanticAction : '$SemanticAction', BSPName : '$BSPName' , ApplicationComponent : '$ApplicationComponent' }
     ,

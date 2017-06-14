@@ -8,6 +8,9 @@ var Parser = require(root + '/parser.js');
 function parseInput(text,startrule) {
   var lexingResult = Parser.SelectLexer.tokenize(text);
   const parser = new Parser.SelectParser(lexingResult.tokens);
+  if(typeof parser[startrule] !== 'function') {
+    console.log('where is the startrule '+ startrule);
+  }
   var res = parser[startrule]();
   //console.log('here res: ' + JSON.stringify(res));
   if (parser.errors.length > 0) {
@@ -15,14 +18,14 @@ function parseInput(text,startrule) {
   }
   return res;
 }
-
+/*
 exports.testParser  = function (test) {
   var inputText = 'SELECT column1 FROM table2';
   var result = parseInput(inputText, 'selectStatement');
  // console.log(Object.keys(result).join('\n')); //.selectClause());
   test.deepEqual(result, { a: 123});
   test.done();
-};
+};*/
 
 exports.testParserListAll  = function (test) {
   var inputText = 'LIST ALL CAT, CAT';
@@ -131,17 +134,6 @@ exports.testCatListMore = function (test) {
 };
 
 
-exports.test_inDomain = function (test) {
-  [ 'in', 'Newest', 'Oldest', 'All'].forEach(function() {
-    var inputText = 'in domain DOM';
-   // var lexingResult = Parser.SelectLexer.tokenize(inputText);
-   // console.log(JSON.stringify(lexingResult,undefined,2));
-    parseInput(inputText,'inDomain');
-    test.equal(1,1);
-  });
-  test.done();
-};
-
 
 
 exports.testCatListMoreInFact = function (test) {
@@ -206,14 +198,14 @@ exports.testCatListMoreInFactCFCFFnocomma = function (test) {
   test.done();
 };
 
-
+/*
 exports.testCatSEtExpression = function (test) {
   var inputText = 'latest CAT';
   parseInput(inputText,'catSetExpression');
   test.equal(1,1);
   test.done();
 };
-
+*/
 /*
 
 exports.testCatListMoreCATequalsFact = function (test) {
