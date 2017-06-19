@@ -1,6 +1,6 @@
 {
   "name": "mgnlq_parser1",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "query parsing",
   "main": "js/index.js",
   "typings": "js/index.d.ts",
@@ -34,13 +34,11 @@
     "@types/node": "^7.0.5",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
-    "gulp-env": "^0.4.0",
     "gulp-eslint": "^3.0.1",
     "gulp-jsdoc3": "^1.0.1",
     "gulp-nodeunit": "^0.1.0",
     "gulp-typescript": "^3.1.5",
-    "mgnlq_testmodel_replay": "^0.0.6",
-    "mgnlq_testmodel": "^0.0.4",
+    "mgnlq_testmodel_replay": "^0.0.7",
     "nyc": "^10.3.2",
     "typescript": "^2.2.1"
   },
@@ -49,7 +47,7 @@
     "debugf": "^0.1.2",
     "lodash": "^4.17.4",
     "mgnlq_er": "^0.0.4",
-    "mgnlq_model": "^0.0.4",
+    "mgnlq_model": "^0.0.5",
     "mongoose": "^4.9.9"
   }
 }

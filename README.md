@@ -52,3 +52,10 @@ db.coll.aggregate(
         }}
     ]
 )
+
+
+
+
+# history
+
+* 0.0.3  showURI, auxiliary categories

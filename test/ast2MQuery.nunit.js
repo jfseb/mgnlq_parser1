@@ -112,7 +112,7 @@ exports.testGetCategoryForNodeThrows = function(test) {
 
 
 exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
-  test.expect(7);
+  test.expect(5);
   getModel().then( (theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   // console.log(theModel.mRules)
@@ -126,23 +126,18 @@ exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
     debuglog(() => Object.keys(theModel.mongoHandle.mongoMaps).join('\n'));
     debuglog(() =>'collectionname ' + domainPick.collectionName);
     var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
+
     var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
     test.deepEqual(match , { $match : { ApplicationComponent : 'CO-FIO', appId : 'W0052', 'TechnicalCatalog' : 'SAP_TC_FIN_CO_COMMON' }});
-    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0], mongoMap);
+    var categoryList = mQ.getCategoryList([], nodeFieldList, r.sentences[0] );
+    var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
     test.deepEqual(proj , { $project: { _id: 0, SemanticObject : 1, SemanticAction : 1, BSPName : 1, ApplicationComponent : 1 }});
-    var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], mongoMap);
+    var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
 
     /* test bad nodetypes*/
     var nodeNoList = node;
     try {
-      mQ.makeMongoSortFromAst(nodeNoList,r.sentences[0],mongoMap);
-      test.equal(1,0);
-    } catch(e) {
-      test.equal(1,1);
-    }
-
-    try {
-      mQ.makeMongoGroupFromAst(nodeNoList,r.sentences[0],mongoMap);
+      mQ.getCategoryList([], nodeNoList,r.sentences[0]);
       test.equal(1,0);
     } catch(e) {
       test.equal(1,1);
@@ -154,15 +149,6 @@ exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
     } catch(e) {
       test.equal(1,1);
     }
-
-
-    try {
-      mQ.makeMongoColumnsFromAst(nodeNoList,r.sentences[0],mongoMap);
-      test.equal(1,0);
-    } catch(e) {
-      test.equal(1,1);
-    }
-
 
 
 
@@ -188,9 +174,10 @@ exports.testAstToMQueryMultiArray = function (test) {
     var nodeFilter = node.children[1];
     var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], theModel.mongoHandle.mongoMaps['metamodels']);
     test.deepEqual(match , { $match : { '_categories.category' : { '$regex': /^elem/i } }});
-    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0],  theModel.mongoHandle.mongoMaps['metamodels']);
+    var categoryList = mQ.getCategoryList([], nodeFieldList, r.sentences[0] );
+    var proj = mQ.makeMongoProjectionFromAst(categoryList,  theModel.mongoHandle.mongoMaps['metamodels']);
     test.deepEqual(proj , { $project: { _id: 0, 'category' : '$_categories.category' }});
-    var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], theModel.mongoHandle.mongoMaps['metamodels']);
+    var group = mQ.makeMongoGroupFromAst(categoryList, theModel.mongoHandle.mongoMaps['metamodels']);
     test.deepEqual(group , { $group: {
       _id:  { _categories : '$_categories' }
     ,
@@ -214,12 +201,12 @@ exports.testMakeMongoQueryEndingWith = function (test) {
     var sentence = r.sentences[0];
     var domainPick = mongoQ.getDomainForSentence(theModel, sentence);
     var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
-
+    var categoryList = mQ.getCategoryList([], nodeFieldList, sentence );
     var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
     test.deepEqual(match ,{ '$match': { domain: { '$regex': /abc$/i } } });
-    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, sentence, mongoMap);
+    var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
     test.deepEqual(proj ,{ '$project': { _id: 0, domain: 1 } });
-    var group = mQ.makeMongoGroupFromAst(nodeFieldList, sentence, mongoMap);
+    var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
     test.deepEqual(group , { '$group': { _id: { domain: '$domain' }, domain: { '$first': '$domain' } } }   , 'group');
     test.done();
     releaseModel(theModel);
@@ -303,7 +290,8 @@ exports.testMakeMongoReverseMapFromAst = function (test) {
     var sentence = r.sentences[0];
     var domainPick = mongoQ.getDomainForSentence(theModel, sentence);
     var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
-    var reverseMap = mQ.makeMongoColumnsFromAst(u, sentence, mongoMap);
+    var categoryList = mQ.getCategoryList([], u, sentence);
+    var reverseMap = mQ.makeMongoColumnsFromAst(categoryList, mongoMap);
     test.deepEqual(reverseMap,  { columns: ['object name'], reverseMap :{ 'object_name' : 'object name' }});
     test.done();
     releaseModel(theModel);

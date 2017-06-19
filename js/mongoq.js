@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mgnlq_er_1 = require("mgnlq_er");
 const mgnlq_model_1 = require("mgnlq_model");
 const debug = require("debugf");
+const _ = require("lodash");
 const debuglog = debug('mongoq');
 const chevrotain = require("chevrotain");
 const AST = require("./ast");
@@ -226,7 +227,7 @@ function getDBConnection(mongooseHndl) {
 const SentenceParser = require("./sentenceparser");
 ;
 ;
-function makeAggregateFromAst(astnode, sentence, mongoMap) {
+function makeAggregateFromAst(astnode, sentence, mongoMap, fixedCategories) {
     var nodeFieldList = astnode.children[0].children[0];
     var nodeFilter = astnode.children[1];
     var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
@@ -237,17 +238,32 @@ function makeAggregateFromAst(astnode, sentence, mongoMap) {
         head = head.concat(unwind);
         head.push(match);
     }
-    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, sentence, mongoMap);
-    var sort = mQ.makeMongoSortFromAst(nodeFieldList, sentence, mongoMap);
-    var columnsReverseMap = mQ.makeMongoColumnsFromAst(nodeFieldList, sentence, mongoMap);
-    var group = mQ.makeMongoGroupFromAst(nodeFieldList, sentence, mongoMap);
+    var categoryList = mQ.getCategoryList(fixedCategories, nodeFieldList, sentence);
+    var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
+    var sort = mQ.makeMongoSortFromAst(categoryList, mongoMap);
+    var columnsReverseMap = mQ.makeMongoColumnsFromAst(categoryList, mongoMap);
+    var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
     //   console.log(' query: ' + JSON.stringify(r)); // how to get domain?
     // test.equal(domain, 'FioriBOM',' got domain');
     var query = head.concat([group, proj, sort]);
     return { query: query, columnsReverseMap: columnsReverseMap };
 }
 exports.makeAggregateFromAst = makeAggregateFromAst;
-function prepareQueries(query, theModel) {
+function containsFixedCategories(theModel, domain, fixedCategories) {
+    if (fixedCategories.length === 0) {
+        return true;
+    }
+    var cats = mgnlq_model_1.Model.getCategoriesForDomain(theModel, domain);
+    return _.intersection(cats, fixedCategories).length === fixedCategories.length;
+}
+exports.containsFixedCategories = containsFixedCategories;
+function augmentCategoriesWithURI(fixedCategories, theModel, domain) {
+    var uris = mgnlq_model_1.Model.getShowURICategoriesForDomain(theModel, domain);
+    var ranks = mgnlq_model_1.Model.getShowURIRankCategoriesForDomain(theModel, domain);
+    return _.union(uris, ranks, fixedCategories);
+}
+exports.augmentCategoriesWithURI = augmentCategoriesWithURI;
+function prepareQueries(query, theModel, fixedCategories, options) {
     debuglog(`here query: ${query}`);
     var r = SentenceParser.parseSentenceToAsts(query, theModel, {}); // words);
     var res = Object.assign({}, r);
@@ -261,18 +277,29 @@ function prepareQueries(query, theModel) {
         }
         var domainPick = getDomainForSentence(theModel, sentence);
         debuglog(() => ' domainPick: ' + JSON.stringify(domainPick, undefined, 2));
+        var domainFixedCategories = [];
+        if (options && options.showURI) {
+            domainFixedCategories = augmentCategoriesWithURI(fixedCategories, theModel, domainPick.domain);
+        }
+        else {
+            domainFixedCategories = fixedCategories;
+        }
         var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.collectionName];
-        var res = makeAggregateFromAst(astnode, sentence, mongoMap);
+        if (!containsFixedCategories(theModel, domainPick.domain, domainFixedCategories)) {
+            debuglog(() => JSON.stringify(` fixed fields not present in domain ${domainPick.domain} given fields ${domainFixedCategories.join(";")} for ${index} `));
+            return undefined;
+        }
+        var res = makeAggregateFromAst(astnode, sentence, mongoMap, domainFixedCategories);
         var query = res.query;
         var columnsReverseMap = res.columnsReverseMap;
         /*
             var nodeFieldList = astnode.children[0].children[0];
             var nodeFilter = astnode.children[1];
             var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
-        
+    
         // TODO: be better than full unwind, use only relelvant categories!
               var MongomMap = MongoMap.unwindsForNonterminalArrays(mongoMap);
-        
+    
             var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, sentence, mongoMap);
             var columnsReverseMap= mQ.makeMongoColumnsFromAst(nodeFieldList, sentence, mongoMap);
             var group = mQ.makeMongoGroupFromAst(nodeFieldList, sentence, mongoMap);
@@ -298,9 +325,19 @@ function mergeResults(r) {
     return r;
 }
 exports.mergeResults = mergeResults;
+function queryWithAuxCategories(query, theModel, auxiliary_categories) {
+    var handle = new ModelHandle(theModel);
+    return queryInternal(query, theModel, handle, auxiliary_categories);
+}
+exports.queryWithAuxCategories = queryWithAuxCategories;
+function queryWithURI(query, theModel, auxiliary_categories) {
+    var handle = new ModelHandle(theModel);
+    return queryInternal(query, theModel, handle, [], { showURI: true });
+}
+exports.queryWithURI = queryWithURI;
 function query(query, theModel) {
     var handle = new ModelHandle(theModel);
-    return queryInternal(query, theModel, handle);
+    return queryInternal(query, theModel, handle, []);
 }
 exports.query = query;
 function remapRecord(rec, columns, reverseMap) {
@@ -317,8 +354,10 @@ function remapResult(res, columns, reverseMap) {
     return res.map(record => remapRecord(record, columns, reverseMap));
 }
 exports.remapResult = remapResult;
-function queryInternal(querystring, theModel, handle) {
-    var r = prepareQueries(querystring, theModel);
+;
+function queryInternal(querystring, theModel, handle, fixedFields, options) {
+    fixedFields = fixedFields || [];
+    var r = prepareQueries(querystring, theModel, fixedFields, options);
     var aPromises = r.queries.map((query, index) => {
         debuglog(() => `query ${index} prepared for domain ` + (query && query.domain));
         if (query === undefined) {
@@ -332,6 +371,7 @@ function queryInternal(querystring, theModel, handle) {
             //console.log('db returned' + res);
             var resClean = remapResult(res, r.queries[index].columns, query.reverseMap);
             return {
+                domain: query.domain,
                 sentence: r.sentences[index],
                 columns: r.queries[index].columns,
                 results: resClean

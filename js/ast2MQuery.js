@@ -117,22 +117,9 @@ function makeMongoMatchFromAst(node, sentence, mongoMap) {
     return { $match: res };
 }
 exports.makeMongoMatchFromAst = makeMongoMatchFromAst;
-function makeMongoGroupFromAst(node, sentence, mongoMap) {
-    debug(AST.astToText(node));
-    if (node.type !== ast_1.ASTNodeType.LIST) {
-        throw new Error('expected different nodetype ' + node.type);
-    }
+function makeMongoGroupFromAst(categoryList, mongoMap) {
     var res = {};
-    var categories = node.children.map(n => {
-        if (n.type === ast_1.ASTNodeType.CAT) {
-            var category = getCategoryForNode(n, sentence);
-            return category;
-        }
-        else {
-            throw new Error(`Expected nodetype ${new AST.NodeType(ast_1.ASTNodeType.CAT).toString()} but was ${new AST.NodeType(n.type).toString()}`);
-        }
-    });
-    categories.forEach(category => {
+    categoryList.forEach(category => {
         var mongocatfullpath = mgnlq_model_1.MongoMap.getFirstSegment(mongoMap[category].paths); // Model.getMongoosePath(theModel, category); //makeMongoName(cat);
         res[mongocatfullpath] = '$' + mongocatfullpath;
     });
@@ -143,20 +130,32 @@ function makeMongoGroupFromAst(node, sentence, mongoMap) {
     return r1;
 }
 exports.makeMongoGroupFromAst = makeMongoGroupFromAst;
-function makeMongoColumnsFromAst(node, sentence, mongoMap) {
+function makeMongoColumnsFromAst(categoryList, mongoMap) {
+    var res = {
+        columns: [],
+        reverseMap: {}
+    };
+    categoryList.forEach(category => {
+        res.columns.push(category);
+        var catmongo = mgnlq_model_1.MongoMap.getShortProjectedName(mongoMap, category);
+        if (category !== catmongo) {
+            res.reverseMap[catmongo] = category;
+        }
+    });
+    return res;
+}
+exports.makeMongoColumnsFromAst = makeMongoColumnsFromAst;
+function getCategoryList(fixedCategories, node, sentence) {
+    var res = fixedCategories.slice();
     debug(AST.astToText(node));
     if (node.type !== ast_1.ASTNodeType.LIST) {
         throw new Error('expected different nodetype ' + node.type);
     }
-    var res = { columns: [],
-        reverseMap: {} };
-    node.children.forEach(n => {
+    node.children.map(n => {
         if (n.type === ast_1.ASTNodeType.CAT) {
             var category = getCategoryForNode(n, sentence);
-            res.columns.push(category);
-            var catmongo = mgnlq_model_1.MongoMap.getShortProjectedName(mongoMap, category);
-            if (category !== catmongo) {
-                res.reverseMap[catmongo] = category;
+            if (res.indexOf(category) < fixedCategories.length) {
+                res.push(category);
             }
         }
         else {
@@ -165,47 +164,27 @@ function makeMongoColumnsFromAst(node, sentence, mongoMap) {
     });
     return res;
 }
-exports.makeMongoColumnsFromAst = makeMongoColumnsFromAst;
-function makeMongoProjectionFromAst(node, sentence, mongoMap) {
-    debug(AST.astToText(node));
-    if (node.type !== ast_1.ASTNodeType.LIST) {
-        throw new Error('expected different nodetype ' + node.type);
-    }
+exports.getCategoryList = getCategoryList;
+function makeMongoProjectionFromAst(categoryList, mongoMap) {
     var res = { _id: 0 };
-    node.children.map(n => {
-        if (n.type === ast_1.ASTNodeType.CAT) {
-            var category = getCategoryForNode(n, sentence);
-            var mongocatfullpath = mongoMap[category].fullpath; //makeMongoName(cat);
-            var shortName = mgnlq_model_1.MongoMap.getShortProjectedName(mongoMap, category);
-            if (shortName === mongocatfullpath) {
-                res[mongocatfullpath] = 1;
-            }
-            else {
-                res[shortName] = "$" + mongocatfullpath;
-            }
+    categoryList.map(category => {
+        var mongocatfullpath = mongoMap[category].fullpath; //makeMongoName(cat);
+        var shortName = mgnlq_model_1.MongoMap.getShortProjectedName(mongoMap, category);
+        if (shortName === mongocatfullpath) {
+            res[mongocatfullpath] = 1;
         }
         else {
-            throw new Error(`Expected nodetype ${new AST.NodeType(ast_1.ASTNodeType.CAT).toString()} but was ${new AST.NodeType(n.type).toString()}`);
+            res[shortName] = "$" + mongocatfullpath;
         }
     });
     return { $project: res };
 }
 exports.makeMongoProjectionFromAst = makeMongoProjectionFromAst;
-function makeMongoSortFromAst(node, sentence, mongoMap) {
-    debug(AST.astToText(node));
-    if (node.type !== ast_1.ASTNodeType.LIST) {
-        throw new Error('expected different nodetype ' + node.type);
-    }
+function makeMongoSortFromAst(categoryList, mongoMap) {
     var res = {};
-    node.children.map(n => {
-        if (n.type === ast_1.ASTNodeType.CAT) {
-            var category = getCategoryForNode(n, sentence);
-            var shortName = mgnlq_model_1.MongoMap.getShortProjectedName(mongoMap, category);
-            res[shortName] = 1;
-        }
-        else {
-            throw new Error(`Expected nodetype ${new AST.NodeType(ast_1.ASTNodeType.CAT).toString()} but was ${new AST.NodeType(n.type).toString()}`);
-        }
+    categoryList.forEach(category => {
+        var shortName = mgnlq_model_1.MongoMap.getShortProjectedName(mongoMap, category);
+        res[shortName] = 1;
     });
     return { $sort: res };
 }

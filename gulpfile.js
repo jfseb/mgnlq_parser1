@@ -112,69 +112,7 @@ gulp.task('doc', ['test'], function (cb) {
     .pipe(jsdoc(cb));
 });
 
-
-
-
-// gulp.task('copyInputFilterRules', ['tsc', 'babel'], function () {
-//  return gulp.src([
-//    genDir + '/match/inputFilterRules.js'
-//  ], { 'base': genDir })
-//    .pipe(gulp.dest('gen_cov'));
-// });
-
-/*
-var instrument = require('gulp-instrument')
-
-gulp.task('instrumentx', ['tsc', 'babel', 'copyInputFilterRules'], function () {
-  return gulp.src([
-    genDir + '/match/data.js',
-    genDir + '/match/dispatcher.js',
-    genDir + '/match/ifmatch.js',
-    genDir + '/match/inputFilter.js',
-    // genDir + '/match/inputFilterRules.js',
-    genDir + '/match/matchData.js',
-    //  genDir + '/match/inputFilterRules.js',
-    genDir + '/utils/*.js',
-    genDir + '/exec/*.js'],
-    { 'base': genDir
-    })
-    .pipe(instrument())
-    .pipe(gulp.dest('gen_cov'))
-})
-
-gulp.task('instrument', ['tsc', 'babel'], function () {
-  return gulp.src([genDir + '/**REMOVEME/*.js'])
-    .pipe(instrument())
-    .pipe(gulp.dest('gen_cov'))
-})
-*/
-
-
-//var newer = require('gulp-newer');
-
-
 var nodeunit = require('gulp-nodeunit');
-var env = require('gulp-env');
-
-/**
- * This does not work, as we are somehow unable to
- * redirect the lvoc reporter output to a file
- */
-gulp.task('testcov', function () {
-  const envs = env.set({
-    FSD_COVERAGE: '1',
-    FSDEVSTART_COVERAGE: '1'
-  });
-  // the file does not matter
-  gulp.src(['./**/match/dispatcher.nunit.js'])
-    .pipe(envs)
-    .pipe(nodeunit({
-      reporter: 'lcov',
-      reporterOptions: {
-        output: 'testcov'
-      }
-    })).pipe(gulp.dest('./cov/lcov.info'));
-});
 
 gulp.task('test', ['tsc'], function () {
   gulp.src(['test/**/*.js'])

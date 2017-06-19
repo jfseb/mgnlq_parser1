@@ -1,7 +1,8 @@
 var process = require('process');
 var root = (process.env.FSD_COVERAGE) ? '../js_cov' : '../js';
 var mQ = require(root + '/ast2MQuery.js');
-var mongoQ = require(root + '/mongoq.js');
+var MongoQ = require(root + '/mongoq.js');
+
 
 var SentenceParser = require(root + '/sentenceparser.js');
 
@@ -18,13 +19,29 @@ var words = {};
 
 exports.testMakeMongoDomain = function (test) {
   getModel().then((theModel) => {
-    var mongoBridge = new mongoQ.MongoBridge(theModel);
+    var mongoBridge = new MongoQ.MongoBridge(theModel);
     var res = mongoBridge.mongoooseDomainToDomain('FioriBOM');
     test.equal(res, 'FioriBOM', 'bad result');
     test.done();
     Model.releaseModel(theModel);
   });
 };
+
+
+
+exports.testMakeMongoDomain = function (test) {
+  getModel().then((theModel) => {
+    var res = MongoQ.augmentCategoriesWithURI(['_url','orbits'], theModel, 'Cosmos');
+    test.deepEqual(res, ['_url', 'orbits'], 'bad result');
+    res = res = MongoQ.augmentCategoriesWithURI(['orbits'], theModel, 'Cosmos');
+    test.deepEqual(res, ['_url', 'orbits'], 'bad result');
+    res = res = MongoQ.augmentCategoriesWithURI(['orbits', 'abc'], theModel, 'FioriBOM');
+    test.deepEqual(res, ['uri', 'uri_rank', 'orbits' , 'abc'], 'bad result');
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
 
 process.on('unhandledRejection', function (err) {
   console.log('wow, here you go' + err);
@@ -33,8 +50,8 @@ process.on('unhandledRejection', function (err) {
 
 exports.testMakeQuery = function (test) {
   getModel().then((theModel) => {
-    var r = mongoQ.prepareQueries('\'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052',
-      theModel);
+    var r = MongoQ.prepareQueries('\'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052',
+      theModel, []);
     test.deepEqual(r.queries, [{
       domain: 'FioriBOM',
       collectionName: 'fioriapps',
@@ -81,7 +98,7 @@ exports.testMakeQuery = function (test) {
 
 exports.testMakeQuerySimple = function (test) {
   getModel().then((theModel) => {
-    var r = mongoQ.prepareQueries('object name', theModel);
+    var r = MongoQ.prepareQueries('object name', theModel, []);
     test.deepEqual(r.queries,
       [{
         domain: 'Cosmos',
@@ -108,8 +125,8 @@ exports.testMakeQuerySimple = function (test) {
 
 exports.testMakeQueryDoubleConstraint = function (test) {
   getModel().then((theModel) => {
-    var r = mongoQ.prepareQueries('AppNAme with AppNAme starting with "Sup" AppNAme containing Obj',
-      theModel);
+    var r = MongoQ.prepareQueries('AppNAme with AppNAme starting with "Sup" AppNAme containing Obj',
+      theModel, []);
     test.deepEqual(r.queries,
       [{
         domain: 'FioriBOM',
@@ -144,8 +161,8 @@ exports.testMakeQueryDoubleConstraint = function (test) {
 
 exports.testMakeQueryStartingWith2 = function (test) {
   getModel().then((theModel) => {
-    var r = mongoQ.prepareQueries('SemanticAction with SemanticAction starting with "Sup"',
-      theModel);
+    var r = MongoQ.prepareQueries('SemanticAction with SemanticAction starting with "Sup"',
+      theModel, []);
     test.deepEqual(r.queries,
       [
         {
@@ -192,8 +209,8 @@ exports.testMakeQueryStartingWith2 = function (test) {
 
 exports.testMakeQueryStartingWith = function (test) {
   getModel().then((theModel) => {
-    var r = mongoQ.prepareQueries('SemanticAction starting with "Sup"',
-      theModel);
+    var r = MongoQ.prepareQueries('SemanticAction starting with "Sup"',
+      theModel, []);
     test.deepEqual(r.queries,
       [
         {
@@ -244,8 +261,8 @@ exports.testMakeQueryStartingWith = function (test) {
 
 exports.testMakeQueryContaining = function (test) {
   getModel().then((theModel) => {
-    var r = mongoQ.prepareQueries('UI5Component containing "DYN"',
-      theModel);
+    var r = MongoQ.prepareQueries('UI5Component containing "DYN"',
+      theModel, []);
     debuglog(() => JSON.stringify(r, undefined, 2));
 
 
@@ -314,8 +331,8 @@ exports.testMakeQueryContaining = function (test) {
 
 exports.testMakeQueryContainsFact = function (test) {
   getModel().then((theModel) => {
-    var r = mongoQ.prepareQueries('element names for element name containing rium 10',
-      theModel);
+    var r = MongoQ.prepareQueries('element names for element name containing rium 10',
+      theModel, []);
     test.deepEqual(r.queries,
       [{
         domain: 'IUPAC',
@@ -420,10 +437,10 @@ var FakeHandle = function (result) {
 exports.testQueryInternal = function (test) {
   getModel().then((theModel) => {
     var handle = new FakeHandle([{ 'object_name': 'abc' }]);
-    mongoQ.queryInternal('object name', theModel, handle).then(res => {
+    MongoQ.queryInternal('object name', theModel, handle).then(res => {
       test.deepEqual(res.queryresults,
         [
-          {
+          { domain : 'Cosmos',
             sentence:
             [{
               string: 'object name',
@@ -487,15 +504,16 @@ exports.testMakeQuery2 = function (test) {
     var node = r.asts[0];
     var nodeFieldList = node.children[0].children[0];
     var nodeFilter = node.children[1];
-    var domainPick = mongoQ.getDomainForSentence(theModel, r.sentences[0]);
+    var domainPick = MongoQ.getDomainForSentence(theModel, r.sentences[0]);
     var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
     var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], mongoMap);
+    var categoryList = mQ.getCategoryList([], nodeFieldList, r.sentences[0]);
     test.deepEqual(match, { $match: { ApplicationComponent: 'CO-FIO', appId: 'W0052', 'TechnicalCatalog': 'SAP_TC_FIN_CO_COMMON' } });
-    var proj = mQ.makeMongoProjectionFromAst(nodeFieldList, r.sentences[0], mongoMap);
+    var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
     test.deepEqual(proj, { $project: { _id: 0, SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } });
-    var sort = mQ.makeMongoSortFromAst(nodeFieldList, r.sentences[0], mongoMap);
+    var sort = mQ.makeMongoSortFromAst(categoryList, mongoMap);
     test.deepEqual(sort, { $sort: { SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } });
-    var group = mQ.makeMongoGroupFromAst(nodeFieldList, r.sentences[0], mongoMap);
+    var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
     test.deepEqual(group, {
       $group: {
         _id: { SemanticObject: '$SemanticObject', SemanticAction: '$SemanticAction', BSPName: '$BSPName', ApplicationComponent: '$ApplicationComponent' },
@@ -503,7 +521,7 @@ exports.testMakeQuery2 = function (test) {
       }
     });
     // console.log(JSON.stringify(r)); // how to get domain?
-    var domain = mongoQ.getDomainForSentence(theModel, r.sentences[0], mongoMap);
+    var domain = MongoQ.getDomainForSentence(theModel, r.sentences[0], mongoMap);
     test.deepEqual(domain, { collectionName: 'fioriapps', domain: 'FioriBOM', modelName: 'fioriapps' }, ' got domain');
     var query = [match, group, proj];
     debuglog(() => query);
@@ -516,7 +534,7 @@ exports.testMakeQuery2 = function (test) {
 exports.testCategoriesInBOM = function (test) {
   getModel().then((theModel) => {
     var s = 'categories in  Fiori BOM';
-    var r = mongoQ.prepareQueries(s, theModel);
+    var r = MongoQ.prepareQueries(s, theModel, []);
     debuglog(() => JSON.stringify(r, undefined, 2));
     var query0 = r.queries[0];
     test.deepEqual(r.queries.length, 2);
@@ -551,7 +569,7 @@ exports.testCategoriesInBOM = function (test) {
 exports.testPrepareQuery2 = function (test) {
   getModel().then((theModel) => {
     var s = 'categories starting with elem';
-    var r = mongoQ.prepareQueries(s, theModel);
+    var r = MongoQ.prepareQueries(s, theModel, []);
     var query0 = r.queries[0];
 
     test.deepEqual(query0.query,
@@ -613,9 +631,9 @@ exports.testGetDomainsForSentence = function (test) {
   getModel().then((theModel) => {
     var s = 'SemanticObject';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    var domain = mongoQ.getDomainForSentence(theModel, r.sentences[0]);
+    var domain = MongoQ.getDomainForSentence(theModel, r.sentences[0]);
     test.deepEqual(domain, { domain: 'FioriBOM', collectionName: 'fioriapps', modelName: 'fioriapps' }, ' got domain');
-    var domain2 = mongoQ.getDomainForSentence(theModel, r.sentences[1]);
+    var domain2 = MongoQ.getDomainForSentence(theModel, r.sentences[1]);
     test.deepEqual(domain2, {
       domain: 'Fiori Backend Catalogs',
       collectionName: 'fioribecatalogs',
@@ -627,20 +645,34 @@ exports.testGetDomainsForSentence = function (test) {
 };
 
 
+exports.testContainsFixedCategories = function (test) {
+  getModel().then((theModel) => {
+    test.deepEqual(MongoQ.containsFixedCategories(theModel, 'Cosmos', []), true, 'empty is always ok');
+    test.deepEqual(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['nocat']), false, ' missing ');
+    test.deepEqual(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits']), true, ' missing ');
+    test.deepEqual(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits', 'nocat']), false, ' missing ');
+
+    // now a hidden category
+    test.deepEqual(MongoQ.containsFixedCategories(theModel, 'FioriBOM', ['uri', 'uri_rank']), true, ' uri present ');
+
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
 
 exports.testGetDomainsForSentence = function (test) {
   getModel().then((theModel) => {
     var s = 'SemanticObject';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    var domain = mongoQ.getDomainForSentence(theModel, r.sentences[0]);
+    var domain = MongoQ.getDomainForSentence(theModel, r.sentences[0]);
     test.deepEqual(domain, { domain: 'FioriBOM', collectionName: 'fioriapps', modelName: 'fioriapps' }, ' got domain');
-    var domain2 = mongoQ.getDomainForSentence(theModel, r.sentences[1]);
+    var domain2 = MongoQ.getDomainForSentence(theModel, r.sentences[1]);
     test.deepEqual(domain2, {
       domain: 'Fiori Backend Catalogs',
       collectionName: 'fioribecatalogs',
       modelName: 'fioribecatalogs'
     }, ' got domain');
-    mongoQ.query('SemanticObject', theModel).then((res) => {
+    MongoQ.query('SemanticObject', theModel).then((res) => {
       test.deepEqual(res.queryresults[0].results,
         [
           [
@@ -704,4 +736,53 @@ exports.testGetDomainsForSentence = function (test) {
     });
   });
 };
+
+
+
+exports.testQueryWithAux = function (test) {
+  getModel().then((theModel) => {
+    MongoQ.queryWithAuxCategories('orbits', theModel, ['_url']).then((res) => {
+      test.deepEqual(res.queryresults.length, 2);
+      debuglog(()=> JSON.stringify(res.queryresults,undefined, 2));
+      test.deepEqual(res.queryresults[0].results,
+        [[null, null],
+        [null, 'n/a'],
+        ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
+        ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
+          ['https://en.wikipedia.org/wiki/Proxima_Centauri_b',
+            'Alpha Centauri C'],
+        ['https://en.wikipedia.org/wiki/Sun', null]]);
+
+      test.deepEqual(res.queryresults[1].results,[]);
+      test.done();
+      Model.releaseModel(theModel);
+    });
+  });
+};
+
+
+
+exports.testQueryWithURI = function (test) {
+  getModel().then((theModel) => {
+    MongoQ.queryWithURI('orbits', theModel).then((res) => {
+      test.deepEqual(res.queryresults.length, 2);
+      debuglog(()=> JSON.stringify(res.queryresults,undefined, 2));
+      test.deepEqual(res.queryresults[0].results,
+        [[null, null],
+        [null, 'n/a'],
+        ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
+        ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
+          ['https://en.wikipedia.org/wiki/Proxima_Centauri_b',
+            'Alpha Centauri C'],
+        ['https://en.wikipedia.org/wiki/Sun', null]]);
+
+      test.deepEqual(res.queryresults[1].results,[]);
+      test.done();
+      Model.releaseModel(theModel);
+    });
+  });
+};
+
+
+
 
