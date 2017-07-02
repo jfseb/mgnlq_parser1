@@ -196,12 +196,54 @@ function incHash(hsh, key) {
   hsh[key] = (hsh[key] || 0) + 1;
 }
 
+/*
+export function getDomainForSentence2(theModel: IFModel.IModels, sentence : IFErBase.ISentence) : {
+  domain: string,
+    collectionName: string,
+    modelName: string
+  }
+{
+  // this is sloppy and bad
+  var res = {};
+  var o = 0xFFFFFFF;
+  sentence.forEach(w => {
+    if (w.rule.wordType === IFModel.WORDTYPE.CATEGORY) {
+      o = o & w.rule.bitSentenceAnd;
+    }
+    if (w.rule.wordType === IFModel.WORDTYPE.FACT) {
+      o = o & w.rule.bitSentenceAnd;
+    }
+  });
+  var domains = Model.getDomainsForBitField(theModel, o);
+  if (domains.length !== 1) {
+    throw new Error('more than one domain: "' + domains.join('", "') + '"');
+  }
+  if (!domains[0]) {
+    console.log('query without a domain : ' + Sentence.dumpNiceArr([sentence]));
+  }
+  return {
+    domain: domains[0],
+    collectionName: Model.getMongoCollectionNameForDomain(theModel, domains[0]),
+    modelName: Model.getModelNameForDomain(theModel.mongoHandle, domains[0])
+  }
+};
+
+*/
+
+export function getDomainForSentenceSafe(theModel: IFModel.IModels, sentence: IFErBase.ISentence) : string {
+  try {
+    return getDomainInfoForSentence(theModel,sentence).domain;
+  } catch(e) {
+    return undefined;
+  }
+}
+
 /**
  * given a Sentence, obtain the domain for it
  * @param theModel
  * @param sentence
  */
-export function getDomainForSentence(theModel: IFModel.IModels, sentence: IFErBase.ISentence): {
+export function getDomainInfoForSentence(theModel: IFModel.IModels, sentence: IFErBase.ISentence): {
   domain: string,
   collectionName: string,
   modelName: string
@@ -252,6 +294,24 @@ export interface QResult {
   sentence: IFErBase.ISentence,
   columns: string[],
   results: string[][]
+};
+
+export interface IResultRecord  { [key: string] : Number | string };
+
+export interface IQueryResult {
+  domain: string,
+  aux : {
+    sentence: IFErBase.ISentence,
+    tokens : string[],
+    astnode? : AST.ASTNode
+  }
+  errors : any,  // undefined for ok result
+  /**
+   * Columns relevant for output, in "query" / "sentence" order
+   */
+  columns: string[], // columns relevant for output
+  auxcolumns?  : string[],  // contains additional columns, usually not present!
+  results: IResultRecord[]
 };
 
 /*
@@ -309,6 +369,7 @@ import * as SentenceParser from './sentenceparser';
 export interface IQuery {
   domain: string,
   columns: string[],
+  auxcolumns? : string[],
   reverseMap: IReverseMap,
   query: any
 };
@@ -358,6 +419,7 @@ export function prepareQueries(query: string, theModel: IFModel.IModels, fixedCa
   debuglog(`here query: ${query}`);
   var r = SentenceParser.parseSentenceToAsts(query, theModel, {}); // words);
   var res = Object.assign({}, r) as IPreparedQuery;
+  debuglog( ()=> ' parsed ' + JSON.stringify(r));
   r.domains = [];
   res.queries = res.asts.map((astnode, index) => {
     var sentence = r.sentences[index];
@@ -366,7 +428,7 @@ export function prepareQueries(query: string, theModel: IFModel.IModels, fixedCa
       debuglog(() => JSON.stringify(` empty node for ${index} ` + JSON.stringify(r.errors[index], undefined, 2)));
       return undefined;
     }
-    var domainPick = getDomainForSentence(theModel, sentence);
+    var domainPick = getDomainInfoForSentence(theModel, sentence);
     debuglog(() => ' domainPick: ' + JSON.stringify(domainPick, undefined, 2));
     var domainFixedCategories : string[] = [];
     if(options && options.showURI) {
@@ -404,6 +466,7 @@ export function prepareQueries(query: string, theModel: IFModel.IModels, fixedCa
       domain: domainPick.domain,
       collectionName: domainPick.collectionName,
       columns: columnsReverseMap.columns,
+      auxcolumns : [], // ? // TODO  allcolumns
       reverseMap: columnsReverseMap.reverseMap,
       query: query
     };
@@ -411,14 +474,18 @@ export function prepareQueries(query: string, theModel: IFModel.IModels, fixedCa
   return res;
 }
 
-export interface IProcessedMongoAnswers extends IMatch.IProcessedSentences {
-  queryresults: QResult[]
-}
+export type IProcessedMongoAnswers = IQueryResult[];
+//extends IMatch.IProcessedSentences {
+//  queryresults: QResult[]
+//}
+
+/* result format redesign */
+/* 1) ability to transport the AST */
+/* 2) ability to transport auxiliary information  ( e.g. _url )  */
+/* 3) result objects  map [{  prop : value }] as this is more natural , not string[][] */
+/* single array of "alternating options" */
 
 
-export function mergeResults(r: QResult[]) {
-  return r;
-}
 
 export function queryWithAuxCategories(query: string, theModel: IFModel.IModels, auxiliary_categories : string[]): Promise<IProcessedMongoAnswers> {
   var handle = new ModelHandle(theModel);
@@ -438,19 +505,25 @@ export function query(query: string, theModel: IFModel.IModels): Promise<IProces
 
 export type IReverseMap = { [key: string]: string };
 
-export function remapRecord(rec, columns: string[], reverseMap: IReverseMap): string[] {
+export function remapRecord(rec, columns: string[], reverseMap: IReverseMap): IResultRecord {
   var r = {};
   Object.keys(rec).forEach(key => {
     var targetKey = reverseMap[key] || key;
     r[targetKey] = rec[key];
   });
-  return columns.map(c => r[c]);
+  return r; // columns.map(c => r[c]);
 };
 
 
-export function remapResult(res, columns: string[], reverseMap: IReverseMap): string[][] {
-  return res.map(record => remapRecord(record, columns, reverseMap)
+export function projectResultToArray( res: IQueryResult ) : (string| Number)[][] {
+  debuglog(' full :' + JSON.stringify(res));
+  return res.results.map( rec =>
+    res.columns.map(c => rec[c])
   );
+}
+
+export function remapResult(res, columns: string[], reverseMap: IReverseMap): IResultRecord[] {
+  return res.map(record => remapRecord(record, columns, reverseMap) );
 }
 
 export interface IQueryOptions {
@@ -461,45 +534,80 @@ export function queryInternal(querystring: string, theModel: IFModel.IModels, ha
   Promise<IProcessedMongoAnswers> {
   fixedFields = fixedFields || [];
   var r = prepareQueries(querystring, theModel, fixedFields, options);
+  debuglog(()=> 'here prepared queries: ' + JSON.stringify(r));
+  if(r.queries.length === 0) {
+    return Promise.resolve<IProcessedMongoAnswers>(
+      [{
+        domain : undefined,
+        aux : { sentence : undefined,
+          tokens : r.tokens },
+        errors : r.errors,
+        columns : [],
+        auxcolumns : [],
+        results : []
+      }]
+    );
+  };
   var aPromises = r.queries.map((query, index) => {
     debuglog(() => `query ${index} prepared for domain ` + (query && query.domain));
     if (query === undefined) {
       return {
-        sentence: r.sentences[index],
+        // TODO may not always be possible
+        domain : getDomainForSentenceSafe(theModel,r.sentences[index]),
+        aux : {
+          sentence: r.sentences[index],
+          tokens : r.tokens
+        },
+        errors : r.errors[index],
         columns: [],
+        auxcolumns: [],
         results: []
-      } as QResult
+      } //as IQueryResult
     }
     return handle.query(query.domain, query.query).then(res => {
       //console.log('db returned' + res);
       var resClean = remapResult(res, r.queries[index].columns, query.reverseMap);
       return {
         domain : query.domain,
-        sentence: r.sentences[index],
+        aux : {
+          sentence: r.sentences[index],
+          tokens : r.tokens
+        },
+        errors : r.errors[index],
         columns: r.queries[index].columns,
+        auxcolumns : r.queries[index].auxcolumns,
         results: resClean
-      } as QResult
-    }
-    )
+      } as IQueryResult
+    })
   }
   );
-  var u = Promise.all<QResult>(aPromises);
+  var u = Promise.all<IQueryResult>(aPromises);
   var k = u.then<IProcessedMongoAnswers>(aRes => {
-    //   console.log("***here results of all queries " + JSON.stringify(aRes, undefined, 2));
-    var queryresults = mergeResults(aRes);
+    debuglog("***here results of all queries " + JSON.stringify(aRes, undefined, 2));
+    var queryresults = aRes; // mergeResults(aRes);
+    return queryresults;
+    /*
+    var res2 = {
+      domain
+
+    } as IProcessedMongoAnswers;
+
+    /*
     var res2 = {
       queryresults: queryresults,
       errors: r.errors, // [ErError.makeError_EMPTY_INPUT()] ,
       tokens: r.tokens,
     } as IProcessedMongoAnswers;
-    return res2;
+    */
+   // return res2;
+
   }
   );
   return k;
 }
 
-/*
 
+/*
 
 
           export interface IWhatIsTupelAnswer {

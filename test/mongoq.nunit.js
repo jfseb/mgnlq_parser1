@@ -31,12 +31,12 @@ exports.testMakeMongoDomain = function (test) {
 
 exports.testMakeMongoDomain = function (test) {
   getModel().then((theModel) => {
-    var res = MongoQ.augmentCategoriesWithURI(['_url','orbits'], theModel, 'Cosmos');
+    var res = MongoQ.augmentCategoriesWithURI(['_url', 'orbits'], theModel, 'Cosmos');
     test.deepEqual(res, ['_url', 'orbits'], 'bad result');
     res = res = MongoQ.augmentCategoriesWithURI(['orbits'], theModel, 'Cosmos');
     test.deepEqual(res, ['_url', 'orbits'], 'bad result');
     res = res = MongoQ.augmentCategoriesWithURI(['orbits', 'abc'], theModel, 'FioriBOM');
-    test.deepEqual(res, ['uri', 'uri_rank', 'orbits' , 'abc'], 'bad result');
+    test.deepEqual(res, ['uri', 'uri_rank', 'orbits', 'abc'], 'bad result');
     test.done();
     Model.releaseModel(theModel);
   });
@@ -56,6 +56,7 @@ exports.testMakeQuery = function (test) {
       domain: 'FioriBOM',
       collectionName: 'fioriapps',
       columns: ['SemanticObject', 'SemanticAction', 'BSPName', 'ApplicationComponent'],
+      auxcolumns: [],
       reverseMap: {},
       query: [{ '$match': { ApplicationComponent: 'CO-FIO', appId: 'W0052' } },
         {
@@ -104,6 +105,7 @@ exports.testMakeQuerySimple = function (test) {
         domain: 'Cosmos',
         collectionName: 'cosmos',
         columns: ['object name'],
+        auxcolumns: [],
         reverseMap: { 'object_name': 'object name' },
         query: [{ '$match': {} },
           {
@@ -132,6 +134,7 @@ exports.testMakeQueryDoubleConstraint = function (test) {
         domain: 'FioriBOM',
         collectionName: 'fioriapps',
         columns: ['AppName'],
+        auxcolumns: [],
         reverseMap: {},
         query:
         [{
@@ -169,6 +172,7 @@ exports.testMakeQueryStartingWith2 = function (test) {
           domain: 'FioriBOM',
           collectionName: 'fioriapps',
           columns: ['SemanticAction'],
+          auxcolumns: [],
           reverseMap: {},
           query:
           [{ '$match': { SemanticAction: { '$regex': /^sup/i } } },
@@ -186,6 +190,7 @@ exports.testMakeQueryStartingWith2 = function (test) {
           domain: 'Fiori Backend Catalogs',
           collectionName: 'fioribecatalogs',
           columns: ['SemanticAction'],
+          auxcolumns: [],
           reverseMap: {},
           query:
           [{ '$match': { SemanticAction: { '$regex': /^sup/i } } },
@@ -217,6 +222,7 @@ exports.testMakeQueryStartingWith = function (test) {
           domain: 'FioriBOM',
           collectionName: 'fioriapps',
           columns: ['SemanticAction'],
+          auxcolumns: [],
           reverseMap: {},
           query:
           [{ '$match': { SemanticAction: { '$regex': /^sup/i } } },
@@ -236,6 +242,7 @@ exports.testMakeQueryStartingWith = function (test) {
           domain: 'Fiori Backend Catalogs',
           collectionName: 'fioribecatalogs',
           columns: ['SemanticAction'],
+          auxcolumns: [],
           reverseMap: {},
           query:
           [{ '$match': { SemanticAction: { '$regex': /^sup/i } } },
@@ -270,6 +277,8 @@ exports.testMakeQueryContaining = function (test) {
       domain: 'FioriBOM',
       collectionName: 'fioriapps',
       columns: ['ApplicationComponent'],
+      auxcolumns: [],
+
       reverseMap: {},
       query:
       [{ '$match': { ApplicationComponent: { '$regex': /dyn/i } } },
@@ -287,6 +296,8 @@ exports.testMakeQueryContaining = function (test) {
       domain: 'Fiori Backend Catalogs',
       collectionName: 'fioribecatalogs',
       columns: ['ApplicationComponent'],
+      auxcolumns: [],
+
       reverseMap: {},
       query:
       [{ '$match': { ApplicationComponent: { '$regex': /dyn/i } } },
@@ -305,6 +316,7 @@ exports.testMakeQueryContaining = function (test) {
       domain: 'FioriBOM',
       collectionName: 'fioriapps',
       columns: ['ArtifactId'],
+      auxcolumns: [],
       reverseMap: {},
       query:
       [{ '$match': { ArtifactId: { '$regex': /dyn/i } } },
@@ -338,6 +350,7 @@ exports.testMakeQueryContainsFact = function (test) {
         domain: 'IUPAC',
         collectionName: 'iupacs',
         columns: ['element name'],
+        auxcolumns: [],
         reverseMap: { element_name: 'element name' },
         query:
         [{ '$match': { element_name: { '$regex': /rium/i }, element_number: '10' } },
@@ -355,6 +368,7 @@ exports.testMakeQueryContainsFact = function (test) {
         domain: 'IUPAC',
         collectionName: 'iupacs',
         columns: ['element name'],
+        auxcolumns: [],
         reverseMap: { element_name: 'element name' },
         query:
         [{
@@ -379,6 +393,7 @@ exports.testMakeQueryContainsFact = function (test) {
         domain: 'IUPAC',
         collectionName: 'iupacs',
         columns: ['element number'],
+        auxcolumns: [],
         reverseMap: { element_number: 'element number' },
         query:
         [{ '$match': { element_name: { '$regex': /rium/i }, element_number: '10' } },
@@ -396,6 +411,7 @@ exports.testMakeQueryContainsFact = function (test) {
         domain: 'IUPAC',
         collectionName: 'iupacs',
         columns: ['element number'],
+        auxcolumns: [],
         reverseMap: { element_number: 'element number' },
         query:
         [{
@@ -438,59 +454,77 @@ exports.testQueryInternal = function (test) {
   getModel().then((theModel) => {
     var handle = new FakeHandle([{ 'object_name': 'abc' }]);
     MongoQ.queryInternal('object name', theModel, handle).then(res => {
-      test.deepEqual(res.queryresults,
+      var expected =
         [
-          { domain : 'Cosmos',
-            sentence:
-            [{
-              string: 'object name',
-              matchedString: 'object name',
-              category: 'category',
-              rule:
-              {
-                category: 'category',
+          {
+            errors: false,
+            domain: 'Cosmos',
+            aux: {
+              sentence:
+              [{
+                string: 'object name',
                 matchedString: 'object name',
-                type: 0,
-                word: 'object name',
-                lowercaseword: 'object name',
-                bitindex: 1,
-                wordType: 'C',
-                bitSentenceAnd: 1,
-                _ranking: 0.95
-              },
-              _ranking: 0.95,
-              span: 2
-            }],
+                category: 'category',
+                rule:
+                {
+                  category: 'category',
+                  matchedString: 'object name',
+                  type: 0,
+                  word: 'object name',
+                  lowercaseword: 'object name',
+                  bitindex: 1,
+                  wordType: 'C',
+                  bitSentenceAnd: 1,
+                  _ranking: 0.95
+                },
+                _ranking: 0.95,
+                span: 2
+              }],
+              tokens: ['object', 'name']
+            },
             columns: ['object name'],
-            results: [['abc']]
+            auxcolumns: [],
+            results: [{ 'object name': 'abc' }]
           },
           {
-            sentence:
-            [{
-              string: 'object name',
-              matchedString: 'object name',
-              category: 'category',
-              rule:
-              {
-                category: 'category',
+            domain: 'metamodel',
+            errors: {
+              err_code: undefined,
+              text: 'Error: EarlyExitException: expecting at least one iteration which starts with one of these possible Token sequences::\n  <[Comma] ,[and] ,[ACategory]> but found: \'FACT\''
+            },
+            aux: {
+              sentence:
+              [{
+                string: 'object name',
                 matchedString: 'object name',
-                type: 0,
-                word: 'object name',
-                bitindex: 16,
-                bitSentenceAnd: 16,
-                exactOnly: false,
-                wordType: 'F',
+                category: 'category',
+                rule:
+                {
+                  category: 'category',
+                  matchedString: 'object name',
+                  type: 0,
+                  word: 'object name',
+                  bitindex: 16,
+                  bitSentenceAnd: 16,
+                  exactOnly: false,
+                  wordType: 'F',
+                  _ranking: 0.95,
+                  lowercaseword: 'object name'
+                },
                 _ranking: 0.95,
-                lowercaseword: 'object name'
-              },
-              _ranking: 0.95,
-              span: 2
-            }],
+                span: 2
+              }],
+              tokens: ['object', 'name']
+            },
             columns: [],
+            auxcolumns: [],
             results: []
-          }]
+          }];
+      test.deepEqual(res[0], expected[0], 'first ok');
+      test.deepEqual(res[0].aux, expected[0].aux, 'first aux ok');
 
-      );
+      // test.deepEqual(res[1], expected[1], '2nd ok');
+      test.deepEqual(res, expected);
       test.done();
       Model.releaseModel(theModel);
     });
@@ -504,7 +538,7 @@ exports.testMakeQuery2 = function (test) {
     var node = r.asts[0];
     var nodeFieldList = node.children[0].children[0];
     var nodeFilter = node.children[1];
-    var domainPick = MongoQ.getDomainForSentence(theModel, r.sentences[0]);
+    var domainPick = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0]);
     var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
     var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], mongoMap);
     var categoryList = mQ.getCategoryList([], nodeFieldList, r.sentences[0]);
@@ -521,7 +555,7 @@ exports.testMakeQuery2 = function (test) {
       }
     });
     // console.log(JSON.stringify(r)); // how to get domain?
-    var domain = MongoQ.getDomainForSentence(theModel, r.sentences[0], mongoMap);
+    var domain = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0], mongoMap);
     test.deepEqual(domain, { collectionName: 'fioriapps', domain: 'FioriBOM', modelName: 'fioriapps' }, ' got domain');
     var query = [match, group, proj];
     debuglog(() => query);
@@ -631,9 +665,9 @@ exports.testGetDomainsForSentence = function (test) {
   getModel().then((theModel) => {
     var s = 'SemanticObject';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    var domain = MongoQ.getDomainForSentence(theModel, r.sentences[0]);
+    var domain = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0]);
     test.deepEqual(domain, { domain: 'FioriBOM', collectionName: 'fioriapps', modelName: 'fioriapps' }, ' got domain');
-    var domain2 = MongoQ.getDomainForSentence(theModel, r.sentences[1]);
+    var domain2 = MongoQ.getDomainInfoForSentence(theModel, r.sentences[1]);
     test.deepEqual(domain2, {
       domain: 'Fiori Backend Catalogs',
       collectionName: 'fioribecatalogs',
@@ -664,16 +698,16 @@ exports.testGetDomainsForSentence = function (test) {
   getModel().then((theModel) => {
     var s = 'SemanticObject';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    var domain = MongoQ.getDomainForSentence(theModel, r.sentences[0]);
+    var domain = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0]);
     test.deepEqual(domain, { domain: 'FioriBOM', collectionName: 'fioriapps', modelName: 'fioriapps' }, ' got domain');
-    var domain2 = MongoQ.getDomainForSentence(theModel, r.sentences[1]);
+    var domain2 = MongoQ.getDomainInfoForSentence(theModel, r.sentences[1]);
     test.deepEqual(domain2, {
       domain: 'Fiori Backend Catalogs',
       collectionName: 'fioribecatalogs',
       modelName: 'fioribecatalogs'
     }, ' got domain');
     MongoQ.query('SemanticObject', theModel).then((res) => {
-      test.deepEqual(res.queryresults[0].results,
+      test.deepEqual(MongoQ.projectResultToArray(res[0]),
         [
           [
             null
@@ -713,22 +747,22 @@ exports.testGetDomainsForSentence = function (test) {
           ]
         ]);
 
-      test.deepEqual(res.queryresults[1].results, [
-        [
-          'Customer'
-        ],
-        [
-          'Document'
-        ],
-        [
-          'TaxReport'
-        ],
-        [
-          'VisitList'
-        ],
-        [
-          'WBSElement'
-        ]
+      test.deepEqual(res[1].results, [
+        {
+          'SemanticObject': 'Customer'
+        },
+        {
+          'SemanticObject': 'Document'
+        },
+        {
+          'SemanticObject': 'TaxReport'
+        },
+        {
+          'SemanticObject': 'VisitList'
+        },
+        {
+          'SemanticObject': 'WBSElement'
+        }
       ]);
 
       test.done();
@@ -742,9 +776,9 @@ exports.testGetDomainsForSentence = function (test) {
 exports.testQueryWithAux = function (test) {
   getModel().then((theModel) => {
     MongoQ.queryWithAuxCategories('orbits', theModel, ['_url']).then((res) => {
-      test.deepEqual(res.queryresults.length, 2);
-      debuglog(()=> JSON.stringify(res.queryresults,undefined, 2));
-      test.deepEqual(res.queryresults[0].results,
+      test.deepEqual(res.length, 2);
+      debuglog(() => JSON.stringify(res, undefined, 2));
+      test.deepEqual(MongoQ.projectResultToArray(res[0]),
         [[null, null],
         [null, 'n/a'],
         ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
@@ -753,7 +787,7 @@ exports.testQueryWithAux = function (test) {
             'Alpha Centauri C'],
         ['https://en.wikipedia.org/wiki/Sun', null]]);
 
-      test.deepEqual(res.queryresults[1].results,[]);
+      test.deepEqual(res[1].results, []);
       test.done();
       Model.releaseModel(theModel);
     });
@@ -765,9 +799,9 @@ exports.testQueryWithAux = function (test) {
 exports.testQueryWithURI = function (test) {
   getModel().then((theModel) => {
     MongoQ.queryWithURI('orbits', theModel).then((res) => {
-      test.deepEqual(res.queryresults.length, 2);
-      debuglog(()=> JSON.stringify(res.queryresults,undefined, 2));
-      test.deepEqual(res.queryresults[0].results,
+      test.deepEqual(res.length, 2);
+      debuglog(() => JSON.stringify(res, undefined, 2));
+      test.deepEqual(MongoQ.projectResultToArray(res[0]),
         [[null, null],
         [null, 'n/a'],
         ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
@@ -776,7 +810,7 @@ exports.testQueryWithURI = function (test) {
             'Alpha Centauri C'],
         ['https://en.wikipedia.org/wiki/Sun', null]]);
 
-      test.deepEqual(res.queryresults[1].results,[]);
+      test.deepEqual(res[1].results, []);
       test.done();
       Model.releaseModel(theModel);
     });

@@ -38,12 +38,27 @@ var makeToken = require('./src/makeToken.js');
 gulp.task('makeToken' , function() {
   makeToken.run();
 });
+
+
+/**
+ * Definition files
+ */
+gulp.task('tsc_d_ts', ['makeToken'], function () {
+  var tsProject = ts.createProject('tsconfig.json', { inlineSourceMap: true
+  });
+  var tsResult = tsProject.src() // gulp.src('lib/*.ts')
+    .pipe(sourcemaps.init()) // This means sourcemaps will be generated
+    .pipe(tsProject());
+  return tsResult.dts
+    .pipe(gulp.dest('js'));
+});
+
 /**
  * compile tsc (including srcmaps)
  * @input srcDir
  * @output genDir
  */
-gulp.task('tsc', ['makeToken'], function () {
+gulp.task('tsc', [ 'makeToken', 'tsc_d_ts'], function () {
   var tsProject = ts.createProject('tsconfig.json', { inlineSourceMap: true
   });
   var tsResult = tsProject.src() // gulp.src('lib/*.ts')

@@ -16,8 +16,8 @@ export declare function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErB
 };
 export declare function makeMongoGroupFromAst(categoryList: string[], mongoMap: IFModel.CatMongoMap): {
     $group: {
-        _id: {} & {};
-    } & {};
+        _id: {};
+    };
 };
 export declare function makeMongoColumnsFromAst(categoryList: string[], mongoMap: IFModel.CatMongoMap): {
     columns: string[];

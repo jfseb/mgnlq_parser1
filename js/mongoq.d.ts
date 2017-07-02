@@ -17,17 +17,17 @@ export declare class ModelHandle {
     constructor(theModel: IFModel.IModels);
     query(domain: string, query: any): Promise<any>;
 }
+export declare function getDomainForSentenceSafe(theModel: IFModel.IModels, sentence: IFErBase.ISentence): string;
 /**
  * given a Sentence, obtain the domain for it
  * @param theModel
  * @param sentence
  */
-export declare function getDomainForSentence(theModel: IFModel.IModels, sentence: IFErBase.ISentence): {
+export declare function getDomainInfoForSentence(theModel: IFModel.IModels, sentence: IFErBase.ISentence): {
     domain: string;
     collectionName: string;
     modelName: string;
 };
-import { IFErBase as IMatch } from 'mgnlq_er';
 export interface SRes {
     sentence: IFErBase.ISentence;
     records: any[];
@@ -38,10 +38,29 @@ export interface QResult {
     columns: string[];
     results: string[][];
 }
+export interface IResultRecord {
+    [key: string]: Number | string;
+}
+export interface IQueryResult {
+    domain: string;
+    aux: {
+        sentence: IFErBase.ISentence;
+        tokens: string[];
+        astnode?: AST.ASTNode;
+    };
+    errors: any;
+    /**
+     * Columns relevant for output, in "query" / "sentence" order
+     */
+    columns: string[];
+    auxcolumns?: string[];
+    results: IResultRecord[];
+}
 import * as SentenceParser from './sentenceparser';
 export interface IQuery {
     domain: string;
     columns: string[];
+    auxcolumns?: string[];
     reverseMap: IReverseMap;
     query: any;
 }
@@ -60,18 +79,16 @@ export declare function makeAggregateFromAst(astnode: AST.ASTNode, sentence: IFM
 export declare function containsFixedCategories(theModel: IFModel.IModels, domain: string, fixedCategories: string[]): boolean;
 export declare function augmentCategoriesWithURI(fixedCategories: string[], theModel: IFModel.IModels, domain: string): string[];
 export declare function prepareQueries(query: string, theModel: IFModel.IModels, fixedCategories: string[], options?: IQueryOptions): IPreparedQuery;
-export interface IProcessedMongoAnswers extends IMatch.IProcessedSentences {
-    queryresults: QResult[];
-}
-export declare function mergeResults(r: QResult[]): QResult[];
+export declare type IProcessedMongoAnswers = IQueryResult[];
 export declare function queryWithAuxCategories(query: string, theModel: IFModel.IModels, auxiliary_categories: string[]): Promise<IProcessedMongoAnswers>;
 export declare function queryWithURI(query: string, theModel: IFModel.IModels, auxiliary_categories: string[]): Promise<IProcessedMongoAnswers>;
 export declare function query(query: string, theModel: IFModel.IModels): Promise<IProcessedMongoAnswers>;
 export declare type IReverseMap = {
     [key: string]: string;
 };
-export declare function remapRecord(rec: any, columns: string[], reverseMap: IReverseMap): string[];
-export declare function remapResult(res: any, columns: string[], reverseMap: IReverseMap): string[][];
+export declare function remapRecord(rec: any, columns: string[], reverseMap: IReverseMap): IResultRecord;
+export declare function projectResultToArray(res: IQueryResult): (string | Number)[][];
+export declare function remapResult(res: any, columns: string[], reverseMap: IReverseMap): IResultRecord[];
 export interface IQueryOptions {
     showURI: boolean;
 }

@@ -59,3 +59,4 @@ db.coll.aggregate(
 # history
 
 * 0.0.3  showURI, auxiliary categories
+* 0.0.4  change in output format
