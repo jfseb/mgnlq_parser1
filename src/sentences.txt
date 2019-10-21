@@ -2,6 +2,7 @@ At least one
 Every newest oldest
 The Life is Short
 CAT and FACT , FACT and FACT
+CAT or CAT FACT
 A > E
 At Least one CAT contains FACT
 CAT starts with AnANY

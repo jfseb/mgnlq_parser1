@@ -44,6 +44,7 @@ var Tnewest = createToken({name: "newest", pattern: /newest/i });
 var Tof = createToken({name: "of", pattern: /of/i });
 var Toldest = createToken({name: "oldest", pattern: /oldest/i });
 var Tone = createToken({name: "one", pattern: /one/i });
+var Tor = createToken({name: "or", pattern: /or/i });
 var Trelating = createToken({name: "relating", pattern: /relating/i });
 var TRParen = createToken({name: "RParen", pattern: /\)/i });
 var Tselect = createToken({name: "select", pattern: /select/i });
@@ -101,6 +102,7 @@ var TIdentifier = createToken({name: "Identifier", pattern: /\w+/i });
  of : Tof ,
  oldest : Toldest ,
  one : Tone ,
+ or : Tor ,
  relating : Trelating ,
  RParen : TRParen ,
  select : Tselect ,

@@ -53,7 +53,11 @@ db.coll.aggregate(
     ]
 )
 
+# environment
 
+the default model name is "testmodel"
+
+environment ABOT_MONGODB controls the used model, e.g. ABOT_MONGODB=testdb2
 
 
 # history

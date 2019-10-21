@@ -1,7 +1,15 @@
 'use strict'
+/**
+ * @file
+ * @module jfseb.mgnlq_parser1.mongoq
+ * @copyright (c) 2016-2109 Gerd Forstmann
+ *
+ * database connectivity and querying
+ */
 
-// based on: http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance
-// and:  http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
+
+
+
 
 import { ErBase as ErBase, Sentence as Sentence, IFErBase as IFErBase } from 'mgnlq_er';
 import { IFModel as IFModel, Model as Model, MongoMap as MongoMap } from 'mgnlq_model';
@@ -45,18 +53,10 @@ process.on(
   "unhandledRejection",
 
   function handleWarning(reason, promise) {
-
-
-
     console.log("[PROCESS] Unhandled Promise Rejection");
-
     console.log("- - - - - - - - - - - - - - - - - - -");
-
     console.log(reason);
-
     console.log('');
-
-
 
   }
 
@@ -66,7 +66,7 @@ export function makeMongoName(s: string): string {
   return s.replace(/[^a-zA-Z0-9]/g, '_');
 }
 
-var mongodb = process.env.ABOT_MONGODB || "testmodel";
+//var mongodb = process.env.ABOT_MONGODB || "testmodel";
 
 
 (<any>mongoose).Promise = global.Promise;
@@ -113,24 +113,6 @@ export class MongoBridge {
 }
 
 
-
-/*
-export var talking = new Promise(function(resolve, reject) {
-  db.on('error', console.error.bind(console, 'connection error:'));
-  db.once('open', function () {
-    // we're connected!
-    debug('here model names : ' + db.modelNames());
-    resolve();
-    debug('now model names : ' + db.modelNames());
-    debug('done');
-  });
-});
-
-talking.catch((err) => {
-  console.log(err);
-});
-*/
-
 export class ModelHandle {
   _theModel: IFModel.IModels;
   _mgBridge: MongoBridge;
@@ -143,7 +125,7 @@ export class ModelHandle {
   query(domain: string, query: any): Promise<any> {
     var that = this;
     var mgmodelname = Model.getMongooseModelNameForDomain(this._theModel, domain); 4
-    debuglog('query ' + domain + ' >>' + JSON.stringify(query, undefined, 2));
+    debuglog('query ' + domain + ' >>' + mgmodelname + ' ' + JSON.stringify(query, undefined, 2));
     return getDBConnection(this._mongoose).then((mongoose) => {
 
       return new Promise(function (resolve, reject) {
@@ -314,36 +296,7 @@ export interface IQueryResult {
   results: IResultRecord[]
 };
 
-/*
-export function fuseAndOrderResults(res : SRes[]) : IFErBase.IWhatIsTupelAnswer[] {
-  var all = [];
-  debug(JSON.stringify(res));
-  res.forEach(res1 => {
-    res1.records.forEach(rec => {
-      var r2 = undefined as IFErBase.IWhatIsTupelAnswer;
-      r2 = {
-        record : rec,
-        sentence : res1.sentence,
-        categories: Object.keys(rec),
-        result: Object.keys(rec).map(key => rec[key]),
-        _ranking : 1
-      };
-      all.push(r2);
-    })
-  }
-  );
-  return all;
-}
-*/
 
-/*
-sentence: ISentence;
-  record: IRecord;
-  categories: string[];
-  result: string[];
-  _ranking: number;
-*/
-//var mongoConnPromise = undefined as Promise<mongoose.Connection>;
 
 function getDBConnection(mongooseHndl: mongoose.Mongoose): Promise<mongoose.Connection> {
   if (mongooseHndl) {
@@ -352,16 +305,6 @@ function getDBConnection(mongooseHndl: mongoose.Mongoose): Promise<mongoose.Conn
     return Promise.resolve(mongooseHndl.connection);
   }
   throw Error('how is this gonna work');
-  /*
-  if(!mongoConnPromise) {
-     mongoConnPromise =  new Promise(function(resolve, reject) {
-      mongoose.connect('mongodb://localhost/' + mongodb).then(() => {
-        resolve(mongoose.connection);
-      });
-    });
-  }
-  return mongoConnPromise;
-  */
 }
 
 import * as SentenceParser from './sentenceparser';
@@ -550,6 +493,8 @@ export function queryInternal(querystring: string, theModel: IFModel.IModels, ha
   };
   var aPromises = r.queries.map((query, index) => {
     debuglog(() => `query ${index} prepared for domain ` + (query && query.domain));
+    debuglog(() => `query ${index} prepared for domain ` + (query && query.domain && getDomainForSentenceSafe(theModel,r.sentences[index])));
+
     if (query === undefined) {
       return {
         // TODO may not always be possible

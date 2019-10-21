@@ -380,6 +380,8 @@ function SelectParser(input) {
         //$.CONSUME(T.Comma));
          $.OR( [
           { ALT: function() { $.CONSUME(T.Comma); }},
+          { ALT: function() { $.CONSUME(T.and); }}, // not a logical and yet
+          { ALT: function() { $.CONSUME(T.or); }}, //not logical or yet
           { ALT: function() { $.CONSUME(T.with); }}
         ])
         )

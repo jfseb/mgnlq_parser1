@@ -694,6 +694,23 @@ exports.testContainsFixedCategories = function (test) {
   });
 };
 
+exports.testCustomStringif = function(test) {
+  var a = { a: /abc/i };
+  var r = MongoQ.JSONStringify(a);
+  test.deepEqual(r, '{\n  "a": "/abc/i"\n}');
+  test.done();
+};
+
+
+exports.testGetDomainForSentenceSafe = function(test) {
+  getModel().then((theModel) => {
+    var domain = MongoQ.getDomainForSentenceSafe(theModel,  []);
+    test.deepEqual(domain, undefined);
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
 exports.testGetDomainsForSentence = function (test) {
   getModel().then((theModel) => {
     var s = 'SemanticObject';

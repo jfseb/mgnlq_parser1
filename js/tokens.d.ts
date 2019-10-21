@@ -40,6 +40,7 @@ export declare const Tokens: {
     of: chevrotain.TokenConstructor;
     oldest: chevrotain.TokenConstructor;
     one: chevrotain.TokenConstructor;
+    or: chevrotain.TokenConstructor;
     relating: chevrotain.TokenConstructor;
     RParen: chevrotain.TokenConstructor;
     select: chevrotain.TokenConstructor;

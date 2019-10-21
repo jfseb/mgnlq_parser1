@@ -337,6 +337,8 @@ function SelectParser(input) {
             //$.CONSUME(T.Comma));
             $.OR([
                 { ALT: function () { $.CONSUME(tokens_1.Tokens.Comma); } },
+                { ALT: function () { $.CONSUME(tokens_1.Tokens.and); } },
+                { ALT: function () { $.CONSUME(tokens_1.Tokens.or); } },
                 { ALT: function () { $.CONSUME(tokens_1.Tokens.with); } }
             ]));
             r.push($.SUBRULE2($.catFact));

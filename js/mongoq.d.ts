@@ -1,4 +1,11 @@
 /// <reference types="mongoose" />
+/**
+ * @file
+ * @module jfseb.mgnlq_parser1.mongoq
+ * @copyright (c) 2016-2109 Gerd Forstmann
+ *
+ * database connectivity and querying
+ */
 import { IFErBase as IFErBase } from 'mgnlq_er';
 import { IFModel as IFModel } from 'mgnlq_model';
 import * as AST from './ast';

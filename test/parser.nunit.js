@@ -145,7 +145,7 @@ exports.testCatListMoreInFact = function (test) {
   test.done();
 };
 
-exports.testCatListMoreInFactAndFact = function (test) {
+exports.testCatListMoreInFactCommaFact = function (test) {
   var inputText = 'CAT, CAT in FACT, FACT'; // in FACT and FACT';
   parseInput(inputText,'catListOpMore');
   test.equal(1,1);
@@ -173,6 +173,50 @@ exports.testCatListMoreInFactCommaFact2 = function (test) {
   test.equal(1,1);
   test.done();
 };
+
+exports.testCatListMoreInFactAndFact2 = function (test) {
+  var inputText = 'CAT, CAT in FACT and FACT;';
+  parseInput(inputText,'catListOpMore');
+  test.equal(1,1);
+  test.done();
+};
+
+exports.testCatListMoreInFactAndFact2 = function (test) {
+  var inputText = 'CAT, CAT with FACT and FACT;';
+  parseInput(inputText,'catListOpMore');
+  test.equal(1,1);
+  test.done();
+};
+
+
+exports.testCatListMoreInFactAndFact3 = function (test) {
+  var inputText = 'CAT, CAT with FACT and FACT and FACT;';
+  parseInput(inputText,'catListOpMore');
+  test.equal(1,1);
+  test.done();
+};
+
+exports.testCatListMoreInFactAndFactorFact = function (test) {
+  var inputText = 'CAT, CAT with FACT and FACT or FACT;';
+  parseInput(inputText,'catListOpMore');
+  test.equal(1,1);
+  test.done();
+};
+
+exports.testCatListMoreInFactAndCatFact = function (test) {
+  var inputText = 'CAT, CAT with FACT and CAT FACT;';
+  parseInput(inputText,'catListOpMore');
+  test.equal(1,1);
+  test.done();
+};
+
+exports.testCatListMoreInFactAndCatFact2 = function (test) {
+  var inputText = 'CAT, CAT for CAT FACT and CAT FACT;';
+  parseInput(inputText,'catListOpMore');
+  test.equal(1,1);
+  test.done();
+};
+
 
 exports.testCatListMoreInFactCFAndCF = function (test) {
   var inputText = 'CAT, CAT with CAT FACT , FACT , CAT FACT';

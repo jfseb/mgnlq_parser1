@@ -1,7 +1,12 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-// based on: http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance
-// and:  http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
+/**
+ * @file
+ * @module jfseb.mgnlq_parser1.mongoq
+ * @copyright (c) 2016-2109 Gerd Forstmann
+ *
+ * database connectivity and querying
+ */
 const mgnlq_er_1 = require("mgnlq_er");
 const mgnlq_model_1 = require("mgnlq_model");
 const debug = require("debugf");
@@ -34,7 +39,7 @@ function makeMongoName(s) {
     return s.replace(/[^a-zA-Z0-9]/g, '_');
 }
 exports.makeMongoName = makeMongoName;
-var mongodb = process.env.ABOT_MONGODB || "testmodel";
+//var mongodb = process.env.ABOT_MONGODB || "testmodel";
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
 class MongoBridge {
@@ -58,22 +63,6 @@ class MongoBridge {
     }
 }
 exports.MongoBridge = MongoBridge;
-/*
-export var talking = new Promise(function(resolve, reject) {
-  db.on('error', console.error.bind(console, 'connection error:'));
-  db.once('open', function () {
-    // we're connected!
-    debug('here model names : ' + db.modelNames());
-    resolve();
-    debug('now model names : ' + db.modelNames());
-    debug('done');
-  });
-});
-
-talking.catch((err) => {
-  console.log(err);
-});
-*/
 class ModelHandle {
     constructor(theModel) {
         this._theModel = theModel;
@@ -84,7 +73,7 @@ class ModelHandle {
         var that = this;
         var mgmodelname = mgnlq_model_1.Model.getMongooseModelNameForDomain(this._theModel, domain);
         4;
-        debuglog('query ' + domain + ' >>' + JSON.stringify(query, undefined, 2));
+        debuglog('query ' + domain + ' >>' + mgmodelname + ' ' + JSON.stringify(query, undefined, 2));
         return getDBConnection(this._mongoose).then((mongoose) => {
             return new Promise(function (resolve, reject) {
                 Promise.resolve(1).then(() => {
@@ -221,35 +210,6 @@ const mQ = require("./ast2MQuery");
 ;
 ;
 ;
-/*
-export function fuseAndOrderResults(res : SRes[]) : IFErBase.IWhatIsTupelAnswer[] {
-  var all = [];
-  debug(JSON.stringify(res));
-  res.forEach(res1 => {
-    res1.records.forEach(rec => {
-      var r2 = undefined as IFErBase.IWhatIsTupelAnswer;
-      r2 = {
-        record : rec,
-        sentence : res1.sentence,
-        categories: Object.keys(rec),
-        result: Object.keys(rec).map(key => rec[key]),
-        _ranking : 1
-      };
-      all.push(r2);
-    })
-  }
-  );
-  return all;
-}
-*/
-/*
-sentence: ISentence;
-  record: IRecord;
-  categories: string[];
-  result: string[];
-  _ranking: number;
-*/
-//var mongoConnPromise = undefined as Promise<mongoose.Connection>;
 function getDBConnection(mongooseHndl) {
     if (mongooseHndl) {
         debuglog('assuming present handle');
@@ -257,16 +217,6 @@ function getDBConnection(mongooseHndl) {
         return Promise.resolve(mongooseHndl.connection);
     }
     throw Error('how is this gonna work');
-    /*
-    if(!mongoConnPromise) {
-       mongoConnPromise =  new Promise(function(resolve, reject) {
-        mongoose.connect('mongodb://localhost/' + mongodb).then(() => {
-          resolve(mongoose.connection);
-        });
-      });
-    }
-    return mongoConnPromise;
-    */
 }
 const SentenceParser = require("./sentenceparser");
 ;
@@ -428,6 +378,7 @@ function queryInternal(querystring, theModel, handle, fixedFields, options) {
     ;
     var aPromises = r.queries.map((query, index) => {
         debuglog(() => `query ${index} prepared for domain ` + (query && query.domain));
+        debuglog(() => `query ${index} prepared for domain ` + (query && query.domain && getDomainForSentenceSafe(theModel, r.sentences[index])));
         if (query === undefined) {
             return {
                 // TODO may not always be possible
