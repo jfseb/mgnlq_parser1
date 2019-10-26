@@ -60,7 +60,30 @@ the default model name is "testmodel"
 environment ABOT_MONGODB controls the used model, e.g. ABOT_MONGODB=testdb2
 
 
+# record
+
+set MONGO_RECORD_REPLAY=
+
+
+
 # history
 
 * 0.0.3  showURI, auxiliary categories
 * 0.0.4  change in output format
+* 0.0.5  add mass tests, upgrade gulp etc.
+
+
+
+# Todo
+     more than N CAT    (List all Application Components with more than 3 Fiori Apps)
+
+     real or
+     associativity, parentheis
+
+     and  CATA FACT_A or CATB FACTB =>   (( CAT_A )
+
+     CAT_A FACT_A OR FACT_A   AND  XX   =     ( CAT_A FACT_A or CAT_A FACT_B )
+
+     (FACT_A OR FACT_B ) OR  X    AND
+
+     FA AND FB OR FC AND FE  =>    FA AND ( FB OR FC) AND FA

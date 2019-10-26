@@ -1,13 +1,13 @@
 {
   "name": "mgnlq_parser1",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "query parsing",
   "main": "js/index.js",
   "typings": "js/index.d.ts",
   "scripts": {
     "build": "gulp && tsc",
     "test": "gulp test",
-    "version" : "npm show mgnlq_parser1@* version",
+    "version": "npm show mgnlq_parser1@* version",
     "coverage": "./node_modules/.bin/nyc --source-map false nodeunit test",
     "coverreportplain": "./node_modules/.bin/nyc --source-map false report --reporter=text-lcov ",
     "coveralls": "./node_modules/.bin/nyc --source-map false report --reporter=text-lcov | coveralls"
@@ -28,26 +28,29 @@
   },
   "homepage": "https://github.com/jfseb/mgnlq_parser1#readme",
   "devDependencies": {
-    "@types/debug": "0.0.29",
+    "@types/debug": "^4.1.5",
     "@types/lodash": "^4.14.61",
-    "@types/mongoose": "^4.7.9",
-    "@types/node": "^7.0.5",
-    "del": "^2.2.2",
-    "gulp": "^3.9.1",
-    "gulp-eslint": "^3.0.1",
-    "gulp-jsdoc3": "^1.0.1",
+    "@types/mongoose": "^5.5.23",
+    "@types/node": "^8.10.56",
+    "abot_utils": "^1.0.2",
+    "del": "^5.1.0",
+    "gulp": "^4.0.0",
+    "gulp-eslint": "^6.0.0",
+    "gulp-jsdoc3": "^2.0.0",
     "gulp-nodeunit": "^0.1.0",
-    "gulp-typescript": "^3.1.5",
-    "mgnlq_testmodel_replay": "^0.0.7",
-    "nyc": "^10.3.2",
-    "typescript": "^2.2.1"
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-typescript": "^5.0.1",
+    "mgnlq_testmodel_replay": "^0.0.10",
+    "nyc": "^14.1.1",
+    "typescript": "^3.6.4"
   },
   "dependencies": {
     "chevrotain": "^0.27.3",
+    "circular-json": "^0.5.9",
     "debugf": "^0.1.2",
     "lodash": "^4.17.4",
-    "mgnlq_er": "^0.0.4",
-    "mgnlq_model": "^0.0.5",
-    "mongoose": "^4.9.9"
+    "mgnlq_er": "^0.0.5",
+    "mgnlq_model": "^0.0.6",
+    "mongoose": "^5.7.7"
   }
 }

@@ -1,18 +1,4 @@
-/*
-var ts = require("gulp-typescript")
-
-// according to https://www.npmjs.com/package/gulp-typescript
-// not supported
-var tsProject = ts.createProject('tsconfig.json', { inlineSourceMap : false })
-
-*/
-// gulp.task('scripts', function() {
-//    var tsResult = tsProject.src() // gulp.src("lib/*  * / * .ts") // or tsProject.src()
-//        .pipe(tsProject())
-//
-//    return tsResult.js.pipe(gulp.dest('release'))
-// })
-// *
+/* standard_v1.0.0*/
 
 var gulp = require('gulp');
 
@@ -23,9 +9,11 @@ var sourcemaps = require('gulp-sourcemaps');
  * Directory containing generated sources which still contain
  * JSDOC etc.
  */
-// var genDir = 'gen';
 var srcDir = 'src';
 var testDir = 'test';
+
+var sourcemaproot = '/projects/nodejs/botbuilder/mgnlq_parser1/';
+
 
 gulp.task('watch', function () {
   gulp.watch([srcDir + '/**/*.js', testDir + '/**/*.js', srcDir + '/**/*.tsx',  srcDir + '/**/*.ts', 'gulpfile.js'],
@@ -35,15 +23,16 @@ gulp.task('watch', function () {
 
 var makeToken = require('./src/makeToken.js');
 
-gulp.task('makeToken' , function() {
+gulp.task('makeToken' , function(cb) {
   makeToken.run();
+  cb();
 });
 
 
 /**
  * Definition files
  */
-gulp.task('tsc_d_ts', ['makeToken'], function () {
+gulp.task('tsc_d_ts', gulp.series('makeToken', function () {
   var tsProject = ts.createProject('tsconfig.json', { inlineSourceMap: true
   });
   var tsResult = tsProject.src() // gulp.src('lib/*.ts')
@@ -51,14 +40,14 @@ gulp.task('tsc_d_ts', ['makeToken'], function () {
     .pipe(tsProject());
   return tsResult.dts
     .pipe(gulp.dest('js'));
-});
+}));
 
 /**
  * compile tsc (including srcmaps)
  * @input srcDir
- * @output genDir
+ * @output js
  */
-gulp.task('tsc', [ 'makeToken', 'tsc_d_ts'], function () {
+gulp.task('tsc', gulp.series( 'makeToken', 'tsc_d_ts', function () {
   var tsProject = ts.createProject('tsconfig.json', { inlineSourceMap: true
   });
   var tsResult = tsProject.src() // gulp.src('lib/*.ts')
@@ -66,36 +55,20 @@ gulp.task('tsc', [ 'makeToken', 'tsc_d_ts'], function () {
     .pipe(tsProject());
 
   return tsResult.js
-//    .pipe(babel({
-//      comments: true,
-//      presets: ['es2015']
-//    }))
-    // .pipe( ... ) // You can use other plugins that also support gulp-sourcemaps
-    .pipe(sourcemaps.write('.',{
-      sourceRoot : function(file) {
-        file.sourceMap.sources[0] = '/projects/nodejs/botbuilder/abot_stringdist/src/' + file.sourceMap.sources[0];
-        //console.log('here is************* file' + JSON.stringify(file, undefined, 2));
+    .pipe(sourcemaps.write('.', {
+      sourceRoot: function (file) {
+        file.sourceMap.sources[0] = sourcemaproot + 'src/' + file.sourceMap.sources[0];
+        // console.log('here is************* file' + JSON.stringify(file, undefined, 2))
         return 'ABC';
       },
-      mapSources: function(src) {
+      mapSources: function (src) {
         //console.log('here we remap' + src);
-        return '/projects/nodejs/botbuilder/fdevstart/' + src;
+        return /* sourcemaproot  +*/ src;
       }}
-      )) // ,  { sourceRoot: './' } ))
-      // Now the sourcemaps are added to the .js file
+    )) // ,  { sourceRoot: './' } ))
+    // Now the sourcemaps are added to the .js file
     .pipe(gulp.dest('js'));
-});
-
-/*
-var webpacks = require('webpack-stream');
-gulp.task('webpack_notinuse', function() {
-  return gulp.src('./src/web/qbetable.tsx')
-    .pipe(webpacks( require('./webpack.config.js') ))
-    .pipe(gulp.dest('/app/public/js/'));
-});
-
-
-*/
+}));
 
 
 var del = require('del');
@@ -109,37 +82,34 @@ gulp.task('clean:models', function () {
     'testmodel2/_cachetrue.js.zip',
     'testmodel/_cachetrue.js.zip',
     // here we use a globbing pattern to match everything inside the `mobile` folder
-  //  'dist/mobile/**/*',
+    //  'dist/mobile/**/*',
     // we don't want to clean this file though so we negate the pattern
-//    '!dist/mobile/deploy.json'
+    //    '!dist/mobile/deploy.json'
   ]);
 });
 
 
-gulp.task('clean', ['clean:models']);
-
-
-
-var jsdoc = require('gulp-jsdoc3');
-
-gulp.task('doc', ['test'], function (cb) {
-  gulp.src([srcDir + '/**/*.js', 'README.md', './js/**/*.js'], { read: false })
-    .pipe(jsdoc(cb));
-});
+gulp.task('clean', gulp.series('clean:models'));
 
 var nodeunit = require('gulp-nodeunit');
 
-gulp.task('test', ['tsc'], function () {
-  gulp.src(['test/**/*.js'])
+gulp.task('test', gulp.series('tsc', function () {
+  return gulp.src(['test/**/*.js'])
     .pipe(nodeunit({
       reporter: 'minimal'
-      // reporterOptions: {
-      //  output: 'testcov'
-      // }
+    // reporterOptions: {
+    //  output: 'testcov'
+    // }
     })).on('error', function (err) { console.log('This is weird: ' + err.message); })
     .pipe(gulp.dest('./out/lcov.info'));
-});
+}));
 
+var jsdoc = require('gulp-jsdoc3');
+
+gulp.task('doc', gulp.series( 'test', function (cb) {
+  return gulp.src([srcDir + '/**/*.js', 'README.md', './js/**/*.js'], { read: false })
+    .pipe(jsdoc(cb));
+}));
 
 const eslint = require('gulp-eslint');
 
@@ -162,5 +132,5 @@ gulp.task('eslint', () => {
 
 
 // Default Task
-gulp.task('default', ['tsc',  'eslint', 'test', 'doc' ]);
-gulp.task('build', ['tsc', 'eslint']);
+gulp.task('default', gulp.series('tsc', 'eslint', 'test', 'doc'));
+gulp.task('build', gulp.series('tsc', 'eslint'));

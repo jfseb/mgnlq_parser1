@@ -301,8 +301,8 @@ exports.testParseWithEndingWith = function (test) {
     debuglog('\n' + Ast.astToText(parsingResult));
 
     test.deepEqual(Ast.astToText(parsingResult),
-   'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  LIST -1(1)\n    OPEndsWith 4(2)\n      CAT 3\n      ANY 5\n'
-   , 'proper ast' );
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  LIST -1(1)\n    OPEndsWith 4(2)\n      CAT 3\n      ANY 5\n'
+      , 'proper ast' );
     test.done();
     Model.releaseModel(theModel);
   });
@@ -332,8 +332,8 @@ exports.testcategoriesStartingWith = function (test) {
     debuglog(r.sentences[0]);
     test.deepEqual(Sentence.simplifyStringsWithBitIndex(r.sentences[0]).join('\n'),
       'categories=>category/category C16\nstarting with=>starting with/operator/2 O256\nelem=>elem/any A4096\nin=>in/filler I256\ndomain=>domain/category C16\nIUPAC=>IUPAC/domain F16'
-     , 'sentence');
-  /*  test.deepEqual(r.asts[0],
+      , 'sentence');
+    /*  test.deepEqual(r.asts[0],
       [
         {
           'err_code': 'NO_KNOWN_WORD',
@@ -354,12 +354,12 @@ exports.testcategoriesStartingWith = function (test) {
     );
     */
     test.deepEqual(Ast.astToText(r.asts[0]),
-     //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
-     'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CAT 4\n      FACT 5\n', 'ast flat');
+      //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CAT 4\n      FACT 5\n', 'ast flat');
     test.deepEqual(Ast.astToText(r.asts[2]),
-     'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
-     //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 5\n'
-     , 'ast 2 flat');
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+      //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 5\n'
+      , 'ast 2 flat');
     test.done();
     Model.releaseModel(theModel);
   });
@@ -374,9 +374,8 @@ exports.testparseSentenceToAstsCatCatCatParseText = function (test) {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(Ast.astToText(r.asts[0]),
-   //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
-
-     'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
+      //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
     );
     test.done();
     Model.releaseModel(theModel);
@@ -395,7 +394,7 @@ exports.testparseCategoriesInDomainAlias = function (test) {
     debuglog(()=> JSON.stringify(r));
 
     test.deepEqual(Ast.astToText(r.asts[0]),
-   //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
+    //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 2\n'
     );
     test.done();
@@ -413,10 +412,10 @@ exports.testparseSentenceToAstsCatAndCatForSthText = function (test) {
     var s = 'element symbol and atomic weight for gold';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(Ast.astToText(r.asts[0]),
-   //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
+      //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
 
-  'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 2\n  LIST -1(1)\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n'
-   );
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 2\n  LIST -1(1)\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n'
+    );
     test.done();
     Model.releaseModel(theModel);
   });
@@ -435,7 +434,7 @@ exports.testparseSentenceForFact1WithCatFact = function (test) {
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(r.errors[0],false);
     test.deepEqual(Ast.astToText(r.asts[0]),
-    'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 2\n    OPEqIn -1(2)\n      CAT 4\n      FACT 5\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 6\n',
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 2\n    OPEqIn -1(2)\n      CAT 4\n      FACT 5\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 6\n',
       'correct ast'  );
     test.done();
     Model.releaseModel(theModel);

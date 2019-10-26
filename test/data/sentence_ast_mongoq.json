@@ -1,0 +1,124 @@
+[
+    {
+        "nr": 1,
+        "query": "domains ending with ABC",
+        "astNice": "BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEndsWith 1(2)\n      CAT 0\n      ANY 2\n",
+        "match_json": [
+            {
+                "$match": "1"
+            },
+            {
+                "domain": "2"
+            },
+            {
+                "$regex": "3"
+            },
+            "__REGEXP /abc$/i"
+        ],
+        "group": {
+            "$group": {
+                "_id": {
+                    "domain": "$domain"
+                },
+                "domain": {
+                    "$first": "$domain"
+                }
+            }
+        },
+        "projection": {
+            "$project": {
+                "_id": 0,
+                "domain": 1
+            }
+        }
+    },
+    {
+        "nr": 2,
+        "query": "categories ending with ABC",
+        "astNice": "BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEndsWith 1(2)\n      CAT 0\n      ANY 2\n",
+        "match_json": [
+            {
+                "$match": "1"
+            },
+            {
+                "_categories.category": "2"
+            },
+            {
+                "$regex": "3"
+            },
+            "__REGEXP /abc$/i"
+        ],
+        "projection": {
+            "$project": {
+                "_id": 0,
+                "category": "$_categories.category"
+            }
+        },
+        "group": {
+            "$group": {
+                "_id": {
+                    "_categories": "$_categories"
+                },
+                "_categories": {
+                    "$first": "$_categories"
+                }
+            }
+        }
+    },
+    {
+        "nr": 3,
+        "query": "mass, albedo with object name Alpha Centauri B or mars",
+        "parseError": "or"
+    },
+    {
+        "nr": 4,
+        "query": "mass, albedo with object name Alpha Centauri B mars",
+        "astNice": "BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  LIST -1(2)\n    OPEqIn -1(2)\n      CAT 3\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n",
+        "match_json": [
+            {
+                "$match": "1"
+            },
+            {
+                "$and": "2"
+            },
+            [
+                "3",
+                "4"
+            ],
+            {
+                "object_name": "5"
+            },
+            {
+                "object_name": "6"
+            },
+            "Alpha Centauri B",
+            "Mars"
+        ],
+        "projection": {
+            "$project": {
+                "_id": 0,
+                "mass": 1,
+                "albedo": 1
+            }
+        },
+        "group": {
+            "$group": {
+                "_id": {
+                    "mass": "$mass",
+                    "albedo": "$albedo"
+                },
+                "mass": {
+                    "$first": "$mass"
+                },
+                "albedo": {
+                    "$first": "$albedo"
+                }
+            }
+        }
+    },
+    {
+        "nr": 5,
+        "query": "mass, albedo with name \"Alpha Centauri B\" mars",
+        "parseError": "any"
+    }
+]

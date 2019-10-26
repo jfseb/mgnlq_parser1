@@ -30,7 +30,7 @@ exports.testParser  = function (test) {
 exports.testParserListAll  = function (test) {
   var inputText = 'LIST ALL CAT, CAT';
   var result = parseInput(inputText,'listAll');
- // console.log(Object.keys(result).join('\n')); //.selectClause());
+  // console.log(Object.keys(result).join('\n')); //.selectClause());
   test.deepEqual(result.map(a => a.image),[ 'CAT', 'CAT' ]);
   test.done();
 };

@@ -13,12 +13,6 @@ var abot_erbase = require('mgnlq_er');
 
 var Erbase = abot_erbase.ErBase;
 
-// const utils = require('abot_utils')
-
-// const inputFiterRules = require(root + '/match/inputFilterRules.js')
-
-// const InputFilter = abot_erbase.InputFilter
-
 const Model = require('mgnlq_model').Model;
 var getModel = require('mgnlq_testmodel_replay').getTestModel;
 
@@ -67,8 +61,8 @@ exports.testTokenizeCatCatCatParse = function (test) {
     debuglog(sStrings.join('\n'));
     test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT' ]);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
-  // /test.deepEqual(parsingResult, {})
-  // console.log('here the ouptut ' + JSON.stringify(Ast.dumpNodeNice(parsingResult),undefined,2))
+    // /test.deepEqual(parsingResult, {})
+    // console.log('here the ouptut ' + JSON.stringify(Ast.dumpNodeNice(parsingResult),undefined,2))
     test.deepEqual(Ast.dumpNodeNice(parsingResult),
       {
         'type': 'BINOP',
@@ -152,7 +146,7 @@ exports.testTokenizeCatCatCatParse = function (test) {
           }
         ]
       }
-  );
+    );
     test.done();
     Model.releaseModel(theModel);
   });
@@ -170,11 +164,11 @@ exports.testTokenizeCatCatCatParseText = function (test) {
     debuglog(sStrings.join('\n'));
     test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT' ]);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
-  // /test.deepEqual(parsingResult, {})
-  // console.log('\n' + Ast.astToText(parsingResult))
+    // /test.deepEqual(parsingResult, {})
+    // console.log('\n' + Ast.astToText(parsingResult))
     test.deepEqual(Ast.astToText(parsingResult),
-    'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
-  );
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
+    );
     test.done();
     Model.releaseModel(theModel);
   });
@@ -199,7 +193,7 @@ exports.testTokenizeCatCatCatErr = function (test) {
       debuglog(e);
       resErr = FormatError.formatError(e.error_obj, res.sentences[0]);
     }
-  // /test.deepEqual(parsingResult, {})
+    // /test.deepEqual(parsingResult, {})
     debuglog('\n' + resErr.text);
     test.deepEqual(resErr.text, 'Sentence terminated unexpectedly, i expected a fact or a string fragment.');
     test.done();
@@ -225,7 +219,7 @@ exports.testTokenizeInterimErr = function (test) {
       debuglog(e);
       resErr = FormatError.formatError(e.error_obj, res.sentences[0]);
     }
-  // /test.deepEqual(parsingResult, {})
+    // /test.deepEqual(parsingResult, {})
     debuglog('\n' + resErr.text);
     test.deepEqual(resErr.text, 'I do not understand the fact "CO-FIO" at this position in the sentence.');
     test.done();

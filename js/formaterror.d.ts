@@ -1,3 +1,10 @@
+/**
+ * @file formaterror.ts
+ *
+ * Formats (some) parser errors into a human understandable text
+ *
+ * (c) gerd forstmann 2017
+ */
 import { IFErBase as IFErBase } from 'mgnlq_er';
 export declare function getTokenText(token: any, sentence: IFErBase.ISentence): string;
 export declare function getSentenceToken(token: any, sentence: IFErBase.ISentence): IFErBase.IWord;

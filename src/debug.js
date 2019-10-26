@@ -27,11 +27,11 @@ console.log('here result' + JSON.stringify(result));
 console.log(Object.keys(result).join('\n')); //.selectClause());
 
 var inputToks = [
-{ image : 'LIST' , tokenType:  2},
-{ image : 'ALL' , tokenType:    3},
-{ image : 'CAT' , tokenType:    9},
-{ image : ',' , tokenType:    7},
-{ image : 'CAT ' , tokenType:  9}
+  { image : 'LIST' , tokenType:  2},
+  { image : 'ALL' , tokenType:    3},
+  { image : 'CAT' , tokenType:    9},
+  { image : ',' , tokenType:    7},
+  { image : 'CAT ' , tokenType:  9}
 ];
 var res = parseGivenTokens(inputToks, 'listAll');
 console.log('here result2' + JSON.stringify(res));

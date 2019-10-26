@@ -9,9 +9,6 @@ var SentenceParser = require(root + '/sentenceparser.js');
 var debuglog = require('debug')('mongoq.nunit');
 const Model = require('mgnlq_model').Model;
 
-//var modelpath = process.env.ABOT_MODELPATH || undefined;
-
-//var theModel = Model.loadModels(modelpath);
 
 var getModel = require('mgnlq_testmodel_replay').getTestModel;
 
@@ -114,11 +111,11 @@ exports.testMakeQuerySimple = function (test) {
               'object_name': { '$first': '$object_name' }
             }
           },
-        { '$project': { _id: 0, 'object_name': 1 } },
-        { '$sort': { object_name: 1 } }
+          { '$project': { _id: 0, 'object_name': 1 } },
+          { '$sort': { object_name: 1 } }
         ]
       },
-        undefined]
+      undefined]
     );
     test.done();
     Model.releaseModel(theModel);
@@ -142,7 +139,7 @@ exports.testMakeQueryDoubleConstraint = function (test) {
           {
             '$and':
             [{ AppName: { '$regex': /^sup/i } },
-            { AppName: { '$regex': /obj/i } }]
+              { AppName: { '$regex': /obj/i } }]
           }
         },
         {
@@ -155,7 +152,7 @@ exports.testMakeQueryDoubleConstraint = function (test) {
         { '$project': { _id: 0, AppName: 1 } },
         { '$sort': { AppName: 1 } }]
       },
-        undefined]);
+      undefined]);
     test.done();
     Model.releaseModel(theModel);
   });
@@ -183,8 +180,8 @@ exports.testMakeQueryStartingWith2 = function (test) {
                 SemanticAction: { '$first': '$SemanticAction' }
               }
             },
-          { '$project': { _id: 0, SemanticAction: 1 } },
-          { '$sort': { SemanticAction: 1 } }]
+            { '$project': { _id: 0, SemanticAction: 1 } },
+            { '$sort': { SemanticAction: 1 } }]
         },
         {
           domain: 'Fiori Backend Catalogs',
@@ -201,8 +198,8 @@ exports.testMakeQueryStartingWith2 = function (test) {
                 SemanticAction: { '$first': '$SemanticAction' }
               }
             },
-          { '$project': { _id: 0, SemanticAction: 1 } },
-          { '$sort': { SemanticAction: 1 } }]
+            { '$project': { _id: 0, SemanticAction: 1 } },
+            { '$sort': { SemanticAction: 1 } }]
         },
         undefined]
     );
@@ -233,8 +230,8 @@ exports.testMakeQueryStartingWith = function (test) {
                 SemanticAction: { '$first': '$SemanticAction' }
               }
             },
-          { '$project': { _id: 0, SemanticAction: 1 } },
-          { '$sort': { SemanticAction: 1 } }
+            { '$project': { _id: 0, SemanticAction: 1 } },
+            { '$sort': { SemanticAction: 1 } }
           ]
         },
 
@@ -253,8 +250,8 @@ exports.testMakeQueryStartingWith = function (test) {
                 SemanticAction: { '$first': '$SemanticAction' }
               }
             },
-          { '$project': { _id: 0, SemanticAction: 1 } },
-          { '$sort': { SemanticAction: 1 } }
+            { '$project': { _id: 0, SemanticAction: 1 } },
+            { '$sort': { SemanticAction: 1 } }
           ]
         },
         undefined
@@ -289,8 +286,8 @@ exports.testMakeQueryContaining = function (test) {
             ApplicationComponent: { '$first': '$ApplicationComponent' }
           }
         },
-      { '$project': { _id: 0, ApplicationComponent: 1 } },
-      { '$sort': { ApplicationComponent: 1 } }]
+        { '$project': { _id: 0, ApplicationComponent: 1 } },
+        { '$sort': { ApplicationComponent: 1 } }]
     },
     {
       domain: 'Fiori Backend Catalogs',
@@ -308,10 +305,10 @@ exports.testMakeQueryContaining = function (test) {
             ApplicationComponent: { '$first': '$ApplicationComponent' }
           }
         },
-      { '$project': { _id: 0, ApplicationComponent: 1 } },
-      { '$sort': { ApplicationComponent: 1 } }]
+        { '$project': { _id: 0, ApplicationComponent: 1 } },
+        { '$sort': { ApplicationComponent: 1 } }]
     },
-      undefined,
+    undefined,
     {
       domain: 'FioriBOM',
       collectionName: 'fioriapps',
@@ -327,10 +324,10 @@ exports.testMakeQueryContaining = function (test) {
             ArtifactId: { '$first': '$ArtifactId' }
           }
         },
-      { '$project': { _id: 0, ArtifactId: 1 } },
-      { '$sort': { ArtifactId: 1 } }]
+        { '$project': { _id: 0, ArtifactId: 1 } },
+        { '$sort': { ArtifactId: 1 } }]
     },
-      undefined];
+    undefined];
     test.deepEqual(r.queries[0], expected[0]);
     test.deepEqual(r.queries[2], expected[2]);
     test.deepEqual(r.queries,
@@ -361,8 +358,8 @@ exports.testMakeQueryContainsFact = function (test) {
               element_name: { '$first': '$element_name' }
             }
           },
-        { '$project': { _id: 0, element_name: 1 } },
-        { '$sort': { element_name: 1 } }]
+          { '$project': { _id: 0, element_name: 1 } },
+          { '$sort': { element_name: 1 } }]
       },
       {
         domain: 'IUPAC',
@@ -376,7 +373,7 @@ exports.testMakeQueryContainsFact = function (test) {
           {
             '$and':
             [{ element_number: { '$regex': /rium/i } },
-            { element_number: '10' }]
+              { element_number: '10' }]
           }
         },
         {
@@ -404,8 +401,8 @@ exports.testMakeQueryContainsFact = function (test) {
               element_number: { '$first': '$element_number' }
             }
           },
-        { '$project': { _id: 0, element_number: 1 } },
-        { '$sort': { element_number: 1 } }]
+          { '$project': { _id: 0, element_number: 1 } },
+          { '$sort': { element_number: 1 } }]
       },
       {
         domain: 'IUPAC',
@@ -419,7 +416,7 @@ exports.testMakeQueryContainsFact = function (test) {
           {
             '$and':
             [{ element_number: { '$regex': /rium/i } },
-            { element_number: '10' }]
+              { element_number: '10' }]
           }
         },
         {
@@ -575,8 +572,8 @@ exports.testCategoriesInBOM = function (test) {
     test.deepEqual(r.queries.filter(q => !!q).length, 1);
     test.deepEqual(query0.query,
       [{ '$match': { domain: 'FioriBOM' } },
-      { '$unwind': { path: '$_categories', preserveNullAndEmptyArrays: true } },
-      { '$match': { domain: 'FioriBOM' } },
+        { '$unwind': { path: '$_categories', preserveNullAndEmptyArrays: true } },
+        { '$match': { domain: 'FioriBOM' } },
         {
           '$group':
           {
@@ -584,8 +581,8 @@ exports.testCategoriesInBOM = function (test) {
             _categories: { '$first': '$_categories' }
           }
         },
-      { '$project': { _id: 0, category: '$_categories.category' } },
-      { '$sort': { category: 1 } }]
+        { '$project': { _id: 0, category: '$_categories.category' } },
+        { '$sort': { category: 1 } }]
     );
     test.deepEqual(query0.columns,
       ['category']
@@ -797,12 +794,12 @@ exports.testQueryWithAux = function (test) {
       debuglog(() => JSON.stringify(res, undefined, 2));
       test.deepEqual(MongoQ.projectResultToArray(res[0]),
         [[null, null],
-        [null, 'n/a'],
-        ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
-        ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
+          [null, 'n/a'],
+          ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
+          ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
           ['https://en.wikipedia.org/wiki/Proxima_Centauri_b',
             'Alpha Centauri C'],
-        ['https://en.wikipedia.org/wiki/Sun', null]]);
+          ['https://en.wikipedia.org/wiki/Sun', null]]);
 
       test.deepEqual(res[1].results, []);
       test.done();
@@ -820,12 +817,12 @@ exports.testQueryWithURI = function (test) {
       debuglog(() => JSON.stringify(res, undefined, 2));
       test.deepEqual(MongoQ.projectResultToArray(res[0]),
         [[null, null],
-        [null, 'n/a'],
-        ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
-        ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
+          [null, 'n/a'],
+          ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
+          ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
           ['https://en.wikipedia.org/wiki/Proxima_Centauri_b',
             'Alpha Centauri C'],
-        ['https://en.wikipedia.org/wiki/Sun', null]]);
+          ['https://en.wikipedia.org/wiki/Sun', null]]);
 
       test.deepEqual(res[1].results, []);
       test.done();

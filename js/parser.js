@@ -118,7 +118,9 @@ exports.SelectLexer = SelectLexer;
 function SelectParser(input) {
     // By default if {recoveryEnabled: true} is not passed in the config object
     // error recovery / fault tolerance capabilities will be disabled
-    var u = Parser.call(this, input, allTokens, {});
+    var u = Parser.call(this, input, allTokens, {
+    // autputCst: true
+    });
     //console.log(u);
     var $ = this;
     this.listAll = $.RULE('listAll', () => {

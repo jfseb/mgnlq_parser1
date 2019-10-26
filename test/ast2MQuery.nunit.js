@@ -3,6 +3,7 @@
 var process = require('process');
 var root = (process.env.FSD_COVERAGE) ? '../js_cov' : '../js';
 var mQ = require(root + '/ast2MQuery.js');
+var Ast = require(root + '/ast.js');
 var SentenceParser = require(root + '/sentenceparser.js');
 
 var mongoQ = require('../js/mongoq.js');
@@ -23,9 +24,6 @@ process.on('unhandledRejection', function onError(err) {
   throw err;
 });
 
-//function getModel() {
-//  return Model.loadModels(mongoose);
-//}
 
 function releaseModel(theModel) {
   Model.releaseModel(theModel);
@@ -154,7 +152,7 @@ exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
 
     test.deepEqual(group , { $group: {
       _id:  { SemanticObject : '$SemanticObject', SemanticAction : '$SemanticAction', BSPName : '$BSPName' , ApplicationComponent : '$ApplicationComponent' }
-    ,
+      ,
       SemanticObject :{ $first: '$SemanticObject'}, SemanticAction : { $first: '$SemanticAction'}, BSPName : { $first: '$BSPName'} , ApplicationComponent : { $first: '$ApplicationComponent'}
     }});
     test.done();
@@ -180,7 +178,7 @@ exports.testAstToMQueryMultiArray = function (test) {
     var group = mQ.makeMongoGroupFromAst(categoryList, theModel.mongoHandle.mongoMaps['metamodels']);
     test.deepEqual(group , { $group: {
       _id:  { _categories : '$_categories' }
-    ,
+      ,
       _categories :{ $first: '$_categories'}
     }});
     test.done();
@@ -213,6 +211,93 @@ exports.testMakeMongoQueryEndingWith = function (test) {
   });
 };
 
+var fs = require('fs');
+var JSONx = require('abot_utils');
+
+exports.testParseSomeQueries = function (test) {
+  getModel().then( (theModel) => {
+    var filename = './test/data/sentence_ast_mongoq.json';
+    var data = fs.readFileSync(filename, 'utf-8');
+    var querylist = JSON.parse( data );
+
+    for( var a in querylist )
+    {
+      var testrun = querylist[a];
+      console.log(' query ' + testrun.query );
+      var actual = { query : testrun.query };
+      console.log( ' test nr ' + testrun.nr );
+      // debuglog(JSON.stringify(ifr, undefined, 2))
+      // console.log(theModel.mRules)
+      var s = testrun.query; // 'domains ending with ABC';
+      var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
+      var node = r.asts[0];
+      console.log( JSON.stringify( r ));
+      var testId = 'nr:' + testrun.nr + ' ' + testrun.query ;
+      if ( !node )
+      {
+        test.deepEqual( true, !!testrun.parseError,  testId + '\nactual is parse error \n "parseError:"' + JSON.stringify(r.errors) + ',');
+        if (testrun.parseError !=='any'
+         &&  JSON.stringify( r.errors).indexOf( testrun.parseError) == -1)
+          test.deepEqual( false, true , 'did not find \n' + testrun.parseError + ' in \n "parseError:"' + JSON.stringify(r.errors) + ',');
+        continue;
+      }
+
+      var r2 = Ast.astToText( node , 2 );
+      if ( testrun.astNice && testrun.astNice !== 'ignore' )
+        test.deepEqual( r2, testrun.astNice, ' nr' + testrun.nr +  '\nexp:' + testrun.astNice + '\nact:' + r2 + '\nactual astNice is \n"astNice":' + JSON.stringify(r2) + ',');
+      console.log( r2 );
+      var nodeFieldList = node.children[0].children[0];
+      var nodeFilter = node.children[1];
+      var sentence = r.sentences[0];
+      var domainPick = mongoQ.getDomainInfoForSentence(theModel, sentence);
+      var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
+      var categoryList = mQ.getCategoryList([], nodeFieldList, sentence );
+      var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
+
+      actual.match = match;
+
+      var match_json = JSONx.stringify( actual.match , undefined, 2 ); // treat regexp
+      actual.match_json = JSON.parse( match_json );
+      test.deepEqual( actual.match_json, testrun.match_json , testId + ' actual match is \n"match_json":' + JSON.stringify( actual.match_json, undefined, 2) + ',');
+
+      //test.deepEqual(match ,{ '$match': { domain: { '$regex': /abc$/i } } });
+      actual.projection = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
+      test.deepEqual(actual.projection, testrun.projection, testId + ' actual projection is \n "projection":' + JSON.stringify(actual.projection, undefined, 2) + ',' );
+      //  ,{ '$project': { _id: 0, domain: 1 } });
+
+      var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
+      actual.group = group;
+      test.deepEqual( testrun.group, actual.group, testId + 'actual group is \n"group":' +  JSON.stringify( actual.group , undefined, 2 ) );
+      //test.deepEqual(group , { '$group': { _id: { domain: '$domain' }, domain: { '$first': '$domain' } } }   , 'group');
+
+    }
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
+    /*
+    var s = 'domains ending with ABC';
+    var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
+    var node = r.asts[0];
+    var nodeFieldList = node.children[0].children[0];
+    var nodeFilter = node.children[1];
+    var sentence = r.sentences[0];
+    var domainPick = mongoQ.getDomainInfoForSentence(theModel, sentence);
+    var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
+    var categoryList = mQ.getCategoryList([], nodeFieldList, sentence );
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
+    test.deepEqual(match ,{ '$match': { domain: { '$regex': /abc$/i } } });
+    var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
+    test.deepEqual(proj ,{ '$project': { _id: 0, domain: 1 } });
+    var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
+    test.deepEqual(group , { '$group': { _id: { domain: '$domain' }, domain: { '$first': '$domain' } } }   , 'group');
+  */
+    test.done();
+    releaseModel(theModel);
+  });
+};
+
+
+
+
 
 exports.testMakeProjection = function (test) {
   var proj  = mQ.makeMongoProjection(
@@ -233,7 +318,7 @@ exports.testMakeMatch = function (test) {
   test.deepEqual(proj,   {
     $match: {
       BSPName : 'CPM_REUSE_MS1' }}
-    , ' match');
+  , ' match');
   test.done();
 };
 

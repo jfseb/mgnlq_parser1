@@ -1,4 +1,3 @@
-/// <reference types="mongoose" />
 /**
  * @file
  * @module jfseb.mgnlq_parser1.mongoq

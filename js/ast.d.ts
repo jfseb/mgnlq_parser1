@@ -15,7 +15,7 @@ export declare enum ASTNodeType {
     FACT = 13,
     LIST = 14,
     ANY = 15,
-    DOM = 16,
+    DOM = 16
 }
 export declare class NodeType {
     nt: ASTNodeType;
