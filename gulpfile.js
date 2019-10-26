@@ -63,7 +63,7 @@ gulp.task('tsc', gulp.series( 'makeToken', 'tsc_d_ts', function () {
       },
       mapSources: function (src) {
         //console.log('here we remap' + src);
-        return /* sourcemaproot  +*/ src;
+        return /* sourcemaproot  +*/  src;
       }}
     )) // ,  { sourceRoot: './' } ))
     // Now the sourcemaps are added to the .js file

@@ -5,7 +5,7 @@ before_script:
   - tsc
 #  - gulp instrument
 node_js:
- - "6"
+ - "8"
  - "node"
 # - "4"   does not support sourcemaps
 after_script:
