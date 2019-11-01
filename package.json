@@ -49,7 +49,7 @@
     "chevrotain": "^0.27.3",
     "debugf": "^0.1.2",
     "lodash": "^4.17.4",
-    "mgnlq_model": "^0.0.14",
+    "mgnlq_model": "0.0.16",
     "mongoose": "^5.7.7"
   }
 }

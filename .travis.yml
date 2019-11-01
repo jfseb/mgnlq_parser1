@@ -1,5 +1,5 @@
 language: node_js
-:env
+env:
   - debug=*
 before_script:
   - unset FSD_COVERAGE
