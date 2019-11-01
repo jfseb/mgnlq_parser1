@@ -11,7 +11,6 @@ var sourcemaps = require('gulp-sourcemaps');
  */
 var srcDir = 'src';
 var testDir = 'test';
-
 var sourcemaproot = '/projects/nodejs/botbuilder/mgnlq_parser1/';
 
 
@@ -29,32 +28,18 @@ gulp.task('makeToken' , function(cb) {
 });
 
 
-/**
- * Definition files
- */
-gulp.task('tsc_d_ts', gulp.series('makeToken', function () {
-  var tsProject = ts.createProject('tsconfig.json', { inlineSourceMap: true
-  });
-  var tsResult = tsProject.src() // gulp.src('lib/*.ts')
-    .pipe(sourcemaps.init()) // This means sourcemaps will be generated
-    .pipe(tsProject());
-  return tsResult.dts
-    .pipe(gulp.dest('js'));
-}));
-
+var merge = require('merge-stream');
 /**
  * compile tsc (including srcmaps)
  * @input srcDir
  * @output js
  */
-gulp.task('tsc', gulp.series( 'makeToken', 'tsc_d_ts', function () {
-  var tsProject = ts.createProject('tsconfig.json', { inlineSourceMap: true
-  });
+gulp.task('tsc', function () {
+  var tsProject = ts.createProject('tsconfig.json', { declaration: true, sourceMap : false, inlineSourceMap: true });
   var tsResult = tsProject.src() // gulp.src('lib/*.ts')
     .pipe(sourcemaps.init()) // This means sourcemaps will be generated
     .pipe(tsProject());
-
-  return tsResult.js
+  return merge(tsResult, tsResult.js)
     .pipe(sourcemaps.write('.', {
       sourceRoot: function (file) {
         file.sourceMap.sources[0] = sourcemaproot + 'src/' + file.sourceMap.sources[0];
@@ -63,13 +48,12 @@ gulp.task('tsc', gulp.series( 'makeToken', 'tsc_d_ts', function () {
       },
       mapSources: function (src) {
         //console.log('here we remap' + src);
-        return /* sourcemaproot  +*/  src;
+        return  src;
       }}
     )) // ,  { sourceRoot: './' } ))
     // Now the sourcemaps are added to the .js file
     .pipe(gulp.dest('js'));
-}));
-
+});
 
 var del = require('del');
 
@@ -77,6 +61,10 @@ gulp.task('clean:models', function () {
   return del([
     'sensitive/_cachefalse.js.zip',
     'testmodel2/_cachefalse.js.zip',
+    'node_modules/mgnlq_testmodel/testmodel/_cache.js.zip',
+    'node_modules/mgnlq_testmodel_replay/testmodel/_cache.js.zip',
+    'node_modules/abot_testmodel/testmodel/_cachefalse.js.zip',
+    'node_modules/abot_testmodel/testmodel/_cachetrue.js.zip',
     'testmodel/_cachefalse.js.zip',
     'sensitive/_cachetrue.js.zip',
     'testmodel2/_cachetrue.js.zip',
@@ -88,7 +76,6 @@ gulp.task('clean:models', function () {
   ]);
 });
 
-
 gulp.task('clean', gulp.series('clean:models'));
 
 var nodeunit = require('gulp-nodeunit');
@@ -97,16 +84,16 @@ gulp.task('test', gulp.series('tsc', function () {
   return gulp.src(['test/**/*.js'])
     .pipe(nodeunit({
       reporter: 'minimal'
-    // reporterOptions: {
-    //  output: 'testcov'
-    // }
+      // reporterOptions: {
+      //  output: 'testcov'
+      // }
     })).on('error', function (err) { console.log('This is weird: ' + err.message); })
     .pipe(gulp.dest('./out/lcov.info'));
 }));
 
 var jsdoc = require('gulp-jsdoc3');
 
-gulp.task('doc', gulp.series( 'test', function (cb) {
+gulp.task('doc', gulp.series('test', function (cb) {
   return gulp.src([srcDir + '/**/*.js', 'README.md', './js/**/*.js'], { read: false })
     .pipe(jsdoc(cb));
 }));

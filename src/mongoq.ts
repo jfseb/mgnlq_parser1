@@ -8,10 +8,7 @@
  */
 
 
-
-
-
-import { ErBase as ErBase, Sentence as Sentence, IFErBase as IFErBase } from 'mgnlq_er';
+import { Sentence as Sentence, IFErBase as IFErBase } from './match/er_index';
 import { IFModel as IFModel, Model as Model, MongoMap as MongoMap } from 'mgnlq_model';
 
 import * as debug from 'debugf';
@@ -262,9 +259,9 @@ export function getDomainInfoForSentence(theModel: IFModel.IModels, sentence: IF
   }
 };
 
-import { IFErBase as IMatch, ErError as ErError } from 'mgnlq_er';
+//import { IFErBase as IMatch, ErError as ErError } from './match/index';
 
-import * as mQ from './ast2MQuery';
+import * as mQ from './ast2query/ast2MQuery';
 
 export interface SRes {
   sentence: IFErBase.ISentence,

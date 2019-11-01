@@ -1,12 +1,12 @@
 {
     "compilerOptions": {
-       // "target": "es6",
+      "target": "es2016",
       "skipLibCheck": true, // avoid lodash WeakMap mismatch
       // "target": "es5",
-       "target": "es2015",
-       // "module" : "es6", //'es2015
-        "module": "commonjs",
-        "moduleResolution": "node",
+      //"target": "es2015",
+      // "module" : "es6", //'es2015
+      "module": "commonjs",
+   "moduleResolution": "node",
         "isolatedModules": false,
       //  "jsx": "react",
        // "watch" : true,
@@ -30,10 +30,20 @@
         "!node_modules/**"
     ],
     "files": [
+		"src/match/algol.ts",
+        "src/match/charsequence.ts",
+        "src/match/erbase.ts",
+        "src/match/er_index.ts",
+        "src/match/ererror.ts",
+        "src/match/iferbase.ts",
+        "src/match/iferbase.ts",
+        "src/match/inputFilter.ts",
+        "src/match/sentence.ts",
+        "src/match/word.ts",
         "src/index.ts",
         "src/parser.ts",
         "src/formaterror.ts",
-        "src/ast2MQuery.ts",
+        "src/ast2query/ast2MQuery.ts",
         "src/mongoq.ts",
         "src/sentenceparser.ts",
         "src/ast.ts",

@@ -4,8 +4,9 @@ const debug = require("debugf");
 const mgnlq_model_1 = require("mgnlq_model");
 const debuglog = debug('ast2MQuery');
 const chevrotain = require("chevrotain");
-const AST = require("./ast");
-const ast_1 = require("./ast");
+const AST = require("../ast");
+const ast_1 = require("../ast");
+// import * as Sentenceparser from '../sentenceparser';
 var createToken = chevrotain.createToken;
 var Lexer = chevrotain.Lexer;
 var Parser = chevrotain.Parser;
@@ -269,5 +270,7 @@ function makeMongoQuery(filters, resultcolumns) {
     return [filter, group, projection];
 }
 exports.makeMongoQuery = makeMongoQuery;
+
+//# sourceMappingURL=ast2MQuery.js.map
 
 //# sourceMappingURL=ast2MQuery.js.map

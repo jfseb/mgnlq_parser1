@@ -1,12 +1,12 @@
 
 
 var process = require('process');
-var root = (process.env.FSD_COVERAGE) ? '../js_cov' : '../js';
-var mQ = require(root + '/ast2MQuery.js');
+var root = (process.env.FSD_COVERAGE) ? '../../js_cov' : '../../js';
+var mQ = require(root + '/ast2query/ast2MQuery.js');
 var Ast = require(root + '/ast.js');
 var SentenceParser = require(root + '/sentenceparser.js');
 
-var mongoQ = require('../js/mongoq.js');
+var mongoQ = require(root + '/mongoq.js');
 
 var debuglog = require('debugf')('ast2MQuery');
 const Model = require('mgnlq_model').Model;

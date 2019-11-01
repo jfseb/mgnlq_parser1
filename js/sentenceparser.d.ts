@@ -1,4 +1,4 @@
-import { IFErBase as IFErBase } from 'mgnlq_er';
+import { IFErBase as IFErBase } from './match/er_index';
 import * as chevrotain from 'chevrotain';
 import * as AST from './ast';
 import { IFModel as IFModel } from 'mgnlq_model';

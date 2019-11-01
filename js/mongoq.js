@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  *
  * database connectivity and querying
  */
-const mgnlq_er_1 = require("mgnlq_er");
+const er_index_1 = require("./match/er_index");
 const mgnlq_model_1 = require("mgnlq_model");
 const debug = require("debugf");
 const _ = require("lodash");
@@ -195,7 +195,7 @@ function getDomainInfoForSentence(theModel, sentence) {
         throw new Error('more than one domain: "' + domains.join('", "') + '"');
     }
     if (!domains[0]) {
-        console.log('query without a domain : ' + mgnlq_er_1.Sentence.dumpNiceArr([sentence]));
+        console.log('query without a domain : ' + er_index_1.Sentence.dumpNiceArr([sentence]));
     }
     return {
         domain: domains[0],
@@ -205,7 +205,8 @@ function getDomainInfoForSentence(theModel, sentence) {
 }
 exports.getDomainInfoForSentence = getDomainInfoForSentence;
 ;
-const mQ = require("./ast2MQuery");
+//import { IFErBase as IMatch, ErError as ErError } from './match/index';
+const mQ = require("./ast2query/ast2MQuery");
 ;
 ;
 ;
@@ -432,5 +433,7 @@ function queryInternal(querystring, theModel, handle, fixedFields, options) {
     return k;
 }
 exports.queryInternal = queryInternal;
+
+//# sourceMappingURL=mongoq.js.map
 
 //# sourceMappingURL=mongoq.js.map

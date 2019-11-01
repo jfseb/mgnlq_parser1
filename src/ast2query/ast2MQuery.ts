@@ -6,7 +6,7 @@
 import * as mongoose from 'mongoose';
 //import * as m2s from './model2schema.js';
 
-import { ErBase as ErBase, Sentence as Sentence, IFErBase as IFErBase } from 'mgnlq_er';
+import { Sentence as Sentence, IFErBase as IFErBase } from '../match/er_index';
 
 import * as debug from 'debugf';
 
@@ -16,11 +16,11 @@ import { IFModel as IFModel, MongoMap } from 'mgnlq_model';
 const debuglog = debug('ast2MQuery');
 
 import * as chevrotain from 'chevrotain';
-import * as AST from './ast';
+import * as AST from '../ast';
 
-import { ASTNodeType as NT } from './ast';
+import { ASTNodeType as NT } from '../ast';
 
-import * as Sentenceparser from './sentenceparser';
+// import * as Sentenceparser from '../sentenceparser';
 
 var createToken = chevrotain.createToken;
 var Lexer = chevrotain.Lexer;

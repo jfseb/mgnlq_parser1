@@ -11,6 +11,42 @@ npm i
 gulp
 ```
 
+# String to Mongo Query conversion
+ -   Entity
+ -   Parsing
+ -   AST 2 Mongo Query
+
+recognition for mongo nlq
+
+entity recognition based on word categorization
+
+the word categorization contains a bitmap filter to retain only sencences
+which are homogeneous in one domain
+
+entity recognition based on word categorization
+
+Words are categorized according to an index
+(see [mgnlq-model](https://github.com/jfseb/mgnlq_model))
+
+into
+- "Facts",
+- "Categories",
+- "Domain",
+- "Operators",
+- "Fillers",
+- "Any"  (generic verbatim strings)
+
+The word categorization contains a bitmap filter to retain only sencences
+which are homogeneous in one domain.
+
+The word index is built by mgnlq_model
+
+usage:
+```javascript
+  var erbase = require('mgnlq_parser1');
+  var words = {}; // a cache!
+  var res = Erbase.processString('orbit of the earth', theModel.rules, words);
+```
 
 
 # scratch
@@ -71,6 +107,19 @@ set MONGO_RECORD_REPLAY=
 * 0.0.3  showURI, auxiliary categories
 * 0.0.4  change in output format
 * 0.0.5  add mass tests, upgrade gulp etc.
+
+
+# Test data
+
+the tests run against recorded data in E:\projects\nodejs\botbuilder\mgnlq_testmodel_replay\mgrecrep\data\807d3ce983c2f3....
+
+This data can be recorded by setting
+
+
+
+SET MGNLQ_MODEL_NO_FILECACHE=1
+SET MGNLQ_TESTMODEL_REPLAY=OFF  | RECORD | REPLAY (default)
+
 
 
 

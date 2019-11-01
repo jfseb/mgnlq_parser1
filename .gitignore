@@ -1,7 +1,13 @@
 node_modules
+docs
+gen_tsc
+testmodel2/graph
 *.bak
 *.tgz
+*.d.ts.map
+**/*.d.ts.nap
 docs
 info.lcov
 logs
+gen_cov
 # we check in gen for coveralls source references

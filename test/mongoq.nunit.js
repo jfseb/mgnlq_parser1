@@ -1,6 +1,6 @@
 var process = require('process');
 var root = (process.env.FSD_COVERAGE) ? '../js_cov' : '../js';
-var mQ = require(root + '/ast2MQuery.js');
+var mQ = require(root + '/ast2query/ast2MQuery.js');
 var MongoQ = require(root + '/mongoq.js');
 
 

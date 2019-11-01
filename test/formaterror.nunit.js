@@ -9,7 +9,7 @@ var Ast = require(root + '/ast.js');
 
 var debuglog = require('debug')('sentenceparser.nunit');
 
-var abot_erbase = require('mgnlq_er');
+var abot_erbase = require(root + '/match/er_index.js');
 
 var Erbase = abot_erbase.ErBase;
 

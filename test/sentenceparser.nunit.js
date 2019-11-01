@@ -8,7 +8,7 @@ var Ast = require(root + '/ast.js');
 
 var debuglog = require('debug')('sentenceparser.nunit');
 
-var mgnlq_er = require('mgnlq_er');
+var mgnlq_er = require(root + '/match/er_index.js');
 
 var Sentence = mgnlq_er.Sentence;
 

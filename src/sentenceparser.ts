@@ -3,7 +3,7 @@
 // based on: http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance
 // and:  http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
 
-import { ErBase as ErBase, Sentence as Sentence, IFErBase as IFErBase } from 'mgnlq_er';
+import { ErBase as ErBase, Sentence as Sentence, IFErBase as IFErBase } from './match/er_index';
 
 import * as debug from 'debugf';
 
@@ -21,69 +21,6 @@ import { ASTNodeType as NT} from './ast';
   var createToken = chevrotain.createToken;
   var Lexer = chevrotain.Lexer;
   var Parser = chevrotain.Parser;
-
-
-
-/*
-
-var LogicalOperator = createToken({name: "AdditionOperator", pattern: Lexer.NA});
-var And = createToken({name: "And", pattern: /and/i, parent: LogicalOperator});
-var Or = createToken({name: "Or", pattern: /Or/i, parent: LogicalOperator});
-
-
-// using the NA pattern marks this Token class as 'irrelevant' for the Lexer.
-// AdditionOperator defines a Tokens hierarchy but only the leafs in this hierarchy define
-// actual Tokens that can appear in the text
-
-
-var AdditionOperator = createToken({name: "AdditionOperator", pattern: Lexer.NA});
-var Plus = createToken({name: "Plus", pattern: /\+/, parent: AdditionOperator});
-var Minus = createToken({name: "Minus", pattern: /-/, parent: AdditionOperator});
-
-var MultiplicationOperator = createToken({name: "MultiplicationOperator", pattern: Lexer.NA});
-var Multi = createToken({name: "Multi", pattern: /\* /, parent: MultiplicationOperator});
-var Div = createToken({name: "Div", pattern: /\//, parent: MultiplicationOperator});
-
-var LParen = createToken({name: "LParen", pattern: /\(/});
-var RParen = createToken({name: "RParen", pattern: /\)/});
-var NumberLiteral = createToken({name: "NumberLiteral", pattern: /[1-9]\d* /});
-
-var PowerFunc = createToken({name: "PowerFunc", pattern: /power/});
-
-  var List = createToken({name: "List", pattern: /LIST/i});
-  var Describe = createToken({name: "Describe", pattern : /DESCRIBE/i});
-  var Is = createToken({name: "Is", pattern : /Is/i});
-  var What = createToken({name: "What", pattern : /What/i});
-  var Me = createToken({name: "Me", pattern : /Me/i});
-  var The = createToken({name: "The", pattern : /The/i});
-  var Meaning = createToken({name: "Meaning", pattern : /Meaning/i});
-  var Of = createToken({name: "Of", pattern : /Of/i});
-  var Relating = createToken({name: "Relating", pattern : /RElating/i});
-  var All = createToken({name: "All", pattern : /All/i});
-  var First = createToken({name: "First", pattern : /First/i});
-  var Oldest = createToken({name: "Oldest", pattern : /Oldest/i});
-  var Latest = createToken({name: "Latest", pattern : /(Latest)|(Newest)/i});
-  var In = createToken({name: "In", pattern : /In/i});
-  var Are = createToken({name: "Are", pattern : /Are/i});
-  var To = createToken({name: "To", pattern : /To/i});
-  var With = createToken({name: "With", pattern : /With/i});
-  var About = createToken({name: "About", pattern : /About/i});
-  var You = createToken({name: "You", pattern : /You/i});
-  var AFact = createToken({name: "AFact", pattern : /FACT/i});
-  var All = createToken({name: "All", pattern: /ALL/});
-  var Select = createToken({name: "Select", pattern: /SELECT/});
-  var From = createToken({name: "From", pattern: /FROM/});
-  var Where = createToken({name: "Where", pattern: /WHERE/});
-  var Comma = createToken({name: "Comma", pattern: /,/});
-  var And = createToken({name: "And", pattern: /And/i});
-  var Every = createToken({name: "And", pattern: /And/i});
-
-  var ACategory = createToken({name: "ACategory", pattern: /CAT/});
-  var Identifier = createToken({name: "Identifier", pattern: /\w+/});
-  var Integer = createToken({name: "Integer", pattern: /0|[1-9]\d+/});
-  var GreaterThan = createToken({name: "GreaterThan", pattern: /</});
-  var LessThan = createToken({name: "LessThan", pattern: />/});
-*/
 
 
 import { IFModel as IFModel} from 'mgnlq_model';
@@ -206,9 +143,9 @@ export interface IParsedSentences  extends IFModel.IProcessedSentences {
 export declare const ERR_PARSE_ERROR = "PARSE_ERROR";
 
 export function parseSentenceToAsts(s : string, model : IFModel.IModels, words : any) : IParsedSentences {
-  var res = ErBase.processString(s, model.rules, words);
+  var res = ErBase.processString(s, model.rules, words, {} /*model.operators*/ );
   debuglog(() =>'res > ' + JSON.stringify(res, undefined, 2));
-  var res2 = Object.assign({}, res) as IParsedSentences;
+  var res2 = Object.assign({}, res as any) as IParsedSentences;
   res2.errors = res2.errors || [];
   res2.asts = res.sentences.map((sentence, index) => {
     res2.errors[index] = false;

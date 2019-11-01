@@ -1,6 +1,6 @@
-import { IFErBase as IFErBase } from 'mgnlq_er';
+import { IFErBase as IFErBase } from '../match/er_index';
 import { IFModel as IFModel } from 'mgnlq_model';
-import * as AST from './ast';
+import * as AST from '../ast';
 export interface IFilter {
     cat: string;
     value: string;

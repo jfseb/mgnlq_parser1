@@ -105,3 +105,5 @@ function formatError(error, sentence) {
 exports.formatError = formatError;
 
 //# sourceMappingURL=formaterror.js.map
+
+//# sourceMappingURL=formaterror.js.map

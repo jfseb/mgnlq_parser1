@@ -10,7 +10,7 @@ import * as debug from 'debugf';
 const debuglog = debug('formaterror');
 
 import { IFModel as IFModel } from 'mgnlq_model';
-import { ErBase as ErBase, Sentence as Sentence, IFErBase as IFErBase } from 'mgnlq_er';
+import { Sentence as Sentence, IFErBase as IFErBase } from './match/er_index';
 
 export function getTokenText(token : any, sentence : IFErBase.ISentence) {
     return getSentenceToken(token,sentence).string;

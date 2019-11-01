@@ -5,7 +5,7 @@
  *
  * (c) gerd forstmann 2017-2019
  */
-import { IFErBase as IFErBase } from 'mgnlq_er';
+import { IFErBase as IFErBase } from './match/er_index';
 export declare function getTokenText(token: any, sentence: IFErBase.ISentence): string;
 export declare function getSentenceToken(token: any, sentence: IFErBase.ISentence): IFErBase.IWord;
 export declare function getTokenQualifier(token: any, sentence: IFErBase.ISentence): string;
