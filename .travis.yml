@@ -7,7 +7,6 @@ before_script:
 node_js:
  - "8"
  - "node"
-# - "4"   does not support sourcemaps
 after_script:
   - npm run coverage
   - npm run coveralls

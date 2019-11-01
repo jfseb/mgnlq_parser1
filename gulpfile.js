@@ -59,6 +59,8 @@ var del = require('del');
 
 gulp.task('clean:models', function () {
   return del([
+    'test/data/mongoose_record_replay/testmodel/data/*',
+    'test/data/mongoose_record_replay/testmodel/queries.json',
     'sensitive/_cachefalse.js.zip',
     'testmodel2/_cachefalse.js.zip',
     'node_modules/mgnlq_testmodel/testmodel/_cache.js.zip',

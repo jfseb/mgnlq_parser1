@@ -3,22 +3,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const MongoQ = require("./mongoq");
 exports.MongoQ = MongoQ;
 // check which of these must be exposed
-/*
-import * as ErError from "./match/ererror";
-export { ErError };
-import * as Sentence from "./match/sentence";
-export { Sentence };
+const er_index_1 = require("./match/er_index");
+exports.ErBase = er_index_1.ErBase;
+const ErError = require("./match/ererror");
+exports.ErError = ErError;
+const Sentence = require("./match/sentence");
+exports.Sentence = Sentence;
 //import * as InputFilterRules from "./match/inputFilterRules";
 //export { InputFilterRules };
-import * as InputFilter from "./match/inputFilter";
-export { InputFilter };
-import * as CharSequence from "./match/charsequence";
-export { CharSequence };
-import * as Word from "./match/word";
-export { Word };
-import * as IFErBase from "./match/iferbase";
-export { IFErBase };
-*/ 
+const InputFilter = require("./match/inputFilter");
+exports.InputFilter = InputFilter;
+const CharSequence = require("./match/charsequence");
+exports.CharSequence = CharSequence;
+const Word = require("./match/word");
+exports.Word = Word;
+const IFErBase = require("./match/iferbase");
+exports.IFErBase = IFErBase;
 
 //# sourceMappingURL=index.js.map
 
