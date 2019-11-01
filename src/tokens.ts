@@ -23,6 +23,7 @@ var Tends_with = createToken({name: "ends_with", pattern: /ends_with/i });
 var Tends = createToken({name: "ends", pattern: /ends/i });
 var Tequals = createToken({name: "equals", pattern: /equals/i });
 var Tevery = createToken({name: "every", pattern: /every/i });
+var Texactly = createToken({name: "exactly", pattern: /exactly/i });
 var Te = createToken({name: "e", pattern: /e/i });
 var Tfirst = createToken({name: "first", pattern: /first/i });
 var Tfor = createToken({name: "for", pattern: /for/i });
@@ -35,11 +36,13 @@ var Tlast = createToken({name: "last", pattern: /last/i });
 var Tlatest = createToken({name: "latest", pattern: /latest/i });
 var Tleast = createToken({name: "least", pattern: /least/i });
 var Tleat = createToken({name: "leat", pattern: /leat/i });
+var Tless_than = createToken({name: "less_than", pattern: /less_than/i });
 var Tless = createToken({name: "less", pattern: /less/i });
 var Tlife = createToken({name: "life", pattern: /life/i });
 var Tlist = createToken({name: "list", pattern: /list/i });
 var TLParen = createToken({name: "LParen", pattern: /\(/i });
 var TLT = createToken({name: "LT", pattern: /</i });
+var Tmore_than = createToken({name: "more_than", pattern: /more_than/i });
 var Tnewest = createToken({name: "newest", pattern: /newest/i });
 var Tof = createToken({name: "of", pattern: /of/i });
 var Toldest = createToken({name: "oldest", pattern: /oldest/i });
@@ -81,6 +84,7 @@ var TIdentifier = createToken({name: "Identifier", pattern: /\w+/i });
  ends : Tends ,
  equals : Tequals ,
  every : Tevery ,
+ exactly : Texactly ,
  e : Te ,
  first : Tfirst ,
  for : Tfor ,
@@ -93,11 +97,13 @@ var TIdentifier = createToken({name: "Identifier", pattern: /\w+/i });
  latest : Tlatest ,
  least : Tleast ,
  leat : Tleat ,
+ less_than : Tless_than ,
  less : Tless ,
  life : Tlife ,
  list : Tlist ,
  LParen : TLParen ,
  LT : TLT ,
+ more_than : Tmore_than ,
  newest : Tnewest ,
  of : Tof ,
  oldest : Toldest ,

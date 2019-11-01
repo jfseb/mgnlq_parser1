@@ -303,8 +303,8 @@ exports.testGetQualifierFromWordType = function (test) {
 
 
 exports.testmapTokenStringToHumanString = function (test) {
-  var res = ['AFact', 'AnANY', '', undefined].map(arg => FormatError.mapTokenStringToHumanString(arg));
-  test.deepEqual(res, ['fact', 'string fragment', undefined, undefined]);
+  var res = ['AFact', 'AnANY', '', 'Integer', '12', 'NUMBER', undefined].map(arg => FormatError.mapTokenStringToHumanString(arg));
+  test.deepEqual(res, ['fact', 'string fragment', undefined, 'number', 'number', 'number', undefined]);
   test.done();
 };
 

@@ -4,13 +4,12 @@
  *
  * Formats (some) parser errors into a human understandable text
  *
- * (c) gerd forstmann 2017
+ * (c) gerd forstmann 2017-2019
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 const debug = require("debugf");
 const debuglog = debug('formaterror');
 const mgnlq_model_1 = require("mgnlq_model");
-//t[{"name":"NoViableAltException","message":"Expecting: one of these possible Token sequences:\n  1. [AFact]\n  2. [AnANY]\nbut found: ''","token":{"image":"","startOffset":null,"endOffset":null,"startLine":null,"endLine":null,"startColumn":null,"endColumn":null,"tokenType":1},"resyncedTokens":[],"context":{"ruleStack":["catListOpMore","factOrAny"],
 function getTokenText(token, sentence) {
     return getSentenceToken(token, sentence).string;
 }
@@ -60,6 +59,11 @@ function mapTokenStringToHumanString(tokenstring) {
             return "fact";
         case "AnANY":
             return "string fragment";
+        case 'TInteger':
+        case 'Integer':
+        case '12':
+        case 'NUMBER':
+            return 'number';
     }
     return undefined;
 }

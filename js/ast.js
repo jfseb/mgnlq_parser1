@@ -23,7 +23,11 @@ var ASTNodeType;
     ASTNodeType[ASTNodeType["FACT"] = 13] = "FACT";
     ASTNodeType[ASTNodeType["LIST"] = 14] = "LIST";
     ASTNodeType[ASTNodeType["ANY"] = 15] = "ANY";
-    ASTNodeType[ASTNodeType["DOM"] = 16] = "DOM";
+    ASTNodeType[ASTNodeType["OPMoreThan"] = 16] = "OPMoreThan";
+    ASTNodeType[ASTNodeType["OPLessThan"] = 17] = "OPLessThan";
+    ASTNodeType[ASTNodeType["OPExactly"] = 18] = "OPExactly";
+    ASTNodeType[ASTNodeType["NUMBER"] = 19] = "NUMBER";
+    ASTNodeType[ASTNodeType["DOM"] = 20] = "DOM";
 })(ASTNodeType = exports.ASTNodeType || (exports.ASTNodeType = {}));
 class NodeType {
     constructor(nt) {
@@ -50,6 +54,10 @@ const astNodeTypes = ["BINOP",
     "FACT",
     "LIST",
     "ANY",
+    "OPMoreThan",
+    "OPLessThan",
+    "OPExactly",
+    "NUMBER",
     "DOM"
 ];
 ;
@@ -95,6 +103,13 @@ function makeNodeForAny(fact) {
     };
 }
 exports.makeNodeForAny = makeNodeForAny;
+function makeNodeForInteger(inttok) {
+    return {
+        type: ASTNodeType.NUMBER,
+        bearer: inttok
+    };
+}
+exports.makeNodeForInteger = makeNodeForInteger;
 function typeToString(type) {
     return astNodeTypes[type];
 }

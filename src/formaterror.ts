@@ -3,7 +3,7 @@
  *
  * Formats (some) parser errors into a human understandable text
  *
- * (c) gerd forstmann 2017
+ * (c) gerd forstmann 2017-2019
  */
 
 import * as debug from 'debugf';
@@ -11,8 +11,6 @@ const debuglog = debug('formaterror');
 
 import { IFModel as IFModel } from 'mgnlq_model';
 import { ErBase as ErBase, Sentence as Sentence, IFErBase as IFErBase } from 'mgnlq_er';
-
-//t[{"name":"NoViableAltException","message":"Expecting: one of these possible Token sequences:\n  1. [AFact]\n  2. [AnANY]\nbut found: ''","token":{"image":"","startOffset":null,"endOffset":null,"startLine":null,"endLine":null,"startColumn":null,"endColumn":null,"tokenType":1},"resyncedTokens":[],"context":{"ruleStack":["catListOpMore","factOrAny"],
 
 export function getTokenText(token : any, sentence : IFErBase.ISentence) {
     return getSentenceToken(token,sentence).string;
@@ -70,7 +68,12 @@ export function mapTokenStringToHumanString(tokenstring : string ) : string {
         case "AFact":
             return "fact";
         case "AnANY":
-            return "string fragment"
+            return "string fragment";
+        case 'TInteger':
+        case 'Integer':
+        case '12':
+        case 'NUMBER':
+            return 'number';
     }
     return undefined;
 }

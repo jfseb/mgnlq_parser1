@@ -89,6 +89,11 @@ function makeToken(t, index, T) {
     if (t.rule.wordType === 'F') {
         return { image: "FACT", startOffset: index, bearer: t, tokenType: T["AFact"].tokenType };
     }
+    if (t.rule.wordType === 'N') {
+        //console.log( 'tokentype is ' +  T["Integer"].tokenType  +  ' ' + JSON.stringify( T["Integer"] ));
+        // TODO i parses as integer -> integer
+        return { image: "12", startOffset: index, bearer: t, tokenType: T["Integer"].tokenType };
+    }
     if (t.rule.wordType === 'D') {
         return { image: "DOM", startOffset: index, bearer: t, tokenType: T["ADomain"].tokenType };
     }
@@ -112,11 +117,13 @@ function makeToken(t, index, T) {
     if (t.rule.wordType === 'O') {
         var tlc = t.matchedString.toLowerCase();
         var tlcClean = tlc.replace(/ /g, '_');
+        //console.log(' here mapped with _ ' + tlcClean + ' ' + Object.keys(T));
         if (!T[tlcClean]) {
             debuglog(Object.keys(T).join('\" \"'));
             throw new Error("unknown token of type O with " + t.matchedString);
             //process.exit(-1);
         }
+        //console.log( ' here image  for O' + t.matchedString + ' ' + T[tlcClean].tokenType);
         return { image: t.matchedString, bearer: t, startOffset: index, tokenType: T[tlcClean].tokenType };
     }
     if (t.rule.wordType === 'I') {
@@ -133,7 +140,7 @@ exports.makeToken = makeToken;
 class XLexer {
     constructor() {
         this.tokenize = function (sentence) {
-            // debuglog(JSON.stringify(sentence));
+            debuglog(() => ' sentence prior tokenize:' + JSON.stringify(sentence));
             return sentence.map((t, index) => {
                 var u = makeToken(t, index, tokens_1.Tokens);
                 debuglog("produced nr   " + index + " > " + JSON.stringify(u));
@@ -163,6 +170,7 @@ var SelectLexer = new Lexer(allTokens);
 exports.SelectLexer = SelectLexer;
 function parse(tokens, startrule) {
     const parser = new SelectParser.SelectParser(tokens);
+    //console.log( ' ' + JSON.stringify( tokens ));
     var res = parser[startrule]();
     if (parser.errors.length > 0) {
         debuglog(() => 'parsing error in  input:' + JSON.stringify(parser.errors, undefined, 2));

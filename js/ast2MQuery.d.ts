@@ -6,11 +6,13 @@ export interface IFilter {
     value: string;
 }
 export declare function makeMongoDistinctGroup(cols: string[]): any;
-export declare function getCategoryForNodePair(nodeCat: AST.ASTNode, nodeFact: AST.ASTNode, sentence: IFErBase.ISentence): string;
+export declare function getCategoryForNodePair(nodeCat: AST.ASTNode, nodeFact: AST.ASTNode, sentence: IFErBase.ISentence): any;
 export declare function getCategoryForNode(nodeCat: AST.ASTNode, sentence: IFErBase.ISentence): string;
 export declare function getFactForNode(nodeFact: AST.ASTNode, sentence: IFErBase.ISentence): string;
 export declare function makeMongoName(s: string): string;
 export declare function addFilterToMatch(res: any, cat: any, filter: any): any;
+export declare function addFilterExpr(res: any, expr: any): any;
+export declare function getNumberArg(node: AST.ASTNode, sentence: IFErBase.ISentence): number;
 export declare function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISentence, mongoMap: IFModel.CatMongoMap): {
     $match: {};
 };

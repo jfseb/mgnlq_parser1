@@ -3,7 +3,7 @@
  *
  * Formats (some) parser errors into a human understandable text
  *
- * (c) gerd forstmann 2017
+ * (c) gerd forstmann 2017-2019
  */
 import { IFErBase as IFErBase } from 'mgnlq_er';
 export declare function getTokenText(token: any, sentence: IFErBase.ISentence): string;

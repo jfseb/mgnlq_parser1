@@ -343,92 +343,38 @@ exports.testMakeQueryContainsFact = function (test) {
     var r = MongoQ.prepareQueries('element names for element name containing rium 10',
       theModel, []);
     test.deepEqual(r.queries,
-      [{
-        domain: 'IUPAC',
+      [ { domain: 'IUPAC',
         collectionName: 'iupacs',
-        columns: ['element name'],
+        columns: [ 'element name' ],
         auxcolumns: [],
         reverseMap: { element_name: 'element name' },
         query:
-        [{ '$match': { element_name: { '$regex': /rium/i }, element_number: '10' } },
-          {
-            '$group':
-            {
-              _id: { element_name: '$element_name' },
-              element_name: { '$first': '$element_name' }
-            }
-          },
-          { '$project': { _id: 0, element_name: 1 } },
-          { '$sort': { element_name: 1 } }]
-      },
-      {
-        domain: 'IUPAC',
+       [ { '$match': { element_name: { '$regex': /rium/i }, element_number: '10' } },
+         { '$group':
+            { _id: { element_name: '$element_name' },
+              element_name: { '$first': '$element_name' } } },
+         { '$project': { _id: 0, element_name: 1 } },
+         { '$sort': { element_name: 1 } } ] },
+      undefined,
+      undefined,
+      undefined,
+      { domain: 'IUPAC',
         collectionName: 'iupacs',
-        columns: ['element name'],
-        auxcolumns: [],
-        reverseMap: { element_name: 'element name' },
-        query:
-        [{
-          '$match':
-          {
-            '$and':
-            [{ element_number: { '$regex': /rium/i } },
-              { element_number: '10' }]
-          }
-        },
-        {
-          '$group':
-          {
-            _id: { element_name: '$element_name' },
-            element_name: { '$first': '$element_name' }
-          }
-        },
-        { '$project': { _id: 0, element_name: 1 } },
-        { '$sort': { element_name: 1 } }]
-      },
-      {
-        domain: 'IUPAC',
-        collectionName: 'iupacs',
-        columns: ['element number'],
+        columns: [ 'element number' ],
         auxcolumns: [],
         reverseMap: { element_number: 'element number' },
         query:
-        [{ '$match': { element_name: { '$regex': /rium/i }, element_number: '10' } },
-          {
-            '$group':
-            {
-              _id: { element_number: '$element_number' },
-              element_number: { '$first': '$element_number' }
-            }
-          },
-          { '$project': { _id: 0, element_number: 1 } },
-          { '$sort': { element_number: 1 } }]
-      },
-      {
-        domain: 'IUPAC',
-        collectionName: 'iupacs',
-        columns: ['element number'],
-        auxcolumns: [],
-        reverseMap: { element_number: 'element number' },
-        query:
-        [{
-          '$match':
-          {
-            '$and':
-            [{ element_number: { '$regex': /rium/i } },
-              { element_number: '10' }]
-          }
-        },
-        {
-          '$group':
-          {
-            _id: { element_number: '$element_number' },
-            element_number: { '$first': '$element_number' }
-          }
-        },
-        { '$project': { _id: 0, element_number: 1 } },
-        { '$sort': { element_number: 1 } }]
-      }]
+       [ { '$match':
+            { '$and':
+               [ { element_number: { '$regex': /rium/i } },
+                 { element_number: '10' } ] } },
+       { '$group':
+            { _id: { element_number: '$element_number' },
+              element_number: { '$first': '$element_number' } } },
+       { '$project': { _id: 0, element_number: 1 } },
+       { '$sort': { element_number: 1 } } ] },
+      undefined,
+      undefined ]
     );
     test.done();
     Model.releaseModel(theModel);
@@ -452,73 +398,57 @@ exports.testQueryInternal = function (test) {
     var handle = new FakeHandle([{ 'object_name': 'abc' }]);
     MongoQ.queryInternal('object name', theModel, handle).then(res => {
       var expected =
-        [
-          {
-            errors: false,
-            domain: 'Cosmos',
-            aux: {
-              sentence:
-              [{
-                string: 'object name',
-                matchedString: 'object name',
-                category: 'category',
-                rule:
-                {
-                  category: 'category',
-                  matchedString: 'object name',
-                  type: 0,
-                  word: 'object name',
-                  lowercaseword: 'object name',
-                  bitindex: 1,
-                  wordType: 'C',
-                  bitSentenceAnd: 1,
-                  _ranking: 0.95
-                },
-                _ranking: 0.95,
-                span: 2
-              }],
-              tokens: ['object', 'name']
-            },
-            columns: ['object name'],
-            auxcolumns: [],
-            results: [{ 'object name': 'abc' }]
-          },
-          {
-            domain: 'metamodel',
-            errors: {
-              err_code: undefined,
-              text: 'Error: EarlyExitException: expecting at least one iteration which starts with one of these possible Token sequences::\n  <[Comma] ,[and] ,[ACategory]> but found: \'FACT\''
-            },
-            aux: {
-              sentence:
-              [{
-                string: 'object name',
-                matchedString: 'object name',
-                category: 'category',
-                rule:
-                {
-                  category: 'category',
-                  matchedString: 'object name',
-                  type: 0,
-                  word: 'object name',
-                  bitindex: 16,
-                  bitSentenceAnd: 16,
-                  exactOnly: false,
-                  wordType: 'F',
-                  _ranking: 0.95,
-                  lowercaseword: 'object name'
-                },
-                _ranking: 0.95,
-                span: 2
-              }],
-              tokens: ['object', 'name']
-            },
-            columns: [],
-            auxcolumns: [],
-            results: []
-          }];
-      test.deepEqual(res[0], expected[0], 'first ok');
-      test.deepEqual(res[0].aux, expected[0].aux, 'first aux ok');
+      [ { domain: 'Cosmos',
+        aux:
+       { sentence:
+          [ { string: 'object name',
+            matchedString: 'object name',
+            category: 'category',
+            rule:
+               { category: 'category',
+                 matchedString: 'object name',
+                 type: 0,
+                 word: 'object name',
+                 lowercaseword: 'object name',
+                 bitindex: 1,
+                 wordType: 'C',
+                 bitSentenceAnd: 1,
+                 _ranking: 0.95 },
+            _ranking: 0.95,
+            span: 2 } ],
+       tokens: [ 'object', 'name' ] },
+        errors: false,
+        columns: [ 'object name' ],
+        auxcolumns: [],
+        results: [ { 'object name': 'abc' } ] },
+      { domain: 'metamodel',
+        aux:
+       { sentence:
+          [ { string: 'object name',
+            matchedString: 'object name',
+            category: 'category',
+            rule:
+               { category: 'category',
+                 matchedString: 'object name',
+                 type: 0,
+                 word: 'object name',
+                 bitindex: 32,
+                 bitSentenceAnd: 32,
+                 exactOnly: false,
+                 wordType: 'F',
+                 _ranking: 0.95,
+                 lowercaseword: 'object name' },
+            _ranking: 0.95,
+            span: 2 } ],
+       tokens: [ 'object', 'name' ] },
+        errors:
+       { err_code: undefined,
+         text: 'Error: EarlyExitException: expecting at least one iteration which starts with one of these possible Token sequences::\n  <[Comma] ,[and] ,[ACategory]> but found: \'FACT\'' },
+        columns: [],
+        auxcolumns: [],
+        results: [] } ];
+      test.deepEqual(res[0], expected[0], 'first ok \n ' + JSON.stringify(res));
+      test.deepEqual(res[0].aux, expected[0].aux, 'first aux ok' + JSON.stringify(res)) ;
 
       // test.deepEqual(res[1], expected[1], '2nd ok');
       test.deepEqual(res, expected);

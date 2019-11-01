@@ -16,8 +16,8 @@ var sourcemaproot = '/projects/nodejs/botbuilder/mgnlq_parser1/';
 
 
 gulp.task('watch', function () {
-  gulp.watch([srcDir + '/**/*.js', testDir + '/**/*.js', srcDir + '/**/*.tsx',  srcDir + '/**/*.ts', 'gulpfile.js'],
-    ['tsc', 'eslint', 'test']);
+  return gulp.watch([srcDir + '/**/*.js', testDir + '/**/*.js', srcDir + '/**/*.tsx',  srcDir + '/**/*.ts', 'gulpfile.js'],
+    gulp.series('tsc', 'eslint', 'test'));
 });
 
 

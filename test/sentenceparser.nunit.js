@@ -53,6 +53,50 @@ exports.testTokenizeStringOrbitWhatis = function (test) {
   });
 };
 
+exports.testTokenizeNumber = function (test) {
+  test.expect(1);
+  getModel().then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
+    var s = 'sender with more than 1234 standort';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+    var sStrings = lexingResult.map(t => t.image);
+    debuglog(sStrings.join('\n'));
+    test.deepEqual(sStrings, ['CAT', 'with', 'more than', '12', 'CAT']);
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+exports.testTokenizeNumberOrElement = function (test) {
+  test.expect(3);
+  getModel().then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
+    var s = 'sender with more than 12 standort';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    test.deepEqual( 2, res.sentences.length );
+    {
+      var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+      var sStrings = lexingResult.map(t => t.image);
+      debuglog(sStrings.join('\n'));
+      test.deepEqual(sStrings, ['CAT',  'with', 'more than', '12', 'CAT']);
+    }
+    {
+      lexingResult = SentenceParser.getLexer().tokenize(res.sentences[1]);
+      sStrings = lexingResult.map(t => t.image);
+      debuglog(sStrings.join('\n'));
+      test.deepEqual(sStrings, ['FACT', 'with', 'more than', '12', 'FACT']);
+    }
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+
 exports.testTokenizeCatCatCat = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
@@ -283,7 +327,6 @@ exports.testParseSimpleEndingWith = function (test) {
   });
 };
 
-
 exports.testParseWithEndingWith = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
@@ -308,10 +351,206 @@ exports.testParseWithEndingWith = function (test) {
   });
 };
 
+exports.testParseWithEndingWithOne = function (test) {
+  test.expect(2);
+  getModel().then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
+    var s = 'element name ending with ABC';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+    var sStrings = lexingResult.map(t => t.image);
+    debuglog(sStrings.join('\n'));
+    test.deepEqual(sStrings,  [ 'CAT', 'ending with', 'ANY' ]);
+    var parsingResult = SentenceParser.parse(lexingResult.slice(1), 'opFactAny');
+    // /test.deepEqual(parsingResult, {})
+    debuglog('\n' + Ast.astToText(parsingResult));
+
+    test.deepEqual(Ast.astToText(parsingResult),
+      'OPEndsWith 1(2)\n  undefined\n  ANY 2\n'
+      , 'proper ast' );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
 
 
+exports.testParseMoreThanS = function (test) {
+  test.expect(2);
+  getModel().then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
+    var s = 'more than 1234 sender';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+    var sStrings = lexingResult.map(t => t.image);
+    debuglog(sStrings.join('\n'));
+    test.deepEqual(sStrings,  [ 'more than', '12', 'CAT' ]);
+    var parsingResult = SentenceParser.parse(lexingResult.slice(0), 'MoreThanLessThanExactly');
+    // /test.deepEqual(parsingResult, {})
+    debuglog('\n' + Ast.astToText(parsingResult));
+
+    test.deepEqual(Ast.astToText(parsingResult),
+      'OPMoreThan 0(2)\n  NUMBER 1\n  CAT 2\n'
+      , 'proper ast' );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+exports.testParseMoreThanXXOK = function (test) {
+  test.expect(2);
+  getModel().then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
+    var s = 'sender with less than 3 standort BFBS';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+    var sStrings = lexingResult.map(t => t.image);
+    debuglog(sStrings.join('\n'));
+    console.log( sStrings.join('\n'));
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'less than', '12', 'CAT', 'FACT']);
+    var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
+    // /test.deepEqual(parsingResult, {})
+    debuglog('\n' + Ast.astToText(parsingResult));
+
+    test.deepEqual(Ast.astToText(parsingResult),
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPLessThan 2(2)\n      NUMBER 3\n      CAT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+    );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+exports.testParseMoreThanXX = function (test) {
+  test.expect(2);
+  getModel().then((theModel) => {
+  // debuglog(JSON.stringify(ifr, undefined, 2))
+  // console.log(theModel.mRules)
+    var s = 'sender with more than 3 standort';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+    var sStrings = lexingResult.map(t => t.image);
+    debuglog(sStrings.join('\n'));
+    console.log( sStrings.join('\n'));
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', '12', 'CAT']);
+    var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
+    // /test.deepEqual(parsingResult, {})
+    debuglog('\n' + Ast.astToText(parsingResult));
+
+    test.deepEqual(Ast.astToText(parsingResult),
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n'
+    );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+exports.testParseMoreThanXX1 = function (test) {
+  test.expect(2);
+  getModel().then((theModel) => {
+  // debuglog(JSON.stringify(ifr, undefined, 2))
+  // console.log(theModel.mRules)
+    var s = 'sender with more than 3 standort';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+    var sStrings = lexingResult.map(t => t.image);
+    debuglog(sStrings.join('\n'));
+    console.log( sStrings.join('\n'));
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', '12', 'CAT']);
+    var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
+    // /test.deepEqual(parsingResult, {})
+    debuglog('\n' + Ast.astToText(parsingResult));
+
+    test.deepEqual(Ast.astToText(parsingResult),
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n' );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
 
 
+// TODO SAME WITH AND!
+exports.testParseMoreThanMT_MT = function (test) {
+  test.expect(2);
+  getModel().then((theModel) => {
+  // debuglog(JSON.stringify(ifr, undefined, 2))
+  // console.log(theModel.mRules)
+    var s = 'sender with more than 3 standort , less than 2 sender';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+    var sStrings = lexingResult.map(t => t.image);
+    debuglog(sStrings.join('\n'));
+    console.log( sStrings.join('\n'));
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', '12', 'CAT',
+      'less than' ,
+      '12', 'CAT']);
+    var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
+    // /test.deepEqual(parsingResult, {})
+    debuglog('\n' + Ast.astToText(parsingResult));
+
+    test.deepEqual(Ast.astToText(parsingResult),
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n    OPLessThan 5(2)\n      NUMBER 6\n      CAT 7\n'
+    );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+exports.testParseMoreThan_MT = function (test) {
+  test.expect(2);
+  getModel().then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
+    var s = 'sender with more than 3 standort';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+    var sStrings = lexingResult.map(t => t.image);
+    debuglog(sStrings.join('\n'));
+    console.log( sStrings.join('\n'));
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', '12', 'CAT']);
+    var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
+    // /test.deepEqual(parsingResult, {})
+    debuglog('\n' + Ast.astToText(parsingResult));
+
+    test.deepEqual(Ast.astToText(parsingResult),
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n');
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+exports.testParseMoreThan_MT_F = function (test) {
+  test.expect(2);
+  getModel().then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    // console.log(theModel.mRules)
+    var s = 'sender with more than 3 standort, bfbs';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+    var sStrings = lexingResult.map(t => t.image);
+    debuglog(sStrings.join('\n'));
+    console.log( sStrings.join('\n'));
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', '12', 'CAT', 'FACT']);
+    var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
+    // /test.deepEqual(parsingResult, {})
+    debuglog('\n' + Ast.astToText(parsingResult));
+
+    test.deepEqual(Ast.astToText(parsingResult),
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+    );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
 
 exports.testcategoriesStartingWith = function (test) {
   test.expect(8);
@@ -331,28 +570,8 @@ exports.testcategoriesStartingWith = function (test) {
     test.deepEqual(r.errors.map((r, index) => (r) ? index : undefined).filter(a => a !== undefined).join('-'), '1-3-4-5', 'asts');
     debuglog(r.sentences[0]);
     test.deepEqual(Sentence.simplifyStringsWithBitIndex(r.sentences[0]).join('\n'),
-      'categories=>category/category C16\nstarting with=>starting with/operator/2 O256\nelem=>elem/any A4096\nin=>in/filler I256\ndomain=>domain/category C16\nIUPAC=>IUPAC/domain F16'
+      'categories=>category/category C32\nstarting with=>starting with/operator/2 O512\nelem=>elem/any A4096\nin=>in/filler I512\ndomain=>domain/category C32\nIUPAC=>IUPAC/domain F32'
       , 'sentence');
-    /*  test.deepEqual(r.asts[0],
-      [
-        {
-          'err_code': 'NO_KNOWN_WORD',
-          'text': 'I do not understand "UI5".',
-          'context': {
-            'tokens': [
-              'semanticObject',
-              'SemanticAction',
-              'BSPName',
-              'with',
-              'UI5'
-            ],
-            'token': 'UI5',
-            'index': 4
-          }
-        }
-      ]
-    );
-    */
     test.deepEqual(Ast.astToText(r.asts[0]),
       //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CAT 4\n      FACT 5\n', 'ast flat');

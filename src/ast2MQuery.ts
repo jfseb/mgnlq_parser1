@@ -42,7 +42,15 @@ export function makeMongoDistinctGroup(cols: string[]): any {
   return res;
 }
 
-export function getCategoryForNodePair(nodeCat: AST.ASTNode, nodeFact: AST.ASTNode, sentence: IFErBase.ISentence) {
+export function getCategoryForNodePair(nodeCat : AST.ASTNode, nodeFact: AST.ASTNode, sentence: IFErBase.ISentence) {
+
+  //  either           <CAT> <FACT>
+  //  or               undefined <FACT>
+  //  or  More than    <number> <CAT>
+  if ( nodeCat && nodeCat.bearer && nodeCat.bearer.image === '12' )
+  {
+    return getCategoryForNodePair(nodeFact, nodeFact, sentence);
+  }
   var startIndex = nodeCat && nodeCat.bearer && nodeCat.bearer.startOffset;
   debug('StartIndex : ' + startIndex);
   debug('StartIndex : ' + JSON.stringify(nodeCat, undefined, 2));
@@ -54,6 +62,8 @@ export function getCategoryForNodePair(nodeCat: AST.ASTNode, nodeFact: AST.ASTNo
     debug(JSON.stringify(sentence[factIndex], undefined, 2));
     return sentence[factIndex].category;
   }
+  debug(' found no category ');
+  return undefined;
 };
 
 export function getCategoryForNode(nodeCat: AST.ASTNode, sentence: IFErBase.ISentence) {
@@ -98,6 +108,31 @@ export function addFilterToMatch(res, cat, filter) {
   return res;
 };
 
+export function addFilterExpr(res, expr : any ) {
+  if (res['$and']) {
+    res['$and'].push(expr);
+    return res;
+  }
+  res['$and'] = [ expr ];
+  return res;
+};
+
+
+
+export function getNumberArg( node :AST.ASTNode , sentence: IFErBase.ISentence ) : number
+{
+  var startIndex = node && node.bearer && node.bearer.startOffset;
+  if (node.type !== NT.NUMBER) {
+    throw new Error(`Expected nodetype ${new AST.NodeType(NT.CAT).toString()} but was ${new AST.NodeType(node.type).toString()}`);
+  }
+  if (startIndex !== undefined && (startIndex >= 0)) {
+    //TODO treat one, two
+    return parseInt(sentence[startIndex].matchedString);
+  }
+  throw new Error(' no startindex' + JSON.stringify(node));
+};
+
+
 export function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISentence, mongoMap: IFModel.CatMongoMap) {
   debug(AST.astToText(node));
   //console.log("making mongo match " + AST.astToText(node));
@@ -124,6 +159,34 @@ export function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISen
     } else if (n.type === NT.OPEndsWith) {
       debuglog(() => '!!!!adding regex with expression ' + fact.toLowerCase());
       res = addFilterToMatch(res, mongocatfullpath, { $regex: new RegExp(`${fact.toLowerCase()}$`, "i") });
+    } else if (n.type === NT.OPMoreThan) {
+      var numberarg = getNumberArg(n.children[0], sentence);
+      debuglog(() => '!!!!adding more than ' + numberarg + ' for category ' + category );
+      //TODO //res = addFilterToMatch(res, mongocatfullpath, { 'count' ( mongocatfullpath ) gt numberarg , "i") });
+      var argpath = '$' + mongocatfullpath;
+      console.log(' this must be $standort' + argpath);
+      res = addFilterExpr( res,
+        { $expr: { $gt: [ { $switch: { branches: [ { case: { $isArray : argpath }, then: { $size: argpath } }], default : 1 }}
+                        , numberarg ]}} );
+
+//
+//        { $expr: { $gt: [ { $size: '$standort'},1 ]}} );
+//      ([ { $match : { $expr: { $gt: [ { $size: argpath }, numberarg ]}}}]);
+// two stage
+// use $addFields  with 3.4
+// try also $expr directly
+//       > db.demomdls.aggregate([ { $project : { standort_size : { $size: '$standort' }, standort:1, sender:1, uu : { $gt:[ { $size: '$standort' },3]} , abx : { $gt:[ "$standort", 1]}}}, { $match: { "standort_size": { $eq: { $size: '$standort'} }}}]);
+//      > db.demomdls.aggregate([ { $project : { standort_size : { $size: '$standort' }, standort:1, sender:1, uu : { $gt:[ { $size: '$standort' },3]} , abx : { $gt:[ "$standort", 1]}}}, { $match: { "standort_size": { $gt: 1 }}}]);
+//      { "_id" : ObjectId("5db88a185b66759cfc56bcd4"), "standort" : [ "Berlin", "München", "Frankfurt", "Hamburg", "Bremen" ], "sender" : "ARundfunkD", "standort_size" : 5, "uu" : true, "abx" : true }
+
+
+    // exact match: db.demomdls.aggregate([ { $match: { standort : { $size : 3 }}},
+
+    }
+    else if (n.type === NT.OPLessThan) {
+      throw new Error(" like MoreThan ");
+    } else if (n.type === NT.OPExactly) {
+      throw new Error(" like MoreThan ");
     }
     else if (n.type === NT.OPContains) {
       res = addFilterToMatch(res, mongocatfullpath, { $regex: new RegExp(`${fact.toLowerCase()}`, "i") });

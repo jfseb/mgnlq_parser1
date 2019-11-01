@@ -1,0 +1,17 @@
+[
+  {
+    "SemanticObject": "Customer"
+  },
+  {
+    "SemanticObject": "Document"
+  },
+  {
+    "SemanticObject": "TaxReport"
+  },
+  {
+    "SemanticObject": "VisitList"
+  },
+  {
+    "SemanticObject": "WBSElement"
+  }
+]

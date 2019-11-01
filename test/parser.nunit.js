@@ -278,6 +278,17 @@ exports.testCatListMoreInFaommaABC = function (test) {
   test.done();
 };
 
+/*
+exports.testCatListMoreInFaommaABC = function (test) {
+  ['more_than', 'less_than', 'exactly'].forEach((op)=> {
+    var inputText = `${op} NUMBER CAT`;
+    parseInput(inputText,'catFact');
+    test.equal(1,1);
+  });
+  test.done();
+};
+TODO:
+*/
 
 /*
 describe Application Component;

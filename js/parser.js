@@ -310,6 +310,66 @@ function SelectParser(input) {
     // TODO CAT OP CONTAINS MANY
     // CAT OP FACT
     // FACT
+    this.MoreThanLessThanExactly = $.RULE("MoreThanLessThanExactly", function () {
+        return $.OR([{
+                ALT: () => {
+                    var tok = $.CONSUME(tokens_1.Tokens.more_than);
+                    var op = AST.makeNode(ast_1.ASTNodeType.OPMoreThan);
+                    op.bearer = tok;
+                    var toki = $.CONSUME(tokens_1.Tokens.Integer);
+                    var numberarg = AST.makeNodeForInteger(toki);
+                    op.children[0] = numberarg;
+                    var tokc = $.CONSUME(tokens_1.Tokens.ACategory);
+                    var cat = AST.makeNodeForCat(tokc);
+                    op.children[1] = cat;
+                    return op;
+                }
+            },
+            {
+                ALT: () => {
+                    var tok = $.CONSUME(tokens_1.Tokens.less_than);
+                    var op = AST.makeNode(ast_1.ASTNodeType.OPLessThan);
+                    op.bearer = tok;
+                    var toki = $.CONSUME2(tokens_1.Tokens.Integer);
+                    var numberarg = AST.makeNodeForInteger(toki);
+                    op.children[0] = numberarg;
+                    var tokc = $.CONSUME2(tokens_1.Tokens.ACategory);
+                    var cat = AST.makeNodeForCat(tokc);
+                    op.children[1] = cat;
+                    return op;
+                }
+            },
+            {
+                ALT: () => {
+                    var tok = $.CONSUME(tokens_1.Tokens.exactly);
+                    var op = AST.makeNode(ast_1.ASTNodeType.OPExactly);
+                    op.bearer = tok;
+                    var toki = $.CONSUME3(tokens_1.Tokens.Integer);
+                    var numberarg = AST.makeNodeForInteger(toki);
+                    op.children[0] = numberarg;
+                    var tokc = $.CONSUME3(tokens_1.Tokens.ACategory);
+                    var cat = AST.makeNodeForCat(tokc);
+                    op.children[1] = cat;
+                    return op;
+                }
+            } /*,
+            {
+              ALT: () => {
+                console.log( 'token index is ' + T.less_than );
+                var tok = $.CONSUME2(T.less_than);
+                var op = AST.makeNode(NT.OPMoreThan);
+                op.bearer = tok;
+                var toki = $.CONSUME3(T.AnANY);
+                var numberarg = AST.makeNodeForInteger(toki);
+                op.children[0] = numberarg;
+                var tokc = $.CONSUME3(T.ACategory);
+                var cat = AST.makeNodeForCat(tokc);
+                op.children[1] = cat;
+                return op;
+              }
+            }*/
+        ]);
+    });
     this.catFact = $.RULE("catFact", function () {
         return $.OR([
             {
@@ -323,8 +383,26 @@ function SelectParser(input) {
             },
             {
                 ALT: () => {
+                    return $.SUBRULE($.MoreThanLessThanExactly);
+                    /*
+                    console.log( 'token index is ' + T.more_than );
+                    var tok = $.CONSUME(T.more_than);
+                    var op = AST.makeNode(NT.OPMoreThan);
+                    op.bearer = tok;
+                    var toki = $.CONSUME(T.Integer);
+                    var numberarg = AST.makeNodeForInteger(toki);
+                    op.children[0] = numberarg;
+                    var tokc = $.CONSUME2(T.ACategory);
+                    var cat = AST.makeNodeForCat(tokc);
+                    op.children[1] = cat;
+                    return op;
+                    */
+                }
+            },
+            {
+                ALT: () => {
                     var op = AST.makeNode(ast_1.ASTNodeType.OPEqIn, AST.makeNode(AST.ASTNodeType.CATPH));
-                    var fact = $.SUBRULE1($.plainFact);
+                    var fact = $.SUBRULE2($.plainFact);
                     op.children.push(fact);
                     return op;
                 }

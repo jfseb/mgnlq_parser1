@@ -11,12 +11,7 @@ var mongoQ = require('../js/mongoq.js');
 var debuglog = require('debugf')('ast2MQuery');
 const Model = require('mgnlq_model').Model;
 
-
 var getModel = require('mgnlq_testmodel_replay').getTestModel;
-
-//var mongoose = require('mongoose_record_replay').instrumentMongoose(require('mongoose'),
-//  'node_modules/mgnlq_testmodel_replay/mgrecrep/',
-//  'RECORD');
 
 process.on('unhandledRejection', function onError(err) {
   console.log(err);
@@ -211,6 +206,43 @@ exports.testMakeMongoQueryEndingWith = function (test) {
   });
 };
 
+
+exports.testMakeMongoQueryMoreThan = function (test) {
+  getModel().then( (theModel) => {
+    var s = 'sender, gründungsjahr with more than 3 standort';
+    var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
+    var node = r.asts[0];
+    var nodeFieldList = node.children[0].children[0];
+    var nodeFilter = node.children[1];
+    var sentence = r.sentences[0];
+    var domainPick = mongoQ.getDomainInfoForSentence(theModel, sentence);
+    var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
+    var categoryList = mQ.getCategoryList([], nodeFieldList, sentence );
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
+    test.deepEqual(match ,{ '$match':
+    { '$and':
+       [ { '$expr':
+            { '$gt':
+               [ { '$switch':
+                    { branches:
+                       [ { case: { '$isArray': '$standort' },
+                         then: { '$size': '$standort' } } ],
+                    default: 1 } },
+               3 ] } } ] } });
+    var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
+    test.deepEqual(proj ,{ '$project': { _id: 0, sender: 1, 'gründungsjahr': 1 } });
+    var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
+    test.deepEqual(group , {  '$group':
+    { _id: { sender: '$sender', 'gründungsjahr': '$gründungsjahr' },
+      sender: { '$first': '$sender' },
+      'gründungsjahr': { '$first': '$gründungsjahr' } } }   , 'group');
+    test.done();
+    releaseModel(theModel);
+  });
+};
+
+
+
 var fs = require('fs');
 var JSONx = require('abot_utils');
 
@@ -296,6 +328,14 @@ exports.testParseSomeQueries = function (test) {
 };
 
 
+exports.testGetNumberArg = function (test) {
+  var res  = mQ.getNumberArg(
+    /* ASTNode */
+    { type : Ast.ASTNodeType.NUMBER, bearer : { startOffset : 0 } },
+    [ { matchedString : '123'}]);
+  test.equal( 123, res, ' number parsing');
+  test.done();
+};
 
 
 

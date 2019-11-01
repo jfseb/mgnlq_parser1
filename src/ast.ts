@@ -24,6 +24,10 @@ export enum ASTNodeType {
   FACT,
   LIST, //14
   ANY,
+  OPMoreThan,
+  OPLessThan,
+  OPExactly,
+  NUMBER,
   DOM
 }
 
@@ -53,6 +57,10 @@ const astNodeTypes =  [ "BINOP",
   "FACT",
   "LIST",
   "ANY",
+  "OPMoreThan",
+  "OPLessThan",
+  "OPExactly",
+  "NUMBER",
   "DOM"
 ];
 
@@ -68,7 +76,6 @@ export function makeNode(type : ASTNodeType, ...  args : ASTNode[]) : ASTNode {
     children : args
   }
 }
-
 
 export function makeNodeForCat(cat : any) : ASTNode {
   return {
@@ -105,6 +112,13 @@ export function makeNodeForAny(fact : any) : ASTNode {
   return {
     type : ASTNodeType.ANY,
     bearer : fact
+  }
+}
+
+export function makeNodeForInteger(inttok : any) : ASTNode {
+  return {
+    type : ASTNodeType.NUMBER,
+    bearer : inttok
   }
 }
 

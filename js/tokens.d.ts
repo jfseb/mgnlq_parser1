@@ -19,6 +19,7 @@ export declare const Tokens: {
     ends: chevrotain.TokenConstructor;
     equals: chevrotain.TokenConstructor;
     every: chevrotain.TokenConstructor;
+    exactly: chevrotain.TokenConstructor;
     e: chevrotain.TokenConstructor;
     first: chevrotain.TokenConstructor;
     for: chevrotain.TokenConstructor;
@@ -31,11 +32,13 @@ export declare const Tokens: {
     latest: chevrotain.TokenConstructor;
     least: chevrotain.TokenConstructor;
     leat: chevrotain.TokenConstructor;
+    less_than: chevrotain.TokenConstructor;
     less: chevrotain.TokenConstructor;
     life: chevrotain.TokenConstructor;
     list: chevrotain.TokenConstructor;
     LParen: chevrotain.TokenConstructor;
     LT: chevrotain.TokenConstructor;
+    more_than: chevrotain.TokenConstructor;
     newest: chevrotain.TokenConstructor;
     of: chevrotain.TokenConstructor;
     oldest: chevrotain.TokenConstructor;

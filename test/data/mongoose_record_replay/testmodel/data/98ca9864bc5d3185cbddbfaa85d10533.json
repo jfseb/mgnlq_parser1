@@ -1,0 +1,38 @@
+[
+  {
+    "SemanticObject": null
+  },
+  {
+    "SemanticObject": ""
+  },
+  {
+    "SemanticObject": "ApplicationJob"
+  },
+  {
+    "SemanticObject": "ComplianceAlerts"
+  },
+  {
+    "SemanticObject": "EWMProduct"
+  },
+  {
+    "SemanticObject": "GLAccount"
+  },
+  {
+    "SemanticObject": "MRPMaterial"
+  },
+  {
+    "SemanticObject": "ProductLabel"
+  },
+  {
+    "SemanticObject": "Project"
+  },
+  {
+    "SemanticObject": "Supplier"
+  },
+  {
+    "SemanticObject": "TaxReport"
+  },
+  {
+    "SemanticObject": "WBSElement"
+  }
+]

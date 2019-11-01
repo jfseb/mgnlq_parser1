@@ -263,9 +263,9 @@ function SelectParser(input) {
           }
         },
         {
-            ALT: () => {
-              filter = $.SUBRULE4($.commaAndListFilter);
-            }
+          ALT: () => {
+            filter = $.SUBRULE4($.commaAndListFilter);
+          }
         }
         ]);
         return [filter, dom];
@@ -347,7 +347,69 @@ function SelectParser(input) {
   // TODO CAT OP CONTAINS MANY
   // CAT OP FACT
   // FACT
-  this.catFact = $.RULE("catFact", function () {
+  this.MoreThanLessThanExactly = $.RULE("MoreThanLessThanExactly", function () {
+    return $.OR( [  {
+          ALT: () => {
+            var tok = $.CONSUME(T.more_than);
+            var op = AST.makeNode(NT.OPMoreThan);
+            op.bearer = tok;
+            var toki = $.CONSUME(T.Integer);
+            var numberarg = AST.makeNodeForInteger(toki);
+            op.children[0] = numberarg;
+            var tokc = $.CONSUME(T.ACategory);
+            var cat = AST.makeNodeForCat(tokc);
+            op.children[1] = cat;
+            return op;
+          }
+        },
+        {
+          ALT: () => {
+            var tok = $.CONSUME(T.less_than);
+            var op = AST.makeNode(NT.OPLessThan);
+            op.bearer = tok;
+            var toki = $.CONSUME2(T.Integer);
+            var numberarg = AST.makeNodeForInteger(toki);
+            op.children[0] = numberarg;
+            var tokc = $.CONSUME2(T.ACategory);
+            var cat = AST.makeNodeForCat(tokc);
+            op.children[1] = cat;
+            return op;
+          }
+        },
+        {
+          ALT: () => {
+            var tok = $.CONSUME(T.exactly);
+            var op = AST.makeNode(NT.OPExactly);
+            op.bearer = tok;
+            var toki = $.CONSUME3(T.Integer);
+            var numberarg = AST.makeNodeForInteger(toki);
+            op.children[0] = numberarg;
+            var tokc = $.CONSUME3(T.ACategory);
+            var cat = AST.makeNodeForCat(tokc);
+            op.children[1] = cat;
+            return op;
+          }
+        } /*,
+        {
+          ALT: () => {
+            console.log( 'token index is ' + T.less_than );
+            var tok = $.CONSUME2(T.less_than);
+            var op = AST.makeNode(NT.OPMoreThan);
+            op.bearer = tok;
+            var toki = $.CONSUME3(T.AnANY);
+            var numberarg = AST.makeNodeForInteger(toki);
+            op.children[0] = numberarg;
+            var tokc = $.CONSUME3(T.ACategory);
+            var cat = AST.makeNodeForCat(tokc);
+            op.children[1] = cat;
+            return op;
+          }
+        }*/
+      ]);
+   });
+
+
+   this.catFact = $.RULE("catFact", function () {
     return $.OR([
         {
           ALT: () => {
@@ -360,9 +422,27 @@ function SelectParser(input) {
         },
         {
           ALT: () => {
+            return  $.SUBRULE($.MoreThanLessThanExactly);
+            /*
+            console.log( 'token index is ' + T.more_than );
+            var tok = $.CONSUME(T.more_than);
+            var op = AST.makeNode(NT.OPMoreThan);
+            op.bearer = tok;
+            var toki = $.CONSUME(T.Integer);
+            var numberarg = AST.makeNodeForInteger(toki);
+            op.children[0] = numberarg;
+            var tokc = $.CONSUME2(T.ACategory);
+            var cat = AST.makeNodeForCat(tokc);
+            op.children[1] = cat;
+            return op;
+            */
+          }
+        },
+        {
+          ALT: () => {
             var op = AST.makeNode(NT.OPEqIn,
               AST.makeNode(AST.ASTNodeType.CATPH));
-            var fact = $.SUBRULE1($.plainFact);
+            var fact = $.SUBRULE2($.plainFact);
             op.children.push(fact);
             return op;
           }
@@ -376,14 +456,13 @@ function SelectParser(input) {
       var r = [$.SUBRULE($.catFact)];
       $.MANY( () => {
         $.OPTION( () =>
-
-        //$.CONSUME(T.Comma));
-         $.OR( [
-          { ALT: function() { $.CONSUME(T.Comma); }},
-          { ALT: function() { $.CONSUME(T.and); }}, // not a logical and yet
-          { ALT: function() { $.CONSUME(T.or); }}, //not logical or yet
-          { ALT: function() { $.CONSUME(T.with); }}
-        ])
+          //$.CONSUME(T.Comma));
+          $.OR( [
+            { ALT: function() { $.CONSUME(T.Comma); }},
+            { ALT: function() { $.CONSUME(T.and); }}, // not a logical and yet
+            { ALT: function() { $.CONSUME(T.or); }}, //not logical or yet
+            { ALT: function() { $.CONSUME(T.with); }}
+          ])
         )
         r.push($.SUBRULE2($.catFact));
       });

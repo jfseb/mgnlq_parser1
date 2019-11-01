@@ -15,7 +15,11 @@ export declare enum ASTNodeType {
     FACT = 13,
     LIST = 14,
     ANY = 15,
-    DOM = 16
+    OPMoreThan = 16,
+    OPLessThan = 17,
+    OPExactly = 18,
+    NUMBER = 19,
+    DOM = 20
 }
 export declare class NodeType {
     nt: ASTNodeType;
@@ -33,6 +37,7 @@ export declare function makeNodeForDomain(cat: any): ASTNode;
 export declare function makeNodeForToken(type: ASTNodeType, opToken: any): ASTNode;
 export declare function makeNodeForFact(fact: any): ASTNode;
 export declare function makeNodeForAny(fact: any): ASTNode;
+export declare function makeNodeForInteger(inttok: any): ASTNode;
 export declare function typeToString(type: ASTNodeType): string;
 export declare function dumpNodeNice(node: ASTNode): any;
 export declare function astToText(node: ASTNode, indent?: number, prefix?: number): any;
