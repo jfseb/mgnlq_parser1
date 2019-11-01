@@ -1,6 +1,6 @@
 {
   "name": "mgnlq_parser1",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "query parsing",
   "main": "js/index.js",
   "typings": "js/index.d.ts",
@@ -49,7 +49,7 @@
     "chevrotain": "^0.27.3",
     "debugf": "^0.1.2",
     "lodash": "^4.17.4",
-    "mgnlq_model": "0.0.16",
+    "mgnlq_model": "0.0.18",
     "mongoose": "^5.7.7"
   }
 }
