@@ -255,15 +255,15 @@ exports.testParseSomeQueries = function (test) {
     for( var a in querylist )
     {
       var testrun = querylist[a];
-      console.log(' query ' + testrun.query );
+      console.log(' test nr ' + testrun.nr  + ' query ' + testrun.query );
       var actual = { query : testrun.query };
-      console.log( ' test nr ' + testrun.nr );
+      debuglog( ' test nr ' + testrun.nr );
       // debuglog(JSON.stringify(ifr, undefined, 2))
-      // console.log(theModel.mRules)
+
       var s = testrun.query; // 'domains ending with ABC';
       var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
       var node = r.asts[0];
-      console.log( JSON.stringify( r ));
+      debuglog( JSON.stringify( r ));
       var testId = 'nr:' + testrun.nr + ' ' + testrun.query ;
       if ( !node )
       {
@@ -277,7 +277,7 @@ exports.testParseSomeQueries = function (test) {
       var r2 = Ast.astToText( node , 2 );
       if ( testrun.astNice && testrun.astNice !== 'ignore' )
         test.deepEqual( r2, testrun.astNice, ' nr' + testrun.nr +  '\nexp:' + testrun.astNice + '\nact:' + r2 + '\nactual astNice is \n"astNice":' + JSON.stringify(r2) + ',');
-      console.log( r2 );
+      //console.log( r2 );
       var nodeFieldList = node.children[0].children[0];
       var nodeFilter = node.children[1];
       var sentence = r.sentences[0];
@@ -304,7 +304,7 @@ exports.testParseSomeQueries = function (test) {
 
     }
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     /*
     var s = 'domains ending with ABC';
     var r = SentenceParser.parseSentenceToAsts(s,theModel,words);

@@ -57,14 +57,14 @@ exports.testTokenizeNumber = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'sender with more than 1234 standort';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'with', 'more than', '12', 'CAT']);
+    test.deepEqual(sStrings, ['CAT', 'with', 'more than', 'NUMBER', 'CAT']);
     test.done();
     Model.releaseModel(theModel);
   });
@@ -74,7 +74,7 @@ exports.testTokenizeNumberOrElement = function (test) {
   test.expect(3);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'sender with more than 12 standort';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -83,13 +83,13 @@ exports.testTokenizeNumberOrElement = function (test) {
       var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
       var sStrings = lexingResult.map(t => t.image);
       debuglog(sStrings.join('\n'));
-      test.deepEqual(sStrings, ['CAT',  'with', 'more than', '12', 'CAT']);
+      test.deepEqual(sStrings, ['CAT',  'with', 'more than', 'NUMBER', 'CAT']);
     }
     {
       lexingResult = SentenceParser.getLexer().tokenize(res.sentences[1]);
       sStrings = lexingResult.map(t => t.image);
       debuglog(sStrings.join('\n'));
-      test.deepEqual(sStrings, ['FACT', 'with', 'more than', '12', 'FACT']);
+      test.deepEqual(sStrings, ['FACT', 'with', 'more than', 'NUMBER', 'FACT']);
     }
     test.done();
     Model.releaseModel(theModel);
@@ -101,7 +101,7 @@ exports.testTokenizeCatCatCat = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicationComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -262,7 +262,7 @@ exports.testParseInDomain = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'SemanticObject, SemanticAction in domain FioriBOM';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -285,7 +285,7 @@ exports.testParseEndingWith = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'SemanticObject ending with element';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -308,7 +308,7 @@ exports.testParseSimpleEndingWith = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'domains ending with ABC';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -331,7 +331,7 @@ exports.testParseWithEndingWith = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'element names, atomic weights with element name ending with ABC';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -355,7 +355,7 @@ exports.testParseWithEndingWithOne = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'element name ending with ABC';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -380,14 +380,14 @@ exports.testParseMoreThanS = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'more than 1234 sender';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'more than', '12', 'CAT' ]);
+    test.deepEqual(sStrings,  [ 'more than', 'NUMBER', 'CAT' ]);
     var parsingResult = SentenceParser.parse(lexingResult.slice(0), 'MoreThanLessThanExactly');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
@@ -403,16 +403,14 @@ exports.testParseMoreThanS = function (test) {
 exports.testParseMoreThanXXOK = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
-    // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
     var s = 'sender with less than 3 standort BFBS';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    console.log( sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'less than', '12', 'CAT', 'FACT']);
+    //console.log( sStrings.join('\n'));
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'less than', 'NUMBER', 'CAT', 'FACT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
@@ -428,16 +426,13 @@ exports.testParseMoreThanXXOK = function (test) {
 exports.testParseMoreThanXX = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
     var s = 'sender with more than 3 standort';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    console.log( sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', '12', 'CAT']);
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
@@ -453,16 +448,13 @@ exports.testParseMoreThanXX = function (test) {
 exports.testParseMoreThanXX1 = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
     var s = 'sender with more than 3 standort';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    console.log( sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', '12', 'CAT']);
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
@@ -479,18 +471,15 @@ exports.testParseMoreThanXX1 = function (test) {
 exports.testParseMoreThanMT_MT = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
     var s = 'sender with more than 3 standort , less than 2 sender';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    console.log( sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', '12', 'CAT',
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT',
       'less than' ,
-      '12', 'CAT']);
+      'NUMBER', 'CAT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
@@ -506,8 +495,6 @@ exports.testParseMoreThanMT_MT = function (test) {
 exports.testParseMoreThan_MT = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
-    // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
     var s = 'sender with more than 3 standort';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -515,7 +502,7 @@ exports.testParseMoreThan_MT = function (test) {
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
     console.log( sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', '12', 'CAT']);
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
@@ -530,16 +517,13 @@ exports.testParseMoreThan_MT = function (test) {
 exports.testParseMoreThan_MT_F = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
-    // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
     var s = 'sender with more than 3 standort, bfbs';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    console.log( sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', '12', 'CAT', 'FACT']);
+    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT', 'FACT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
@@ -555,8 +539,6 @@ exports.testParseMoreThan_MT_F = function (test) {
 exports.testcategoriesStartingWith = function (test) {
   test.expect(8);
   getModel().then((theModel) => {
-    // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
     var s = 'categories starting with "elem" in domain IUPAC';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -589,7 +571,7 @@ exports.testparseSentenceToAstsCatCatCatParseText = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(Ast.astToText(r.asts[0]),
@@ -607,7 +589,7 @@ exports.testparseCategoriesInDomainAlias = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'categories in  Fiori BOM';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     debuglog(()=> JSON.stringify(r));
@@ -627,7 +609,7 @@ exports.testparseSentenceToAstsCatAndCatForSthText = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'element symbol and atomic weight for gold';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(Ast.astToText(r.asts[0]),
@@ -648,7 +630,7 @@ exports.testparseSentenceForFact1WithCatFact = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'SemanticObject  for FI-FIO-GL with ApplicationType "FPM/WEbDynpro" Maintain';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(r.errors[0],false);
@@ -665,7 +647,7 @@ exports.testparseSentenceStartingWith = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'SemanticObject, SemanticAction with SemanticObject starting with Sup';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(r.errors[0],false);
@@ -682,7 +664,7 @@ exports.testparseSentenceToAstssError = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
-    // console.log(theModel.mRules)
+
     var s = 'semanticObject, SemanticAction, BSPName with UI5';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(r.errors,

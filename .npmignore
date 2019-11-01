@@ -1,7 +1,9 @@
 node_modules
 *.tgz
+*.md.bak
 *.bak
 **/*.bak
+*.txt
 **/*.d.ts.map
 docs
 logs

@@ -32,7 +32,7 @@ function makeToken(t, index, T) {
     if (t.rule.wordType === 'N') {
         //console.log( 'tokentype is ' +  T["Integer"].tokenType  +  ' ' + JSON.stringify( T["Integer"] ));
         // TODO i parses as integer -> integer
-        return { image: "12", startOffset: index, bearer: t, tokenType: T["Integer"].tokenType };
+        return { image: "NUMBER", startOffset: index, bearer: t, tokenType: T["Integer"].tokenType };
     }
     if (t.rule.wordType === 'D') {
         return { image: "DOM", startOffset: index, bearer: t, tokenType: T["ADomain"].tokenType };

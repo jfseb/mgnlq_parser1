@@ -25,7 +25,7 @@ function getCategoryForNodePair(nodeCat, nodeFact, sentence) {
     //  either           <CAT> <FACT>
     //  or               undefined <FACT>
     //  or  More than    <number> <CAT>
-    if (nodeCat && nodeCat.bearer && nodeCat.bearer.image === '12') {
+    if (nodeCat && nodeCat.bearer && nodeCat.bearer.image === 'NUMBER') {
         return getCategoryForNodePair(nodeFact, nodeFact, sentence);
     }
     var startIndex = nodeCat && nodeCat.bearer && nodeCat.bearer.startOffset;
