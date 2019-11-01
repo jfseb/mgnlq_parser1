@@ -108,7 +108,7 @@ exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
   test.expect(5);
   getModel().then( (theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
     var node = r.asts[0];
@@ -159,7 +159,7 @@ exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
 exports.testAstToMQueryMultiArray = function (test) {
   getModel().then( (theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
     var s = 'categories starting with elem';
     var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
     var node = r.asts[0];
@@ -185,7 +185,7 @@ exports.testAstToMQueryMultiArray = function (test) {
 exports.testMakeMongoQueryEndingWith = function (test) {
   getModel().then( (theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
     var s = 'domains ending with ABC';
     var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
     var node = r.asts[0];

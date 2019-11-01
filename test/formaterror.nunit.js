@@ -21,7 +21,7 @@ var words = {};
 exports.testTokenizeStringOrbitWhatis = function (test) {
   getModel().then((theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
     var res = Erbase.processString('orbit of the earth', theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
@@ -36,7 +36,7 @@ exports.testTokenizeStringOrbitWhatis = function (test) {
 exports.testTokenizeCatCatCat = function (test) {
   getModel().then((theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicationComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -52,7 +52,7 @@ exports.testTokenizeCatCatCat = function (test) {
 exports.testTokenizeCatCatCatParse = function (test) {
   getModel().then((theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -155,7 +155,7 @@ exports.testTokenizeCatCatCatParse = function (test) {
 exports.testTokenizeCatCatCatParseText = function (test) {
   getModel().then((theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -177,7 +177,7 @@ exports.testTokenizeCatCatCatParseText = function (test) {
 exports.testTokenizeCatCatCatErr = function (test) {
   getModel().then((theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
     var s = 'SemanticObject, SemanticAction, ApplicationComponent starting with';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
@@ -204,7 +204,7 @@ exports.testTokenizeCatCatCatErr = function (test) {
 exports.testTokenizeInterimErr = function (test) {
   getModel().then((theModel) => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
     var s = 'SemanticObject, SemanticAction, CO-FIO, and ApplicationComponent with';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));

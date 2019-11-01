@@ -39,7 +39,7 @@ var words = {};
 
 exports.testTokenizeStringOrbitWhatis = function (test) {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
   test.expect(1);
   getModel().then((theModel) => {
     var res = Erbase.processString('orbit of the earth', theModel.rules, words);
@@ -116,7 +116,7 @@ exports.testTokenizeCatCatCat = function (test) {
 
 exports.testTokenizeCatCatCatParse = function (test) {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
   test.expect(2);
   getModel().then((theModel) => {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
@@ -220,7 +220,7 @@ exports.testTokenizeCatCatCatParse = function (test) {
 
 exports.testTokenizeCatCatCatParseText = function (test) {
   // debuglog(JSON.stringify(ifr, undefined, 2))
-  // console.log(theModel.mRules)
+
   test.expect(3);
   getModel().then((theModel) => {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
@@ -501,7 +501,6 @@ exports.testParseMoreThan_MT = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    console.log( sStrings.join('\n'));
     test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
@@ -570,8 +569,6 @@ exports.testcategoriesStartingWith = function (test) {
 exports.testparseSentenceToAstsCatCatCatParseText = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
-    // debuglog(JSON.stringify(ifr, undefined, 2))
-
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(Ast.astToText(r.asts[0]),
@@ -588,8 +585,6 @@ exports.testparseSentenceToAstsCatCatCatParseText = function (test) {
 exports.testparseCategoriesInDomainAlias = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
-    // debuglog(JSON.stringify(ifr, undefined, 2))
-
     var s = 'categories in  Fiori BOM';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     debuglog(()=> JSON.stringify(r));
@@ -608,8 +603,6 @@ exports.testparseCategoriesInDomainAlias = function (test) {
 exports.testparseSentenceToAstsCatAndCatForSthText = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
-    // debuglog(JSON.stringify(ifr, undefined, 2))
-
     var s = 'element symbol and atomic weight for gold';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(Ast.astToText(r.asts[0]),
@@ -629,8 +622,6 @@ exports.testparseSentenceToAstsCatAndCatForSthText = function (test) {
 exports.testparseSentenceForFact1WithCatFact = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
-    // debuglog(JSON.stringify(ifr, undefined, 2))
-
     var s = 'SemanticObject  for FI-FIO-GL with ApplicationType "FPM/WEbDynpro" Maintain';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(r.errors[0],false);
@@ -646,8 +637,6 @@ exports.testparseSentenceForFact1WithCatFact = function (test) {
 exports.testparseSentenceStartingWith = function (test) {
   test.expect(2);
   getModel().then((theModel) => {
-    // debuglog(JSON.stringify(ifr, undefined, 2))
-
     var s = 'SemanticObject, SemanticAction with SemanticObject starting with Sup';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(r.errors[0],false);
@@ -663,8 +652,6 @@ exports.testparseSentenceStartingWith = function (test) {
 exports.testparseSentenceToAstssError = function (test) {
   test.expect(1);
   getModel().then((theModel) => {
-    // debuglog(JSON.stringify(ifr, undefined, 2))
-
     var s = 'semanticObject, SemanticAction, BSPName with UI5';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     test.deepEqual(r.errors,
