@@ -3,7 +3,8 @@ before_script:
   - unset FSD_COVERAGE
   - gulp tsc
   - set DEBUG=*
-  - nodeunit test/parser.nunit.js -t testCatListMoreInFactAndFact2
+  - export DEBUG=* && export debug=* && nodeunit test/parser.nunit.js -t testCatListMoreInFactAndFact2
+  - unset DEBUG
   - gulp
   - tsc
 #  - gulp instrument
