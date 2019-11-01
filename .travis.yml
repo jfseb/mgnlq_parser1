@@ -1,9 +1,10 @@
 language: node_js
+:env
+  - debug=*
 before_script:
   - unset FSD_COVERAGE
   - gulp tsc
-  - set DEBUG=*
-  - export DEBUG=* && export debug=* && nodeunit test/parser.nunit.js -t testCatListMoreInFactAndFact2
+  - nodeunit test/parser.nunit.js -t testCatListMoreInFactAndFact2
   - unset DEBUG
   - gulp
   - tsc
