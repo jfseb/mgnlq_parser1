@@ -1,6 +1,6 @@
 {
   "name": "mgnlq_parser1",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "query parsing",
   "main": "js/index.js",
   "typings": "js/index.d.ts",
