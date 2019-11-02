@@ -244,6 +244,10 @@ export function isSpanVec(vec: Array<any>, index: number) {
  * with the special property
  */
 export function expandTokenMatchesToSentences(tokens: string[], tokenMatches: Array<Array<any>>): IMatch.IProcessedSentences {
+  return expandTokenMatchesToSentences2( tokens, tokenMatches);
+}
+ /*
+export function expandTokenMatchesToSentences(tokens: string[], tokenMatches: Array<Array<any>>): IMatch.IProcessedSentences {
   var a = [];
   var wordMatches = [];
   debuglogV(debuglog.enabled ? JSON.stringify(tokenMatches) : '-');
@@ -303,10 +307,12 @@ export function expandTokenMatchesToSentences(tokens: string[], tokenMatches: Ar
     //  debuglog("now at " + k + ":" + l + " >" + JSON.stringify(nextBase))
     res = nextBase;
   }
-  debuglogV(debuglogV.enabled ? ("APPENDING TO RES" + 0 + ":" + l + " >" + JSON.stringify(nextBase)) : '-');
+  debuglogV(debuglogV.enabled ? ("APPENDING TO RES2#" + 0 + ":" + l + " >" + JSON.stringify(nextBase)) : '-');
   result.sentences = res;
   return result;
 }
+
+*/
 
 // todo: bitindex
 export function makeAnyWord(token : string) {
@@ -332,9 +338,12 @@ export function isSuccessorOperator(res : any, tokenIndex : number) : boolean {
   if(tokenIndex === 0) {
     return false;
   }
-  if(res[res.length-1].rule.wordType === 'O') {
-    if ( IMatch.aAnySuccessorOperatorNames.indexOf(res[res.length-1].rule.word) >= 0)
+  if(res[res.length-1].rule && res[res.length-1].rule.wordType === 'O') {
+    if ( IMatch.aAnySuccessorOperatorNames.indexOf(res[res.length-1].rule.matchedString) >= 0)
+    {
+      debuglog(()=>' isSuccessorOperator' + JSON.stringify( res[res.length-1] ));
       return true;
+    }
   }
   return false;
 }
@@ -418,11 +427,14 @@ export function expandTokenMatchesToSentences2(tokens: string[], tokenMatches: A
     //  debuglog("now at " + k + ":" + l + " >" + JSON.stringify(nextBase))
     res = nextBase;
   }
-  debuglogV(debuglogV.enabled ? ("APPENDING TO RES" + 0 + ":" + l + " >" + JSON.stringify(nextBase)) : '-');
+  debuglogV(debuglogV.enabled ? ("APPENDING TO RES1#" + 0 + ":" + l + " >" + JSON.stringify(nextBase)) : '-');
   res = res.filter( (sentence,index) => {
     var full = 0xFFFFFFFF;
     //console.log(`sentence  ${index}  \n`)
-    return sentence.every( (word,index2) => { full = full & word.rule.bitSentenceAnd;
+    return sentence.every( (word,index2) => {
+      if (!word.rule)
+        return true;
+      full = (full & word.rule.bitSentenceAnd);
       //console.log(` word  ${index2} ${full} "${word.matchedString}" ${word.rule.bitSentenceAnd}  ${tokens[index2]} \n`);
       return full !== 0 } )
   });

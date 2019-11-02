@@ -304,6 +304,42 @@ exports.testParseEndingWith = function (test) {
   });
 };
 
+
+
+
+exports.testParseAndContains2x = function (test) {
+  test.expect(2);
+  getModel().then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+
+    var s = 'fiori apps, support component with \"fiori app\" contains \"ampi\" and support component contains \"FIO\"';
+    var res = Erbase.processString(s, theModel.rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+    var sStrings = lexingResult.map(t => t.image);
+    debuglog(sStrings.join('\n'));
+    test.deepEqual(sStrings,[ 'CAT',
+      'CAT',
+      'with',
+      'CAT',
+      'containing',
+      'ANY',
+      'and',
+      'CAT',
+      'containing',
+      'ANY' ]);
+    var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
+    // /test.deepEqual(parsingResult, {})
+    debuglog('\n' + Ast.astToText(parsingResult));
+    test.deepEqual(Ast.astToText(parsingResult),
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  LIST -1(2)\n    OPContains 4(2)\n      CAT 3\n      ANY 5\n    OPContains 8(2)\n      CAT 7\n      ANY 9\n'
+    );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+
 exports.testParseSimpleEndingWith = function (test) {
   test.expect(2);
   getModel().then((theModel) => {

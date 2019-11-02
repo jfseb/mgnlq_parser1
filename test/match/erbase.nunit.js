@@ -344,6 +344,251 @@ exports.testTokenizeTCodeGRM3 = function (test) {
   });
 };
 
+exports.testContaining2CCNoAlias = function (test) {
+  getRules().then((args) => {
+    var [rules, mongoose] = args;
+    var s = 'fiori apps, support component with \"fiori app\" containing \"ampi\" and ApplicationComponent containing \"FIO\"';
+    var res = Erbase.processString(s, rules, words );
+    // 'SemanticObject, SemanticAction with SemanticObject starting with Sup', rules, words);
+    debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
+
+
+    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
+    [ [ 'fiori apps=>AppName/category/2 C4',
+    'support component=>ApplicationComponent/category/2 C4',
+    'with=>with/filler I512',
+    'fiori app=>AppName/category C4',
+    'containing=>containing/operator O512',
+    'ampi=>ampi/any A4096',
+    'and=>and/filler I512',
+    'ApplicationComponent=>ApplicationComponent/category C4',
+    'containing=>containing/operator O512',
+    'FIO=>FIO/any A4096' ],
+  [ 'fiori apps=>AppName/category/2 F32',
+    'support component=>ApplicationComponent/category/2 F32',
+    'with=>with/filler I512',
+    'fiori app=>AppName/category F32',
+    'containing=>containing/operator O512',
+    'ampi=>ampi/any A4096',
+    'and=>and/filler I512',
+    'ApplicationComponent=>ApplicationComponent/category F32',
+    'containing=>containing/operator O512',
+    'FIO=>FIO/any A4096' ] ]
+      , ' correct result ');
+    test.done();
+    releaseRules(mongoose);
+  });
+};
+
+// TODO contains yield empty!
+exports.testContains2CC = function (test) {
+  getRules().then((args) => {
+    var [rules, mongoose] = args;
+    var s = 'fiori apps, support component with \"fiori app\" contains \"ampi\" and ApplicationComponent contains \"FIO\"';
+    var res = Erbase.processString(s, rules, words );
+    debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
+
+    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
+    [ [ 'fiori apps=>AppName/category/2 C4',
+    'support component=>ApplicationComponent/category/2 C4',
+    'with=>with/filler I512',
+    'fiori app=>AppName/category C4',
+    'contains=>containing/operator O512',
+    'ampi=>ampi/any A4096',
+    'and=>and/filler I512',
+    'ApplicationComponent=>ApplicationComponent/category C4',
+    'contains=>containing/operator O512',
+    'FIO=>FIO/any A4096' ],
+  [ 'fiori apps=>AppName/category/2 F32',
+    'support component=>ApplicationComponent/category/2 F32',
+    'with=>with/filler I512',
+    'fiori app=>AppName/category F32',
+    'contains=>containing/operator O512',
+    'ampi=>ampi/any A4096',
+    'and=>and/filler I512',
+    'ApplicationComponent=>ApplicationComponent/category F32',
+    'contains=>containing/operator O512',
+    'FIO=>FIO/any A4096' ] ]
+      , ' correct result ');
+    test.done();
+    releaseRules(mongoose);
+  });
+};
+
+
+
+exports.testContaining2XAS = function (test) {
+  getRules().then((args) => {
+    var [rules, mongoose] = args;
+    var s = 'fioriapps, support component with \"fiori app\" containing "ampi" and  ApplicationComponent containing "FIO"';
+{
+    var res = Erbase.processString(s, rules, words );
+    // 'SemanticObject, SemanticAction with SemanticObject starting with Sup', rules, words);
+    debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
+
+
+    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
+    [ [ 'fioriapps=>AppName/category C4',
+    'support component=>ApplicationComponent/category/2 C4',
+    'with=>with/filler I512',
+    'fiori app=>AppName/category C4',
+    'containing=>containing/operator O512',
+    'ampi=>ampi/any A4096',
+    'and=>and/filler I512',
+    'ApplicationComponent=>ApplicationComponent/category C4',
+    'containing=>containing/operator O512',
+    'FIO=>FIO/any A4096' ],
+  [ 'fioriapps=>AppName/category F32',
+    'support component=>ApplicationComponent/category/2 F32',
+    'with=>with/filler I512',
+    'fiori app=>AppName/category F32',
+    'containing=>containing/operator O512',
+    'ampi=>ampi/any A4096',
+    'and=>and/filler I512',
+    'ApplicationComponent=>ApplicationComponent/category F32',
+    'containing=>containing/operator O512',
+    'FIO=>FIO/any A4096' ] ]
+      , ' correct result ');
+
+}
+/*
+    var res = Erbase.tokenizeString(s, rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    console.log(JSON.stringify(res));
+    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
+    [ [ 'fiori apps=>AppName/category/2 C4',
+    'fiori apps=>AppName/category/2 F32' ],
+  [],
+  [ 'support component=>ApplicationComponent/category/2 C4',
+    'support component=>ApplicationComponent/category/2 C8',
+    'support component=>ApplicationComponent/category/2 F32' ],
+  [ 'component=>ApplicationComponent/category C4',
+    'component=>ApplicationComponent/category C8',
+    'component=>ApplicationComponent/category F32' ],
+  [ 'with=>with/filler I512' ],
+  [ 'fiori app=>AppName/category C4',
+    'fiori app=>AppName/category F32' ],
+  [ 'containing=>containing/operator O512' ],
+  [],
+  [ 'and=>and/filler I512' ],
+  [ 'ApplicationComponent=>ApplicationComponent/category C4',
+    'ApplicationComponent=>ApplicationComponent/category C8',
+    'ApplicationComponent=>ApplicationComponent/category F32' ],
+  [ 'containing=>containing/operator O512' ],
+  [] ]
+      , ' correct result ');
+      */
+    test.done();
+    releaseRules(mongoose);
+  });
+};
+
+
+exports.testContains2XAC = function (test) {
+  getRules().then((args) => {
+    var [rules, mongoose] = args;
+    var s = 'fiori apps, support component with \"fiori app\" contains \"ampi\" and ApplicationComponent contains \"FIO\"';
+    var res = Erbase.tokenizeString(s, rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    //console.log(JSON.stringify(res));
+    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
+    [ [ 'fiori apps=>AppName/category/2 C4',
+    'fiori apps=>AppName/category/2 F32' ],
+  [],
+  [ 'support component=>ApplicationComponent/category/2 C4',
+    'support component=>ApplicationComponent/category/2 C8',
+    'support component=>ApplicationComponent/category/2 F32' ],
+  [ 'component=>ApplicationComponent/category C4',
+    'component=>ApplicationComponent/category C8',
+    'component=>ApplicationComponent/category F32' ],
+  [ 'with=>with/filler I512' ],
+  [ 'fiori app=>AppName/category C4',
+    'fiori app=>AppName/category F32' ],
+  [ 'contains=>containing/operator O512' ],
+  [],
+  [ 'and=>and/filler I512' ],
+  [ 'ApplicationComponent=>ApplicationComponent/category C4',
+    'ApplicationComponent=>ApplicationComponent/category C8',
+    'ApplicationComponent=>ApplicationComponent/category F32' ],
+  [ 'contains=>containing/operator O512' ],
+  [] ]
+      , ' correct result ');
+    test.done();
+    releaseRules(mongoose);
+  });
+};
+
+exports.testContains21xNQ= function (test) {
+  getRules().then((args) => {
+    var [rules, mongoose] = args;
+    var s = 'fiori apps, support component witj ApplicationComponent contains sdfs';
+    var res = Erbase.tokenizeString(s, rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    //console.log(JSON.stringify(res));
+    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
+    [ [ 'fiori apps=>AppName/category/2 C4',
+    'fiori apps=>AppName/category/2 F32' ],
+  [],
+  [ 'support component=>ApplicationComponent/category/2 C4',
+    'support component=>ApplicationComponent/category/2 C8',
+    'support component=>ApplicationComponent/category/2 F32' ],
+  [ 'component=>ApplicationComponent/category C4',
+    'component=>ApplicationComponent/category C8',
+    'component=>ApplicationComponent/category F32' ],
+  [],
+  [ 'ApplicationComponent=>ApplicationComponent/category C4',
+    'ApplicationComponent=>ApplicationComponent/category C8',
+    'ApplicationComponent=>ApplicationComponent/category F32' ],
+  [ 'contains=>containing/operator O512' ],
+  [] ],
+  'correct result ');
+    test.done();
+    releaseRules(mongoose);
+  });
+};
+
+
+exports.testContains2XACNQ = function (test) {
+  getRules().then((args) => {
+    var [rules, mongoose] = args;
+    var s = 'fiori apps, support component with \"fiori app\" contains ampi and ApplicationComponent contains FIO     ApplicationComponent starting with FIO';
+    var res = Erbase.tokenizeString(s, rules, words);
+    debuglog('res > ' + JSON.stringify(res, undefined, 2));
+    //console.log(JSON.stringify(res));
+    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
+    [ [ 'fiori apps=>AppName/category/2 C4',
+    'fiori apps=>AppName/category/2 F32' ],
+  [],
+  [ 'support component=>ApplicationComponent/category/2 C4',
+    'support component=>ApplicationComponent/category/2 C8',
+    'support component=>ApplicationComponent/category/2 F32' ],
+  [ 'component=>ApplicationComponent/category C4',
+    'component=>ApplicationComponent/category C8',
+    'component=>ApplicationComponent/category F32' ],
+  [ 'with=>with/filler I512' ],
+  [ 'fiori app=>AppName/category C4',
+    'fiori app=>AppName/category F32' ],
+  [ 'contains=>containing/operator O512' ],
+  [],
+  [ 'and=>and/filler I512' ],
+  [ 'ApplicationComponent=>ApplicationComponent/category C4',
+    'ApplicationComponent=>ApplicationComponent/category C8',
+    'ApplicationComponent=>ApplicationComponent/category F32' ],
+  [ 'contains=>containing/operator O512' ],
+  [],
+  [ 'ApplicationComponent=>ApplicationComponent/category C4',
+    'ApplicationComponent=>ApplicationComponent/category C8',
+    'ApplicationComponent=>ApplicationComponent/category F32' ],
+  [ 'starting with=>starting with/operator/2 O512' ],
+  [ 'with=>with/filler I512' ],
+  [] ],
+  'correct result ');
+    test.done();
+    releaseRules(mongoose);
+  });
+};
+
+
 exports.testTokenizeInteger = function (test) {
   debugger;
   getRules().then((args) => {
@@ -688,6 +933,116 @@ exports.testProcessStringStartingWith = function (test) {
         _ranking: 0.9
       }
       , ' correct result ');
+
+
+    test.done();
+    releaseRules(mongoose);
+  });
+};
+
+
+exports.testProcessStringContainsOK = function (test) {
+  // debuglog(JSON.stringify(ifr, undefined, 2))
+  //console.log(theModel.mRules);
+  getRules().then((args) => {
+    var [rules, mongoose] = args;
+
+    var res = Erbase.processString('SemanticObject contains Sup', rules, words);
+    debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
+
+    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
+    [ [ 'SemanticObject=>SemanticObject/category C4',
+    'contains=>containing/operator O512',
+    'Sup=>Sup/any A4096' ],
+  [ 'SemanticObject=>SemanticObject/category C8',
+    'contains=>containing/operator O512',
+    'Sup=>Sup/any A4096' ],
+  [ 'SemanticObject=>SemanticObject/category F32',
+    'contains=>containing/operator O512',
+    'Sup=>Sup/any A4096' ] ]
+      , ' correct result ');
+    test.done();
+    releaseRules(mongoose);
+  });
+};
+
+exports.testProcessStringContainingOK = function (test) {
+  // debuglog(JSON.stringify(ifr, undefined, 2))
+  //console.log(theModel.mRules);
+  getRules().then((args) => {
+    var [rules, mongoose] = args;
+
+    var res = Erbase.processString('SemanticObject containing Sup', rules, words);
+    debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
+
+    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
+    [ [ 'SemanticObject=>SemanticObject/category C4',
+    'containing=>containing/operator O512',
+    'Sup=>Sup/any A4096' ],
+  [ 'SemanticObject=>SemanticObject/category C8',
+    'containing=>containing/operator O512',
+    'Sup=>Sup/any A4096' ],
+  [ 'SemanticObject=>SemanticObject/category F32',
+    'containing=>containing/operator O512',
+    'Sup=>Sup/any A4096' ] ]
+      , ' correct result ');
+    test.done();
+    releaseRules(mongoose);
+  });
+};
+
+
+exports.testProcessStringContains = function (test) {
+  // debuglog(JSON.stringify(ifr, undefined, 2))
+  //console.log(theModel.mRules);
+  getRules().then((args) => {
+    var [rules, mongoose] = args;
+
+    var res = Erbase.processString('SemanticObject, SemanticAction with SemanticObject containing Sup', rules, words);
+    debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
+
+    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
+    [ [ 'SemanticObject=>SemanticObject/category C4',
+    'SemanticAction=>SemanticAction/category C4',
+    'with=>with/filler I512',
+    'SemanticObject=>SemanticObject/category C4',
+    'containing=>containing/operator O512',
+    'Sup=>Sup/any A4096' ],
+  [ 'SemanticObject=>SemanticObject/category C8',
+    'SemanticAction=>SemanticAction/category C8',
+    'with=>with/filler I512',
+    'SemanticObject=>SemanticObject/category C8',
+    'containing=>containing/operator O512',
+    'Sup=>Sup/any A4096' ],
+  [ 'SemanticObject=>SemanticObject/category F32',
+    'SemanticAction=>SemanticAction/category F32',
+    'with=>with/filler I512',
+    'SemanticObject=>SemanticObject/category F32',
+    'containing=>containing/operator O512',
+    'Sup=>Sup/any A4096' ] ]
+      , ' correct result ');
+      /*
+    test.deepEqual(res.sentences[0][4],
+      {
+        string: 'Sup',
+        matchedString: 'Sup',
+        category: 'any',
+        rule:
+        {
+          category: 'any',
+          word: 'Sup',
+          lowercaseword: 'sup',
+          type: 0,
+          matchedString: 'Sup',
+          exactOnly: true,
+          bitindex: 4096,
+          bitSentenceAnd: 4095,
+          wordType: 'A',
+          _ranking: 0.9
+        },
+        _ranking: 0.9
+      }
+      , ' correct result '); */
 
 
     test.done();
@@ -1404,10 +1759,10 @@ exports.testProcessStringelementNamesSep = function (test) {
 exports.testExpandEmtpy = function (test) {
   test.ok(1);
   var src = [
-    [{ string: 'a', a: 1 },
-    { string: 'b', a: 1 }],
+    [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } },
+    { string: 'b', a: 1 , rule: { bitSentenceAnd: 0x02 }}],
     [],
-    [{ string: '3', a: 1 }]
+    [{ string: '3', a: 1 , rule: { bitSentenceAnd: 0x02 }}]
   ];
   var res = Erbase.expandTokenMatchesToSentences(['a', 'b', 'c'], src);
   test.deepEqual(res.sentences, []);
@@ -1499,19 +1854,19 @@ exports.testExpandEmtpy2Errors = function (test) {
 exports.testExpand0 = function (test) {
   test.ok(1);
   var src = [
-    [{ string: 'a', a: 1 },
-    { string: 'b', a: 1 }],
-    [{ string: '1', a: 1 },
-    { string: '2', a: 1 },
-    { string: '3', a: 1 }]
+    [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } },
+    { string: 'b', a: 1, rule: { bitSentenceAnd: 0x02 } }],
+    [{ string: '1', a: 1, rule: { bitSentenceAnd: 0x02 } },
+    { string: '2', a: 1 ,rule: { bitSentenceAnd: 0x02 }},
+    { string: '3', a: 1.,rule: { bitSentenceAnd: 0x02 } }]
   ];
   var res = Erbase.expandTokenMatchesToSentences([], src);
-  test.deepEqual(res.sentences, [[{ string: 'a', a: 1 }, { string: '1', a: 1 }],
-  [{ string: 'b', a: 1 }, { string: '1', a: 1 }],
-  [{ string: 'a', a: 1 }, { string: '2', a: 1 }],
-  [{ string: 'b', a: 1 }, { string: '2', a: 1 }],
-  [{ string: 'a', a: 1 }, { string: '3', a: 1 }],
-  [{ string: 'b', a: 1 }, { string: '3', a: 1 }]], 'correct result');
+  test.deepEqual(res.sentences, [[{ string: 'a', a: 1 ,rule: { bitSentenceAnd: 0x02 }}, { string: '1', a: 1,rule: { bitSentenceAnd: 0x02 } }],
+  [{ string: 'b', a: 1,rule: { bitSentenceAnd: 0x02 } }, { string: '1', a: 1, rule: { bitSentenceAnd: 0x02 } }],
+  [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '2', a: 1, rule: { bitSentenceAnd: 0x02 } }],
+  [{ string: 'b', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '2', a: 1, rule: { bitSentenceAnd: 0x02 } }],
+  [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '3', a: 1, rule: { bitSentenceAnd: 0x02 } }],
+  [{ string: 'b', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '3', a: 1, rule: { bitSentenceAnd: 0x02 } }]], 'correct result');
   test.done();
 };
 

@@ -924,7 +924,7 @@ function expandMatchArr(deep) {
             //  debuglog("now at " + k + ":" + l + " >" + JSON.stringify(nextBase))
             vecs = nextBase;
         }
-        debuglogV(debuglogV.enabled ? ("APPENDING TO RES" + i + ":" + l + " >" + JSON.stringify(nextBase)) : '-');
+        debuglogV(debuglogV.enabled ? ("APPENDING TO RES3#" + i + ":" + l + " >" + JSON.stringify(nextBase)) : '-');
         res = res.concat(vecs);
     }
     return res;
