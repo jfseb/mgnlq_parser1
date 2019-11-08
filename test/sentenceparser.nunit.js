@@ -312,7 +312,7 @@ exports.testParseAndContains2x = function (test) {
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
-    var s = 'fiori apps, support component with \"fiori app\" contains \"ampi\" and support component contains \"FIO\"';
+    var s = 'fiori apps, support component with "fiori app" contains "ampi" and support component contains "FIO"';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
