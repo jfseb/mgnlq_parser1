@@ -164,7 +164,6 @@ export function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISen
       debuglog(() => '!!!!adding more than ' + numberarg + ' for category ' + category );
       //TODO //res = addFilterToMatch(res, mongocatfullpath, { 'count' ( mongocatfullpath ) gt numberarg , "i") });
       var argpath = '$' + mongocatfullpath;
-      console.log(' this must be $standort' + argpath);
       res = addFilterExpr( res,
         { $expr: { $gt: [ { $switch: { branches: [ { case: { $isArray : argpath }, then: { $size: argpath } }], default : 1 }}
                         , numberarg ]}} );
@@ -184,9 +183,21 @@ export function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISen
 
     }
     else if (n.type === NT.OPLessThan) {
-      throw new Error(" like MoreThan ");
+      var numberarg = getNumberArg(n.children[0], sentence);
+      debuglog(() => '!!!!adding more than ' + numberarg + ' for category ' + category );
+      //TODO //res = addFilterToMatch(res, mongocatfullpath, { 'count' ( mongocatfullpath ) gt numberarg , "i") });
+      var argpath = '$' + mongocatfullpath;
+      res = addFilterExpr( res,
+        { $expr: { $lt: [ { $switch: { branches: [ { case: { $isArray : argpath }, then: { $size: argpath } }], default : 1 }}
+                        , numberarg ]}} );
     } else if (n.type === NT.OPExactly) {
-      throw new Error(" like MoreThan ");
+      var numberarg = getNumberArg(n.children[0], sentence);
+      debuglog(() => '!!!!adding more than ' + numberarg + ' for category ' + category );
+      //TODO //res = addFilterToMatch(res, mongocatfullpath, { 'count' ( mongocatfullpath ) gt numberarg , "i") });
+      var argpath = '$' + mongocatfullpath;
+      res = addFilterExpr( res,
+        { $expr: { $eq: [ { $switch: { branches: [ { case: { $isArray : argpath }, then: { $size: argpath } }], default : 1 }}
+                        , numberarg ]}} );
     }
     else if (n.type === NT.OPContains) {
       res = addFilterToMatch(res, mongocatfullpath, { $regex: new RegExp(`${fact.toLowerCase()}`, "i") });

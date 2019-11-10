@@ -16,6 +16,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 const mgnlq_model_1 = require("mgnlq_model");
+const debug = require("debugf");
+var debuglog = debug('word');
 exports.Category = {
     CAT_CATEGORY: "category",
     CAT_DOMAIN: "domain",
@@ -23,6 +25,7 @@ exports.Category = {
     CAT_FILLER: "filler",
     CAT_NUMBER: "number",
     CAT_TOOL: "tool",
+    CAT_ANY: "any",
     _aCatFillers: ["filler"],
     isDomain: function (sCategory) {
         return sCategory === exports.Category.CAT_DOMAIN;
@@ -79,6 +82,9 @@ exports.WordType = {
             return mgnlq_model_1.IFModel.WORDTYPE.DOMAIN;
         if (sCategory == exports.Category.CAT_TOOL)
             return mgnlq_model_1.IFModel.WORDTYPE.TOOL;
+        if (sCategory == exports.Category.CAT_ANY)
+            return mgnlq_model_1.IFModel.WORDTYPE.ANY;
+        debug(" unable to map to category " + sCategory);
         return undefined;
     }
 };

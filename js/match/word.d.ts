@@ -21,6 +21,7 @@ export declare const Category: {
     CAT_FILLER: string;
     CAT_NUMBER: string;
     CAT_TOOL: string;
+    CAT_ANY: string;
     _aCatFillers: string[];
     isDomain: (sCategory: string) => boolean;
     isCategory: (sCategory: string) => boolean;

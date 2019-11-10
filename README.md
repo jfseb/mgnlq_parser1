@@ -49,6 +49,13 @@ usage:
 ```
 
 
+# Adding an operator
+
+    1   Add to operators.json including synonyms
+    2   Add non-synonyms to mgnlq_model ifmatch.ts
+    3   Add tests to erbase.nunit.js
+    4   Add queryies to
+
 # scratch
 
 Filtering elements in an array

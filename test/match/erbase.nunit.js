@@ -1197,8 +1197,27 @@ exports.testWithMoreThan3 = function (test) {
   });
 };
 
+exports.testWithSmallerOp = function (test) {
+  getRules().then((args) => {
+    var [rules, model] = args;
+    var res = Erbase.processString('sendertyp gründungsjahr < 133434 sender', rules, words, model.operators);
+    debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-exports.testWithMoreThan0o2X = function (test) {
+    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
+    [ [ 'sendertyp=>sendertyp/category C2',
+    'gründungsjahr=>gründungsjahr/category C2',
+    '<=></operator O512',
+    '133434=>133434/any A4096',
+    'sender=>sender/category C2' ] ]
+      , ' correct distinct result 2 ');
+
+    test.done();
+    releaseRules(model);
+  });
+};
+
+
+exports.testWithLessThanxxxx = function (test) {
   getRules().then((args) => {
     var [rules, model] = args;
     var res = Erbase.processString('12 with less than 13 standort', rules, words, model.operators);
@@ -1217,6 +1236,84 @@ exports.testWithMoreThan0o2X = function (test) {
   });
 };
 
+
+var operatorTestCases = {
+  '12 with less than 13 standort': [['12=>12/number N512',
+    'with=>with/filler I512',
+    'less than=>less than/operator/2 O512',
+    '13=>13/number N512',
+    'standort=>standort/category C2']],
+  "gründungsjahr < 1972": [ [ 'gründungsjahr=>gründungsjahr/category C2',
+  '<=></operator O512',
+  '1972=>1972/any A4096' ] ],
+  "gründungsjahr <= 1972": [ [ 'gründungsjahr=>gründungsjahr/category C2',
+  '<==><=/operator O512',
+  '1972=>1972/any A4096' ] ],
+  "gründungsjahr != 1972": [ [ 'gründungsjahr=>gründungsjahr/category C2',
+  '==>=/operator O512',
+  '1972=>1972/any A4096' ] ],
+  "gründungsjahr = 1972": [ [ 'gründungsjahr=>gründungsjahr/category C2',
+  '==>=/operator O512',
+  '1972=>1972/any A4096' ] ],
+  "gründungsjahr > 1972": [ [ 'gründungsjahr=>gründungsjahr/category C2',
+  '>=>>/operator O512',
+  '1972=>1972/any A4096' ] ],
+  "gründungsjahr > 178344": [ [ 'gründungsjahr=>gründungsjahr/category C2',
+  '>=>>/operator O512',
+  '178344=>178344/any A4096' ] ],
+  "gründungsjahr > ADF": [ [ 'gründungsjahr=>gründungsjahr/category C2',
+  '>=>>/operator O512',
+  'ADF=>ADF/any A4096' ] ],
+  "gründungsjahr >= 1972": [ [ 'gründungsjahr=>gründungsjahr/category C2',
+  '>==>>=/operator O512',
+  '1972=>1972/any A4096' ] ],
+  "not existing betriebsjahr": [],
+  "not existing caesium": [],
+  "not existing element name": [['not existing=>not existing/operator/2 O512',
+    'element name=>element name/category/2 C16'],
+  ['not existing=>not existing/operator/2 O512',
+    'element name=>element name/category/2 C64'],
+  ['not=>No/element symbol F16',
+    'existing=>existing/operator O512',
+    'element name=>element name/category/2 C16'],
+  ['not existing=>not existing/operator/2 O512',
+    'element name=>element number/category/2 C16'],
+  ['not=>No/element symbol F16',
+    'existing=>existing/operator O512',
+    'element name=>element number/category/2 C16'] ],
+    "existing betriebsende" : [['existing=>existing/operator O512',
+      'betriebsende=>betriebsende/category C2']],
+    "order by sendertyp" : [ [ 'order by=>order by/operator/2 O512',
+    'sendertyp=>sendertyp/category C2' ] ],
+    "order by gründungsjahr" : [ [ 'order by=>order by/operator/2 O512',
+    'gründungsjahr=>gründungsjahr/category C2' ] ],
+    "order descending by sender" : [ [ 'order descending by=>order descending by/operator/3 O512',
+    'sender=>sender/category C2' ] ],
+    "order by caesium" : [],
+    "order by element number" : [['order by=>order by/operator/2 O512',
+      'element number=>element number/category/2 C16'],
+    ['order by=>order by/operator/2 O512',
+      'element number=>element name/category/2 C16'],
+    ['order by=>order by/operator/2 O512',
+      'element number=>element name/category/2 C64']]
+};
+
+
+exports.testOperators = function (test) {
+  getRules().then((args) => {
+    var [rules, model] = args;
+    Object.getOwnPropertyNames(operatorTestCases).forEach(key => {
+      var sentence = key;
+      var result = operatorTestCases[key];
+      var res = Erbase.processString(sentence, rules, words, model.operators);
+      debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
+      test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
+        result, ' correct distinct result for ' + sentence);
+    });
+    test.done();
+    releaseRules(model);
+  });
+};
 exports.testWithMoreThanoNC = function (test) {
   getRules().then((args) => {
     var [rules, model] = args;

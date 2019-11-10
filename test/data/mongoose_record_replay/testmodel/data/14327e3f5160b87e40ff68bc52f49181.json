@@ -10,14 +10,14 @@
         "category_synonyms": [
           "name"
         ],
-        "_id": "5dbc49e604edbc147889aa63",
+        "_id": "5dc72788620bbf743865a1df",
         "category": "element name",
         "category_description": "name of the philosophical element",
         "wordindex": true
       },
       {
         "category_synonyms": [],
-        "_id": "5dbc49e604edbc147889aa62",
+        "_id": "5dc72788620bbf743865a1de",
         "category": "element properties"
       }
     ],

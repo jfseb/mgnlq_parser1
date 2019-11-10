@@ -23,6 +23,11 @@
 import * as IMatch from './iferbase';
 import { IFModel } from 'mgnlq_model';
 
+
+import * as debug from 'debugf';
+
+var debuglog = debug('word');
+
 export const Category = {
   CAT_CATEGORY :  "category",
   CAT_DOMAIN :  "domain",
@@ -30,6 +35,7 @@ export const Category = {
   CAT_FILLER : "filler",
   CAT_NUMBER : "number",
   CAT_TOOL : "tool",
+  CAT_ANY  : "any",
   _aCatFillers : ["filler"],
   isDomain : function(sCategory : string )  : boolean{
     return sCategory === Category.CAT_DOMAIN;
@@ -91,6 +97,9 @@ export const WordType = {
       return IFModel.WORDTYPE.DOMAIN;
     if( sCategory == Category.CAT_TOOL )
       return IFModel.WORDTYPE.TOOL;
+    if ( sCategory == Category.CAT_ANY )
+      return IFModel.WORDTYPE.ANY;
+    debug(" unable to map to category " + sCategory );
     return undefined;
   }
 }
