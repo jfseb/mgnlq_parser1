@@ -12,10 +12,15 @@ export declare function getFactForNode(nodeFact: AST.ASTNode, sentence: IFErBase
 export declare function makeMongoName(s: string): string;
 export declare function addFilterToMatch(res: any, cat: any, filter: any): any;
 export declare function addFilterExpr(res: any, expr: any): any;
+export declare function addObjectProp(src: any, key: string, value: any): any;
+export declare function addSortExpression(res: any, expr: any): any;
 export declare function getNumberArg(node: AST.ASTNode, sentence: IFErBase.ISentence): number;
-export declare function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISentence, mongoMap: IFModel.CatMongoMap): {
+export declare function isArray(mongoHandleRaw: IFModel.IModelHandleRaw, domain: string, category: string): boolean;
+export declare function amendCategoryList(extractSortResult: any[], catList: string[]): string[];
+export declare function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISentence, mongoMap: IFModel.CatMongoMap, domain: string, mongoHandleRaw: IFModel.IModelHandleRaw): {
     $match: {};
 };
+export declare function extractExplicitSortFromAst(node: AST.ASTNode, sentence: IFErBase.ISentence, mongoMap: IFModel.CatMongoMap, domain: string, mongoHandleRaw: IFModel.IModelHandleRaw): ExplicitSort[];
 export declare function makeMongoGroupFromAst(categoryList: string[], mongoMap: IFModel.CatMongoMap): {
     $group: {
         _id: {};
@@ -34,6 +39,14 @@ export declare function makeMongoProjectionFromAst(categoryList: string[], mongo
     };
 };
 export declare function makeMongoSortFromAst(categoryList: string[], mongoMap: IFModel.CatMongoMap): {
+    $sort: {};
+};
+export interface ExplicitSort {
+    categoryName: string;
+    ascDesc: number;
+    mongocatfullpath: string;
+}
+export declare function makeMongoExplicitSort(explicitSort: ExplicitSort[], categoryList: string[], mongoMap: IFModel.CatMongoMap): {
     $sort: {};
 };
 export declare function makeMongoMatchF(filters: IFilter[]): {

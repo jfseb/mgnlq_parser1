@@ -1,6 +1,6 @@
 [
   {
-    "_id": "5dc72788620bbf743865a22f",
+    "_id": "5dc84b5dc31bee1eb45dee9f",
     "operators": {
       "containing": {
         "arity": 2,
@@ -112,7 +112,8 @@
             "category"
           ],
           [
-            "any"
+            "any",
+            "number"
           ]
         ]
       },
@@ -124,7 +125,8 @@
             "category"
           ],
           [
-            "any"
+            "any",
+            "number"
           ]
         ]
       },
@@ -136,7 +138,8 @@
             "category"
           ],
           [
-            "any"
+            "any",
+            "number"
           ]
         ]
       },
@@ -148,7 +151,8 @@
             "category"
           ],
           [
-            "any"
+            "any",
+            "number"
           ]
         ]
       },
@@ -159,7 +163,8 @@
             "category"
           ],
           [
-            "any"
+            "any",
+            "number"
           ]
         ]
       },
@@ -170,7 +175,8 @@
             "category"
           ],
           [
-            "any"
+            "any",
+            "number"
           ]
         ]
       },
@@ -209,6 +215,22 @@
             "category"
           ]
         ]
+      },
+      "left_paren": {
+        "arity": 0,
+        "argcategory": []
+      },
+      "right_paren": {
+        "arity": 0,
+        "argcategory": []
+      },
+      "logical_or": {
+        "arity": 0,
+        "argcategory": []
+      },
+      "logical_and": {
+        "arity": 0,
+        "argcategory": []
       }
     },
     "synonyms": {

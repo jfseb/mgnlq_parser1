@@ -2,10 +2,10 @@ import { IFErBase as IFErBase } from './match/er_index';
 import * as chevrotain from 'chevrotain';
 import * as AST from './ast';
 import { IFModel as IFModel } from 'mgnlq_model';
-export declare function makeToken(t: IFErBase.IWord, index: number, T: any): {
+export declare function makeToken(t: IFErBase.IWord, index: number, OL: any): {
     image: string;
-    startOffset: number;
     bearer: IFErBase.IWord;
+    startOffset: number;
     tokenType: any;
 };
 export declare function getLexer(): any;

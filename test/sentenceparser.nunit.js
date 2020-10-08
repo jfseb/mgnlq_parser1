@@ -412,6 +412,70 @@ exports.testParseWithEndingWithOne = function (test) {
 };
 
 
+var testDataOperators = [
+  {
+    sentence: 'more than 1234 sender',
+    cattokens : ['more than', 'NUMBER', 'CAT'],
+    startrule : 'MoreThanLessThanExactly',
+    ast : 'OPMoreThan 0(2)\n  NUMBER 1\n  CAT 2\n'
+  },
+  {
+    sentence: 'existing betriebende',
+    cattokens :[ 'existing', 'CAT' ],
+    startrule : 'MoreThanLessThanExactly',
+    ast : 'OPExisting 0(1)\n  CAT 1\n'
+  },
+  {
+    sentence: 'not existing betriebsende',
+    cattokens : [ 'not existing', 'CAT' ],
+    startrule : 'MoreThanLessThanExactly',
+    ast : 'OPNotExisting 0(1)\n  CAT 1\n'
+  },
+  {
+    sentence: 'gründungsjahr < 1950',
+    cattokens : ['CAT', '<', 'ANY'],
+    startrule : 'catListOpMore',
+    ast : 'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPLT 1(2)\n      CAT 0\n      ANY 2\n'
+  },
+  {
+    sentence: 'sender >= 20',
+    cattokens : ['CAT', '>=', 'ANY'],
+    startrule : 'catListOpMore',
+    ast : 'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPGE 1(2)\n      CAT 0\n      ANY 2\n'
+  }
+];
+
+
+exports.testParseOperators = function (test) {
+  test.expect(2 * testDataOperators.length);
+  getModel().then((theModel) => {
+    // debuglog(JSON.stringify(ifr, undefined, 2))
+    testDataOperators.forEach( (d,index) => {
+      var s = d.sentence; //'more than 1234 sender';
+      var res = Erbase.processString(s, theModel.rules, words);
+      debuglog('res > ' + JSON.stringify(res, undefined, 2));
+      var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+      var sStrings = lexingResult.map(t => t.image);
+      debuglog(sStrings.join('\n'));
+      test.deepEqual(sStrings, d.cattokens, ' cattokens for ' + index + ' ' + d.sentence);
+      //  [ 'more than', 'NUMBER', 'CAT' ]);
+      var parsingResult = SentenceParser.parse(lexingResult.slice(0),
+        d.startrule ); // 'MoreThanLessThanExactly');
+      // /test.deepEqual(parsingResult, {})
+      debuglog('\n' + Ast.astToText(parsingResult));
+
+      test.deepEqual(Ast.astToText(parsingResult),
+        d.ast
+        // 'OPMoreThan 0(2)\n  NUMBER 1\n  CAT 2\n'
+        , 'proper ast for ' + index + ' ' + d.sentence );
+    });
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+
+
 exports.testParseMoreThanS = function (test) {
   test.expect(2);
   getModel().then((theModel) => {

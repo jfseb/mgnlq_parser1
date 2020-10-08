@@ -1,6 +1,8 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const debug = require("debugf");
+const _ = require("lodash");
+//import * as Model from 'mgnlq_model';
 const mgnlq_model_1 = require("mgnlq_model");
 const debuglog = debug('ast2MQuery');
 const chevrotain = require("chevrotain");
@@ -98,6 +100,20 @@ function addFilterExpr(res, expr) {
 }
 exports.addFilterExpr = addFilterExpr;
 ;
+function addObjectProp(src, key, value) {
+    src[key] = value;
+    return src;
+}
+exports.addObjectProp = addObjectProp;
+function addSortExpression(res, expr) {
+    if (res['$sort']) {
+        _.merge(res['$sort'], expr);
+        return res;
+    }
+    res['$sort'] = expr;
+    return res;
+}
+exports.addSortExpression = addSortExpression;
 function getNumberArg(node, sentence) {
     var startIndex = node && node.bearer && node.bearer.startOffset;
     if (node.type !== ast_1.ASTNodeType.NUMBER) {
@@ -111,7 +127,24 @@ function getNumberArg(node, sentence) {
 }
 exports.getNumberArg = getNumberArg;
 ;
-function makeMongoMatchFromAst(node, sentence, mongoMap) {
+function isArray(mongoHandleRaw, domain, category) {
+    var cat = mgnlq_model_1.Model.getCategoryRec(mongoHandleRaw, domain, category);
+    return _.isArray(cat.type);
+}
+exports.isArray = isArray;
+function amendCategoryList(extractSortResult, catList) {
+    var res = [];
+    extractSortResult.forEach(a => {
+        var name = a.categoryName;
+        if (!catList.includes(name)) {
+            res.push(name);
+        }
+    });
+    res = res.concat(catList);
+    return res;
+}
+exports.amendCategoryList = amendCategoryList;
+function makeMongoMatchFromAst(node, sentence, mongoMap, domain, mongoHandleRaw) {
     debug(AST.astToText(node));
     //console.log("making mongo match " + AST.astToText(node));
     if (!node) {
@@ -128,7 +161,7 @@ function makeMongoMatchFromAst(node, sentence, mongoMap) {
         //console.log(JSON.stringify(theModel.mongoHandle.mongoMaps[mongodomain], undefined,2));
         var mongocatfullpath = mongoMap[category].fullpath; // Model.getMongoosePath(theModel, category); //makeMongoName(cat);
         debuglog(() => `here is the fullpath for ${category} is ${mongocatfullpath} `);
-        var fact = getFactForNode(n.children[1], sentence);
+        var fact = (n.children.length > 1) && getFactForNode(n.children[1], sentence);
         if (n.type === ast_1.ASTNodeType.OPEqIn) {
             res = addFilterToMatch(res, mongocatfullpath, fact);
         }
@@ -138,43 +171,108 @@ function makeMongoMatchFromAst(node, sentence, mongoMap) {
         else if (n.type === ast_1.ASTNodeType.OPEndsWith) {
             debuglog(() => '!!!!adding regex with expression ' + fact.toLowerCase());
             res = addFilterToMatch(res, mongocatfullpath, { $regex: new RegExp(`${fact.toLowerCase()}$`, "i") });
-        }
-        else if (n.type === ast_1.ASTNodeType.OPMoreThan) {
+        } /* else if (n.type === NT.OPMoreThan) {
+          var numberarg = getNumberArg(n.children[0], sentence);
+          debuglog(() => '!!!!adding more than ' + numberarg + ' for category ' + category );
+          //TODO //res = addFilterToMatch(res, mongocatfullpath, { 'count' ( mongocatfullpath ) gt numberarg , "i") });
+          var argpath = '$' + mongocatfullpath;
+          res = addFilterExpr( res,
+            { $expr: { $gt: [ { $switch: { branches: [ { case: { $isArray : argpath }, then: { $size: argpath } }], default : 1 }}
+                            , numberarg ]}} );
+    
+    //
+    //        { $expr: { $gt: [ { $size: '$standort'},1 ]}} );
+    //      ([ { $match : { $expr: { $gt: [ { $size: argpath }, numberarg ]}}}]);
+    // two stage
+    // use $addFields  with 3.4
+    // try also $expr directly
+    //       > db.demomdls.aggregate([ { $project : { standort_size : { $size: '$standort' }, standort:1, sender:1, uu : { $gt:[ { $size: '$standort' },3]} , abx : { $gt:[ "$standort", 1]}}}, { $match: { "standort_size": { $eq: { $size: '$standort'} }}}]);
+    //      > db.demomdls.aggregate([ { $project : { standort_size : { $size: '$standort' }, standort:1, sender:1, uu : { $gt:[ { $size: '$standort' },3]} , abx : { $gt:[ "$standort", 1]}}}, { $match: { "standort_size": { $gt: 1 }}}]);
+    //      { "_id" : ObjectId("5db88a185b66759cfc56bcd4"), "standort" : [ "Berlin", "München", "Frankfurt", "Hamburg", "Bremen" ], "sender" : "ARundfunkD", "standort_size" : 5, "uu" : true, "abx" : true }
+    
+    
+        // exact match: db.demomdls.aggregate([ { $match: { standort : { $size : 3 }}},
+    
+        }*/
+        else if (n.type === ast_1.ASTNodeType.OPLessThan || n.type === ast_1.ASTNodeType.OPMoreThan || n.type == ast_1.ASTNodeType.OPExactly) {
             var numberarg = getNumberArg(n.children[0], sentence);
             debuglog(() => '!!!!adding more than ' + numberarg + ' for category ' + category);
             //TODO //res = addFilterToMatch(res, mongocatfullpath, { 'count' ( mongocatfullpath ) gt numberarg , "i") });
             var argpath = '$' + mongocatfullpath;
-            res = addFilterExpr(res, { $expr: { $gt: [{ $switch: { branches: [{ case: { $isArray: argpath }, then: { $size: argpath } }], default: 1 } },
-                        numberarg] } });
-            //
-            //        { $expr: { $gt: [ { $size: '$standort'},1 ]}} );
-            //      ([ { $match : { $expr: { $gt: [ { $size: argpath }, numberarg ]}}}]);
-            // two stage
-            // use $addFields  with 3.4
-            // try also $expr directly
-            //       > db.demomdls.aggregate([ { $project : { standort_size : { $size: '$standort' }, standort:1, sender:1, uu : { $gt:[ { $size: '$standort' },3]} , abx : { $gt:[ "$standort", 1]}}}, { $match: { "standort_size": { $eq: { $size: '$standort'} }}}]);
-            //      > db.demomdls.aggregate([ { $project : { standort_size : { $size: '$standort' }, standort:1, sender:1, uu : { $gt:[ { $size: '$standort' },3]} , abx : { $gt:[ "$standort", 1]}}}, { $match: { "standort_size": { $gt: 1 }}}]);
-            //      { "_id" : ObjectId("5db88a185b66759cfc56bcd4"), "standort" : [ "Berlin", "München", "Frankfurt", "Hamburg", "Bremen" ], "sender" : "ARundfunkD", "standort_size" : 5, "uu" : true, "abx" : true }
-            // exact match: db.demomdls.aggregate([ { $match: { standort : { $size : 3 }}},
-        }
-        else if (n.type === ast_1.ASTNodeType.OPLessThan) {
-            var numberarg = getNumberArg(n.children[0], sentence);
-            debuglog(() => '!!!!adding more than ' + numberarg + ' for category ' + category);
-            //TODO //res = addFilterToMatch(res, mongocatfullpath, { 'count' ( mongocatfullpath ) gt numberarg , "i") });
-            var argpath = '$' + mongocatfullpath;
-            res = addFilterExpr(res, { $expr: { $lt: [{ $switch: { branches: [{ case: { $isArray: argpath }, then: { $size: argpath } }], default: 1 } },
-                        numberarg] } });
-        }
-        else if (n.type === ast_1.ASTNodeType.OPExactly) {
-            var numberarg = getNumberArg(n.children[0], sentence);
-            debuglog(() => '!!!!adding more than ' + numberarg + ' for category ' + category);
-            //TODO //res = addFilterToMatch(res, mongocatfullpath, { 'count' ( mongocatfullpath ) gt numberarg , "i") });
-            var argpath = '$' + mongocatfullpath;
-            res = addFilterExpr(res, { $expr: { $eq: [{ $switch: { branches: [{ case: { $isArray: argpath }, then: { $size: argpath } }], default: 1 } },
-                        numberarg] } });
+            var extract = [{ $switch: { branches: [{ case: { $isArray: argpath }, then: { $size: argpath } }], default: 1 } },
+                numberarg];
+            switch (n.type) {
+                case ast_1.ASTNodeType.OPLessThan:
+                    res = addFilterExpr(res, { $expr: { $lt: extract } });
+                    break;
+                case ast_1.ASTNodeType.OPMoreThan:
+                    res = addFilterExpr(res, { $expr: { $gt: extract } });
+                    break;
+                case ast_1.ASTNodeType.OPExactly:
+                    res = addFilterExpr(res, { $expr: { $eq: extract } });
+                    break;
+            }
         }
         else if (n.type === ast_1.ASTNodeType.OPContains) {
             res = addFilterToMatch(res, mongocatfullpath, { $regex: new RegExp(`${fact.toLowerCase()}`, "i") });
+        }
+        else if (n.type === ast_1.ASTNodeType.OPGT || n.type === ast_1.ASTNodeType.OPLT
+            || n.type == ast_1.ASTNodeType.OPEQ || n.type == ast_1.ASTNodeType.OPNE
+            || n.type == ast_1.ASTNodeType.OPGE || n.type == ast_1.ASTNodeType.OPLE) {
+            var fact = getFactForNode(n.children[1], sentence);
+            var argpath = '$' + mongocatfullpath;
+            var extract2 = [argpath, `${fact}`];
+            // $switch: { branches: [ { case: { $isArray : argpath }, then: { $size: argpath } }], default : 1 }}
+            var opstr = '$lt';
+            switch (n.type) {
+                case ast_1.ASTNodeType.OPLT:
+                    opstr = '$lt';
+                    break;
+                case ast_1.ASTNodeType.OPGT:
+                    opstr = '$gt';
+                    break;
+                case ast_1.ASTNodeType.OPEQ:
+                    opstr = '$eq';
+                    break;
+                case ast_1.ASTNodeType.OPNE:
+                    opstr = '$ne';
+                    break;
+                case ast_1.ASTNodeType.OPLE:
+                    opstr = '$lte';
+                    break;
+                case ast_1.ASTNodeType.OPGE:
+                    opstr = '$gte';
+                    break;
+            }
+            if (isArray(mongoHandleRaw, domain, category)) {
+                // db.demomdls.aggregate([ { $match: { standort : {  $elemMatch : { '$gte': 'M' }} }  }  ]);
+                var filterobj = makeFilterObj(mongocatfullpath, { $elemMatch: makeFilterObj(opstr, `${fact}`) });
+                res = addFilterExpr(res, filterobj);
+            }
+            else {
+                var filterobj = makeFilterObj(mongocatfullpath, makeFilterObj(opstr, `${fact}`));
+                res = addFilterExpr(res, filterobj);
+            }
+            //var numberarg = getNumberArg(n.children[0], sentence);
+        }
+        else if (n.type === ast_1.ASTNodeType.OPOrderBy || n.type === ast_1.ASTNodeType.OPOrderDescendingBy) {
+            //var ascdesc = (n.type == NT.OPOrderDescendingBy) ? 1 : -1;
+            // res = addSortExpression(res, addObjectProp( {}, mongocatfullpath, ascdesc ) );
+            // TODO  this may be added in the wrong position
+            //  one also has to assure the data is not projected out before
+            //   throw new Error('Expected nodetype NT.OPEqIn but was ' + n.type);
+            // { $sort : { sender : -1 } }`
+        }
+        else if (n.type === ast_1.ASTNodeType.OPNotExisting) {
+            // { item : null }
+            var filterobj = makeFilterObj(mongocatfullpath, null);
+            res = addFilterExpr(res, filterobj);
+            //  throw new Error('Expected nodetype OPExisiting not supported here  NT.OPEqIn but was ' + n.type);
+        }
+        else if (n.type === ast_1.ASTNodeType.OPExisting) {
+            var filterobj = makeFilterObj(mongocatfullpath, { '$exists': true });
+            res = addFilterExpr(res, filterobj);
+            //  throw new Error('Expected nodetype OPExisiting not supported here  NT.OPEqIn but was ' + n.type);
         }
         else {
             throw new Error('Expected nodetype NT.OPEqIn but was ' + n.type);
@@ -183,6 +281,33 @@ function makeMongoMatchFromAst(node, sentence, mongoMap) {
     return { $match: res };
 }
 exports.makeMongoMatchFromAst = makeMongoMatchFromAst;
+function extractExplicitSortFromAst(node, sentence, mongoMap, domain, mongoHandleRaw) {
+    // return an array
+    debug(AST.astToText(node));
+    //console.log("making mongo match " + AST.astToText(node));
+    if (!node) {
+        return [];
+    }
+    if (node.type !== ast_1.ASTNodeType.LIST) {
+        throw new Error('expected different nodetype ' + node.type);
+    }
+    var res = [];
+    node.children.forEach(n => {
+        var category = getCategoryForNodePair(n.children[0], n.children[1], sentence);
+        var mongocatfullpath = mongoMap[category].fullpath; // Model.getMongoosePath(theModel, category); //makeMongoName(cat);
+        var fact = (n.children.length > 1) && getFactForNode(n.children[1], sentence);
+        if (n.type === ast_1.ASTNodeType.OPOrderBy || n.type === ast_1.ASTNodeType.OPOrderDescendingBy) {
+            var ascdesc = (n.type == ast_1.ASTNodeType.OPOrderDescendingBy) ? 1 : -1;
+            res.push({
+                categoryName: category,
+                mongocatfullpath: mongocatfullpath,
+                ascDesc: ascdesc
+            });
+        }
+    });
+    return res;
+}
+exports.extractExplicitSortFromAst = extractExplicitSortFromAst;
 function makeMongoGroupFromAst(categoryList, mongoMap) {
     var res = {};
     categoryList.forEach(category => {
@@ -213,6 +338,8 @@ function makeMongoColumnsFromAst(categoryList, mongoMap) {
 exports.makeMongoColumnsFromAst = makeMongoColumnsFromAst;
 function getCategoryList(fixedCategories, node, sentence) {
     var res = fixedCategories.slice();
+    while (node.type !== ast_1.ASTNodeType.LIST)
+        node = node.children[0];
     debug(AST.astToText(node));
     if (node.type !== ast_1.ASTNodeType.LIST) {
         throw new Error('expected different nodetype ' + node.type);
@@ -255,6 +382,22 @@ function makeMongoSortFromAst(categoryList, mongoMap) {
     return { $sort: res };
 }
 exports.makeMongoSortFromAst = makeMongoSortFromAst;
+;
+function makeMongoExplicitSort(explicitSort, categoryList, mongoMap) {
+    var res = {};
+    explicitSort.forEach(es => {
+        var mongoCatName = es.mongocatfullpath;
+        res[mongoCatName] = es.ascDesc;
+    });
+    categoryList.forEach(category => {
+        var shortName = mgnlq_model_1.MongoMap.getShortProjectedName(mongoMap, category);
+        if (res[shortName] == undefined) {
+            res[shortName] = 1;
+        }
+    });
+    return { $sort: res };
+}
+exports.makeMongoExplicitSort = makeMongoExplicitSort;
 function makeMongoMatchF(filters) {
     var res = { $match: {} };
     //console.log('is match \n');

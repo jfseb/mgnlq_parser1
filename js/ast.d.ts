@@ -18,8 +18,20 @@ export declare enum ASTNodeType {
     OPMoreThan = 16,
     OPLessThan = 17,
     OPExactly = 18,
-    NUMBER = 19,
-    DOM = 20
+    OPLT = 19,
+    OPLE = 20,
+    OPNE = 21,
+    OPEQ = 22,
+    OPGT = 23,
+    OPGE = 24,
+    OPOrderBy = 25,
+    OPOrderDescendingBy = 26,
+    OPExisting = 27,
+    OPNotExisting = 28,
+    OPLogicalAnd = 29,
+    OPLogicalOr = 30,
+    NUMBER = 31,
+    DOM = 32
 }
 export declare class NodeType {
     nt: ASTNodeType;

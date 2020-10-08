@@ -130,12 +130,14 @@ exports.testAstToMQuerySentenceToAstsCatCatCatParseText = function (test) {
     /* test bad nodetypes*/
     var nodeNoList = node;
     try {
-      mQ.getCategoryList([], nodeNoList,r.sentences[0]);
-      test.equal(1,0);
+      var res1 = mQ.getCategoryList([], nodeNoList,r.sentences[0]);
+      test.deepEqual(res1,[ 'SemanticObject',
+        'SemanticAction',
+        'BSPName',
+        'ApplicationComponent' ] );
     } catch(e) {
-      test.equal(1,1);
+      test.equal(1,0);
     }
-
     try {
       mQ.makeMongoMatchFromAst(nodeNoList,r.sentences[0],mongoMap);
       test.equal(1,0);
@@ -277,14 +279,14 @@ exports.testParseSomeQueries = function (test) {
       var r2 = Ast.astToText( node , 2 );
       if ( testrun.astNice && testrun.astNice !== 'ignore' )
         test.deepEqual( r2, testrun.astNice, ' nr' + testrun.nr +  '\nexp:' + testrun.astNice + '\nact:' + r2 + '\nactual astNice is \n"astNice":' + JSON.stringify(r2) + ',');
-      //console.log( r2 );
+      console.log( r2 );
       var nodeFieldList = node.children[0].children[0];
       var nodeFilter = node.children[1];
       var sentence = r.sentences[0];
       var domainPick = mongoQ.getDomainInfoForSentence(theModel, sentence);
       var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
       var categoryList = mQ.getCategoryList([], nodeFieldList, sentence );
-      var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
+      var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap, domainPick.collectionName, theModel.mongoHandle);
 
       actual.match = match;
 
@@ -322,6 +324,131 @@ exports.testParseSomeQueries = function (test) {
     var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
     test.deepEqual(group , { '$group': { _id: { domain: '$domain' }, domain: { '$first': '$domain' } } }   , 'group');
   */
+    test.done();
+    releaseModel(theModel);
+  });
+};
+
+exports.testParseSomeQueries2 = function (test) {
+  getModel().then( (theModel) => {
+    var querylist = [ { nr: 111,
+
+      query: 'sender, standort with less than 3 standort order by gründungsjahr',
+      'match_json':[
+        {
+          '$match': '1'
+        },
+        {
+          '$and': '2'
+        },
+        [
+          '3'
+        ],
+        {
+          '$expr': '4'
+        },
+        {
+          '$lt': '5'
+        },
+        [
+          '6',
+          3
+        ],
+        {
+          '$switch': '7'
+        },
+        {
+          'branches': '8',
+          'default': 1
+        },
+        [
+          '9'
+        ],
+        {
+          'case': '10',
+          'then': '11'
+        },
+        {
+          '$isArray': '12'
+        },
+        {
+          '$size': '12'
+        },
+        '$standort'
+      ],
+      'projection':{
+        '$project': {
+          '_id': 0,
+          'sender': 1,
+          'standort': 1
+        }
+      },
+      'group':{
+        '$group': {
+          '_id': {
+            'sender': '$sender',
+            'standort': '$standort'
+          },
+          'sender': {
+            '$first': '$sender'
+          },
+          'standort': {
+            '$first': '$standort'
+          }
+        }
+      },
+      'astNice':'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  LIST -1(2)\n    OPLessThan 3(2)\n      NUMBER 4\n      CAT 5\n    OPOrderBy 6(1)\n      CAT 7\n'
+    }];
+    for( var a in querylist )
+    {
+      var testrun = querylist[a];
+      console.log(' test nr ' + testrun.nr  + ' query ' + testrun.query );
+      var actual = { query : testrun.query };
+      debuglog( ' test nr ' + testrun.nr );
+      // debuglog(JSON.stringify(ifr, undefined, 2))
+
+      var s = testrun.query; // 'domains ending with ABC';
+      var r = SentenceParser.parseSentenceToAsts(s,theModel,words);
+      var node = r.asts[0];
+      debuglog( JSON.stringify( r ));
+      var testId = 'nr:' + testrun.nr + ' ' + testrun.query ;
+      if ( !node )
+      {
+        test.deepEqual( true, !!testrun.parseError,  testId + '\nactual is parse error \n "parseError:"' + JSON.stringify(r.errors) + ',');
+        if (testrun.parseError !=='any'
+         &&  JSON.stringify( r.errors).indexOf( testrun.parseError) == -1)
+          test.deepEqual( false, true , 'did not find \n' + testrun.parseError + ' in \n "parseError:"' + JSON.stringify(r.errors) + ',');
+        continue;
+      }
+      var r2 = Ast.astToText( node , 2 );
+      if ( testrun.astNice && testrun.astNice !== 'ignore' )
+        test.deepEqual( r2, testrun.astNice, ' nr' + testrun.nr +  '\nexp:' + testrun.astNice + '\nact:' + r2 + '\nactual astNice is \n"astNice":' + JSON.stringify(r2) + ',');
+      //console.log( r2 );
+      var nodeFieldList = node.children[0].children[0];
+      var nodeFilter = node.children[1];
+      var sentence = r.sentences[0];
+      var domainPick = mongoQ.getDomainInfoForSentence(theModel, sentence);
+      var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
+      var categoryList = mQ.getCategoryList([], nodeFieldList, sentence );
+      var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap, domainPick.collectionName, theModel.mongoHandle);
+
+      actual.match = match;
+
+      var match_json = JSONx.stringify( actual.match , undefined, 2 ); // treat regexp
+      actual.match_json = JSON.parse( match_json );
+      test.deepEqual( actual.match_json, testrun.match_json , testId + ' actual match is \n"match_json":' + JSON.stringify( actual.match_json, undefined, 2) + ',');
+
+      //test.deepEqual(match ,{ '$match': { domain: { '$regex': /abc$/i } } });
+      actual.projection = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
+      test.deepEqual(actual.projection, testrun.projection, testId + ' actual projection is \n "projection":' + JSON.stringify(actual.projection, undefined, 2) + ',' );
+      //  ,{ '$project': { _id: 0, domain: 1 } });
+
+      var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
+      actual.group = group;
+      test.deepEqual( testrun.group, actual.group, testId + 'actual group is \n"group":' +  JSON.stringify( actual.group , undefined, 2 ) );
+      //test.deepEqual(group , { '$group': { _id: { domain: '$domain' }, domain: { '$first': '$domain' } } }   , 'group');
+
+    }
     test.done();
     releaseModel(theModel);
   });

@@ -8,77 +8,77 @@
     "_categories": [
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1ec",
+        "_id": "5dc84b5dc31bee1eb45dee5c",
         "category": "object name",
         "category_description": "name of the comsmological object, e.g. star, start system, galaxy or planet",
         "wordindex": true
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1eb",
+        "_id": "5dc84b5dc31bee1eb45dee5b",
         "category": "visual magnitude",
         "wordindex": true
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1ea",
+        "_id": "5dc84b5dc31bee1eb45dee5a",
         "category": "visual luminosity"
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1e9",
+        "_id": "5dc84b5dc31bee1eb45dee59",
         "category": "mass",
         "category_description": "mass of an object"
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1e8",
+        "_id": "5dc84b5dc31bee1eb45dee58",
         "category": "radius"
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1e7",
+        "_id": "5dc84b5dc31bee1eb45dee57",
         "category": "object type",
         "category_description": "type of object, e.g. \"star\", \"planet\".",
         "wordindex": true
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1e6",
+        "_id": "5dc84b5dc31bee1eb45dee56",
         "category": "orbits",
         "category_description": "for planets, name of the central entity",
         "wordindex": true
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1e5",
+        "_id": "5dc84b5dc31bee1eb45dee55",
         "category": "distance",
         "category_description": "distance from earth"
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1e4",
+        "_id": "5dc84b5dc31bee1eb45dee54",
         "category": "_url",
         "showURI": true
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1e3",
+        "_id": "5dc84b5dc31bee1eb45dee53",
         "category": "orbit radius"
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1e2",
+        "_id": "5dc84b5dc31bee1eb45dee52",
         "category": "eccentricity"
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1e1",
+        "_id": "5dc84b5dc31bee1eb45dee51",
         "category": "orbital period"
       },
       {
         "category_synonyms": [],
-        "_id": "5dc72788620bbf743865a1e0",
+        "_id": "5dc84b5dc31bee1eb45dee50",
         "category": "albedo"
       }
     ],

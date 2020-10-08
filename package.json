@@ -31,7 +31,7 @@
     "@types/debug": "^4.1.5",
     "@types/lodash": "^4.14.61",
     "@types/mongoose": "^5.5.23",
-    "@types/node": "^8.10.56",
+    "@types/node": "^8.10.59",
     "abot_utils": "^1.0.3",
     "del": "^5.1.0",
     "gulp": "^4.0.0",
@@ -41,7 +41,7 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
     "merge-stream": "^2.0.0",
-    "mgnlq_testmodel_replay": "^0.1.5",
+    "mgnlq_testmodel_replay": "^0.1.6",
     "nyc": "^14.1.1",
     "typescript": "^3.6.4"
   },
@@ -49,7 +49,7 @@
     "chevrotain": "^0.27.3",
     "debugf": "^0.1.2",
     "lodash": "^4.17.4",
-    "mgnlq_model": "^0.0.21",
+    "mgnlq_model": "^0.0.22",
     "mongoose": "^5.7.7"
   }
 }

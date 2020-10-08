@@ -228,8 +228,8 @@ exports.testTokenizeInterimErr = function (test) {
 };
 
 exports.testExtractExpect = function (test) {
-  var res = FormatError.extractExpectArr(' one of these possible Token sequences:\n  1. [AFact]\n  2. [AnANY]\nbut found: \'\'');
-  test.deepEqual(res, ['AFact', 'AnANY']);
+  var res = FormatError.extractExpectArr(' one of these possible Token sequences:\n  1. [FACT]\n  2. [AnANY]\nbut found: \'\'');
+  test.deepEqual(res, ['FACT', 'AnANY']);
   test.done();
 };
 
@@ -303,7 +303,7 @@ exports.testGetQualifierFromWordType = function (test) {
 
 
 exports.testmapTokenStringToHumanString = function (test) {
-  var res = ['AFact', 'AnANY', '', 'Integer', '12', 'NUMBER', undefined].map(arg => FormatError.mapTokenStringToHumanString(arg));
+  var res = ['FACT', 'AnANY', '', 'Integer', '12', 'NUMBER', undefined].map(arg => FormatError.mapTokenStringToHumanString(arg));
   test.deepEqual(res, ['fact', 'string fragment', undefined, 'number', 'number', 'number', undefined]);
   test.done();
 };

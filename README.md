@@ -51,10 +51,14 @@ usage:
 
 # Adding an operator
 
-    1   Add to operators.json including synonyms
-    2   Add non-synonyms to mgnlq_model ifmatch.ts
-    3   Add tests to erbase.nunit.js
-    4   Add queryies to
+1.   Add to operators.json including synonyms
+2.   Add non-synonyms to mgnlq_model ifmatch.ts
+3.   Add tests to erbase.nunit.js (testOperators)
+4.   Add to tokens.json, run `gulp makeToken`
+4.   Add to ast.ts ASTNodeType, astNodeTypes and
+5.   Add tests to sentenceparser.nunit.js
+6.   Add queryies to sentences_ast_mongoq.json
+7.   Add Mongo AST to Query Processing to
 
 # scratch
 

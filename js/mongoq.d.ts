@@ -73,7 +73,7 @@ export interface IQuery {
 export interface IPreparedQuery extends SentenceParser.IParsedSentences {
     queries: IQuery[];
 }
-export declare function makeAggregateFromAst(astnode: AST.ASTNode, sentence: IFModel.IWord[], mongoMap: IFModel.CatMongoMap, fixedCategories: any): {
+export declare function makeAggregateFromAst(astnode: AST.ASTNode, sentence: IFModel.IWord[], models: IFModel.IModels, collectionName: string, fixedCategories: any): {
     query: any[];
     columnsReverseMap: {
         columns: string[];

@@ -209,6 +209,53 @@ exports.testMakeQueryStartingWith2 = function (test) {
 };
 
 
+
+exports.testMakeQueryOrderBy = function (test) {
+  var  q0 = 'sender, standort order by gründungsjahr';
+
+  var  q1 = 'sender, standort with less than 3 standort order by gründungsjahr';
+  getModel().then((theModel) => {
+    var r = MongoQ.prepareQueries(q1,
+      theModel, []);
+    test.deepEqual(r.queries,
+      [ { domain: 'demomdls',
+        collectionName: 'demomdls',
+        columns: [ 'sender', 'standort' ],
+        auxcolumns: [],
+        reverseMap: {},
+        query:
+     [ { '$match':
+          { '$and':
+             [
+               { '$expr':
+              { '$lt':
+                 [ { '$switch':
+                      { branches:
+                         [ { case: { '$isArray': '$standort' },
+                           then: { '$size': '$standort' } } ],
+                      default: 1 } },
+                 3 ] } }
+             ] } },
+     { '$sort': { 'gründungsjahr': -1, sender: 1, standort: 1 } },
+     { '$group':
+             { _id:
+                { 'gründungsjahr': '$gründungsjahr',
+                  sender: '$sender',
+                  standort: '$standort' },
+             'gründungsjahr': { '$first': '$gründungsjahr' },
+             sender: { '$first': '$sender' },
+             standort: { '$first': '$standort' } } },
+     { '$project': { _id: 0, 'gründungsjahr': 1, sender: 1, standort: 1 } },
+     { '$sort': { 'gründungsjahr': -1, sender: 1, standort: 1 } },
+     { '$project': { _id: 0, sender: 1, standort: 1 } } ] },
+      undefined ]
+    );
+    test.done();
+    Model.releaseModel(theModel);
+  });
+};
+
+
 exports.testMakeQueryStartingWith = function (test) {
   getModel().then((theModel) => {
     var r = MongoQ.prepareQueries('SemanticAction starting with "Sup"',
@@ -443,14 +490,14 @@ exports.testQueryInternal = function (test) {
        tokens: [ 'object', 'name' ] },
         errors:
        { err_code: undefined,
-         text: 'Error: EarlyExitException: expecting at least one iteration which starts with one of these possible Token sequences::\n  <[Comma] ,[and] ,[ACategory]> but found: \'FACT\'' },
+         text: 'Error: EarlyExitException: expecting at least one iteration which starts with one of these possible Token sequences::\n  <[Comma] ,[and] ,[CAT]> but found: \'FACT\'' },
         columns: [],
         auxcolumns: [],
         results: [] } ];
-      test.deepEqual(res[0], expected[0], 'first ok \n ' + JSON.stringify(res));
       test.deepEqual(res[0].aux, expected[0].aux, 'first aux ok' + JSON.stringify(res)) ;
+      test.deepEqual(res[1], expected[1], '2nd ok');
+      test.deepEqual(res[0], expected[0], 'first ok \n ' + JSON.stringify(res));
 
-      // test.deepEqual(res[1], expected[1], '2nd ok');
       test.deepEqual(res, expected);
       test.done();
       Model.releaseModel(theModel);

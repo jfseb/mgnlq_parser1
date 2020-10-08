@@ -75,6 +75,9 @@ function run() {
     export const Tokens = {
   ${ tokens.map(tok => ` ${tok.niceName} : T${tok.niceName} `).join(',\n')}
     };
+    export const OperatorLookup = {
+      ${ tokens.map(tok => ` "${tok.value}" : T${tok.niceName} `).join(',\n')}
+        };
   `;
 
 

@@ -222,10 +222,22 @@ function getDBConnection(mongooseHndl) {
 const SentenceParser = require("./sentenceparser");
 ;
 ;
-function makeAggregateFromAst(astnode, sentence, mongoMap, fixedCategories) {
+function makeAggregateFromAst(astnode, sentence, models, collectionName, fixedCategories) {
     var nodeFieldList = astnode.children[0].children[0];
     var nodeFilter = astnode.children[1];
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
+    var mongoMap = undefined;
+    mongoMap = models.mongoHandle.mongoMaps[collectionName];
+    var modelHandleRaw = models.mongoHandle;
+    // todo: detect any explicit sorts
+    // { sortCartegoryList : ["cat1"],
+    //  [ {cat1 : 1} ,{ cat2 : -1} ]
+    //
+    // then iff explicit sort,
+    // project out cat+sortCart, the then sort by it, only then project out desiredcat
+    //
+    //}//
+    var explicitSort = mQ.extractExplicitSortFromAst(nodeFilter, sentence, mongoMap, collectionName, modelHandleRaw);
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap, collectionName, modelHandleRaw);
     // TODO: be better than full unwind, use only relelvant categories!
     var unwind = mgnlq_model_1.MongoMap.unwindsForNonterminalArrays(mongoMap);
     var head = [match];
@@ -234,13 +246,21 @@ function makeAggregateFromAst(astnode, sentence, mongoMap, fixedCategories) {
         head.push(match);
     }
     var categoryList = mQ.getCategoryList(fixedCategories, nodeFieldList, sentence);
+    var categoryListPlusExplicitSort = mQ.amendCategoryList(explicitSort, categoryList);
     var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
     var sort = mQ.makeMongoSortFromAst(categoryList, mongoMap);
-    var columnsReverseMap = mQ.makeMongoColumnsFromAst(categoryList, mongoMap);
     var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
+    var columnsReverseMap = mQ.makeMongoColumnsFromAst(categoryList, mongoMap);
+    console.log(" catPlus " + JSON.stringify(categoryListPlusExplicitSort));
+    var projExplicit = mQ.makeMongoProjectionFromAst(categoryListPlusExplicitSort, mongoMap);
+    var sortExplicit = mQ.makeMongoExplicitSort(explicitSort, categoryList, mongoMap);
+    var groupExplicit = mQ.makeMongoGroupFromAst(categoryListPlusExplicitSort, mongoMap);
     //   console.log(' query: ' + JSON.stringify(r)); // how to get domain?
     // test.equal(domain, 'FioriBOM',' got domain');
-    var query = head.concat([group, proj, sort]);
+    console.log(" explicitSort" + JSON.stringify(explicitSort));
+    var query = (explicitSort.length > 0) ?
+        head.concat([sortExplicit, groupExplicit, projExplicit, sortExplicit, proj])
+        : head.concat([group, proj, sort]);
     return { query: query, columnsReverseMap: columnsReverseMap };
 }
 exports.makeAggregateFromAst = makeAggregateFromAst;
@@ -285,7 +305,7 @@ function prepareQueries(query, theModel, fixedCategories, options) {
             debuglog(() => JSON.stringify(` fixed fields not present in domain ${domainPick.domain} given fields ${domainFixedCategories.join(";")} for ${index} `));
             return undefined;
         }
-        var res = makeAggregateFromAst(astnode, sentence, mongoMap, domainFixedCategories);
+        var res = makeAggregateFromAst(astnode, sentence, theModel, domainPick.collectionName, domainFixedCategories);
         var query = res.query;
         var columnsReverseMap = res.columnsReverseMap;
         /*

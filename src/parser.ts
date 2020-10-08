@@ -44,76 +44,15 @@ import { ASTNodeType as NT} from './ast';
   var Lexer = chevrotain.Lexer;
   var Parser = chevrotain.Parser;
 
-
-/*
-
-var LogicalOperator = createToken({name: "AdditionOperator", pattern: Lexer.NA});
-var And = createToken({name: "And", pattern: /and/i, parent: LogicalOperator});
-var Or = createToken({name: "Or", pattern: /Or/i, parent: LogicalOperator});
-
-
-// using the NA pattern marks this Token class as 'irrelevant' for the Lexer.
-// AdditionOperator defines a Tokens hierarchy but only the leafs in this hierarchy define
-// actual Tokens that can appear in the text
-
-
-var AdditionOperator = createToken({name: "AdditionOperator", pattern: Lexer.NA});
-var Plus = createToken({name: "Plus", pattern: /\+/, parent: AdditionOperator});
-var Minus = createToken({name: "Minus", pattern: /-/, parent: AdditionOperator});
-
-var MultiplicationOperator = createToken({name: "MultiplicationOperator", pattern: Lexer.NA});
-var Multi = createToken({name: "Multi", pattern: /\* /, parent: MultiplicationOperator});
-var Div = createToken({name: "Div", pattern: /\//, parent: MultiplicationOperator});
-
-var LParen = createToken({name: "LParen", pattern: /\(/});
-var RParen = createToken({name: "RParen", pattern: /\)/});
-var NumberLiteral = createToken({name: "NumberLiteral", pattern: /[1-9]\d* /});
-
-var PowerFunc = createToken({name: "PowerFunc", pattern: /power/});
-
-  var List = createToken({name: "List", pattern: /LIST/i});
-  var Describe = createToken({name: "Describe", pattern : /DESCRIBE/i});
-  var Is = createToken({name: "Is", pattern : /Is/i});
-  var What = createToken({name: "What", pattern : /What/i});
-  var Me = createToken({name: "Me", pattern : /Me/i});
-  var The = createToken({name: "The", pattern : /The/i});
-  var Meaning = createToken({name: "Meaning", pattern : /Meaning/i});
-  var Of = createToken({name: "Of", pattern : /Of/i});
-  var Relating = createToken({name: "Relating", pattern : /RElating/i});
-  var All = createToken({name: "All", pattern : /All/i});
-  var First = createToken({name: "First", pattern : /First/i});
-  var Oldest = createToken({name: "Oldest", pattern : /Oldest/i});
-  var Latest = createToken({name: "Latest", pattern : /(Latest)|(Newest)/i});
-  var In = createToken({name: "In", pattern : /In/i});
-  var Are = createToken({name: "Are", pattern : /Are/i});
-  var To = createToken({name: "To", pattern : /To/i});
-  var With = createToken({name: "With", pattern : /With/i});
-  var About = createToken({name: "About", pattern : /About/i});
-  var You = createToken({name: "You", pattern : /You/i});
-  var AFact = createToken({name: "AFact", pattern : /FACT/i});
-  var All = createToken({name: "All", pattern: /ALL/});
-  var Select = createToken({name: "Select", pattern: /SELECT/});
-  var From = createToken({name: "From", pattern: /FROM/});
-  var Where = createToken({name: "Where", pattern: /WHERE/});
-  var Comma = createToken({name: "Comma", pattern: /,/});
-  var And = createToken({name: "And", pattern: /And/i});
-  var Every = createToken({name: "And", pattern: /And/i});
-
-  var ACategory = createToken({name: "ACategory", pattern: /CAT/});
-  var Identifier = createToken({name: "Identifier", pattern: /\w+/});
-  var Integer = createToken({name: "Integer", pattern: /0|[1-9]\d+/});
-  var GreaterThan = createToken({name: "GreaterThan", pattern: /</});
-  var LessThan = createToken({name: "LessThan", pattern: />/});
-*/
   var WhiteSpace = createToken({name: "WhiteSpace", pattern: /\s+/});
 
   WhiteSpace.GROUP = Lexer.SKIPPED;
 
 
-import { Tokens as T}  from './tokens';
+import { OperatorLookup as OL, Tokens as T}  from './tokens';
   // whitespace is normally very common so it is placed first to speed up the lexer
   var allTokens = Object.keys(T).map(key => T[key]);
-  /* [ AFact, And,
+  /* [ FACT, And,
     Describe,
     First, Oldest, Latest, What,
     At, Every, All, At, Least, One,
@@ -180,7 +119,6 @@ function SelectParser(input) {
       ])
     });
 
-
     this.catListOpMore = $.RULE("catListOpMore", function() : AST.ASTNode {
        var r = undefined as AST.ASTNode;
        $.OPTION(() =>
@@ -189,16 +127,35 @@ function SelectParser(input) {
        r = r || AST.makeNode(NT.OPAll);
        var catList = $.SUBRULE2($.categoryList);
        r.children = [catList];
-       var inop = $.OPTION3(() => {
-            var op = $.SUBRULE4($.binaryFragOp);
+       var inop = $.OPTION2(() => {
+            var op = $.SUBRULE3($.binaryFragOp);
             var head = catList.children[catList.children.length-1];
               op.children = [head];
-            var factOrAny = $.SUBRULE5($.factOrAny);
+            var factOrAny = $.SUBRULE4($.factOrAny);
             op.children.push(factOrAny);
                   return op;
         });
+       var res = $.SUBRULE($.catListTail);
+       var filterDom = res[0];
+       var filter = (filterDom || [])[0];
+       if(!filter && inop) {
+          var n =  AST.makeNode(NT.LIST);
+          n.children = [inop];
+          filter = n;
+       } else if(inop) {
+          filter.children.unshift(inop);
+       }
+       var orderBy = res[1];
+       if ( orderBy )
+         filter.children.push(orderBy);
+       var dom = (filterDom || [])[1];
+       var current = (dom) ?
+           AST.makeNode(NT.BINOP, r, filter, dom)
+        :  AST.makeNode(NT.BINOP,r, filter);
+       return current;
+       /*
        var filterDom = undefined;
-       $.OPTION2(() => filterDom = $.SUBRULE3($.catFilter));
+       $.OPTION3(() => filterDom = $.SUBRULE5($.catFilter));
        var filter = (filterDom || [])[0];
 
        if(!filter && inop) {
@@ -208,14 +165,53 @@ function SelectParser(input) {
        } else if(inop) {
           filter.children.unshift(inop);
        }
+       var orderBy = undefined;
+       $.OPTION4(() => orderBy = $.SUBRULE6($.orderBy));
 
        var dom = (filterDom || [])[1];
-       if(dom) {
-          return AST.makeNode(NT.BINOP, r, filter, dom);
+       var current = (dom) ?
+           AST.makeNode(NT.BINOP, r, filter, dom)
+        :  AST.makeNode(NT.BINOP,r, filter);
+       if(orderBy) {
+          orderBy[0] = current;
+          return orderBy;
        } else {
-         return AST.makeNode(NT.BINOP,r, filter);
+         return current;
        }
+       */
     });
+
+    this.catListTail = $.RULE("catListTail", function() : AST.ASTNode[] {
+        var filterDom = undefined;
+        $.OPTION3(() => filterDom = $.SUBRULE1($.catFilter));
+        var filter = (filterDom || [])[0];
+        var orderBy = undefined;
+        $.OPTION4(() => orderBy = $.SUBRULE2($.orderBy));
+        return [ filterDom, orderBy ];
+        /*
+        if(!filter && inop) {
+          var n =  AST.makeNode(NT.LIST);
+          n.children = [inop];
+          filter = n;
+        } else if(inop) {
+          filter.children.unshift(inop);
+        }
+        var orderBy = undefined;
+        $.OPTION4(() => orderBy = $.SUBRULE6($.orderBy));
+
+        var dom = (filterDom || [])[1];
+        var current = (dom) ?
+            AST.makeNode(NT.BINOP, r, filter, dom)
+        :  AST.makeNode(NT.BINOP,r, filter);
+        if(orderBy) {
+          orderBy[0] = current;
+          return orderBy;
+        } else {
+          return current;
+        }
+        */
+    });
+
 
     this.filterEntry = $.RULE("filterEntry", function() {
       $.OR([
@@ -243,9 +239,33 @@ function SelectParser(input) {
     });
 
 
+    this.orderBy = $.RULE("orderBy", function() {
+      var op = undefined;
+      $.OR([
+        {
+        ALT: () => {
+          var tok = $.CONSUME1(T.order_by)
+          op = AST.makeNode(NT.OPOrderBy);
+          op.bearer = tok;
+        }
+      },
+      {
+        ALT: () => {
+        var tok = $.CONSUME2(T.order_descending_by)
+        op = AST.makeNode(NT.OPOrderDescendingBy);
+        op.bearer = tok;
+      }
+      }]);
+      var cat = $.CONSUME3(T.CAT);
+      var nodeCat = AST.makeNodeForCat(cat);
+      op.children[0] = nodeCat;
+      return op;
+    });
+
+
     this.domOrDomainDom = $.RULE("domOrDomainDom", function() {
       $.OPTION(() => $.CONSUME(T.domain));
-      var r = $.CONSUME2(T.ADomain);
+      var r = $.CONSUME2(T.DOM);
       return AST.makeNodeForDomain(r);
     });
 
@@ -280,12 +300,12 @@ function SelectParser(input) {
             { ALT: ()=> $.CONSUME(T.and)},
           ])
          });
-        r.push(AST.makeNodeForCat($.CONSUME(T.ACategory)));
+        r.push(AST.makeNodeForCat($.CONSUME(T.CAT)));
       });
       /*
       $.AT_LEAST_ONE_SEP({
         SEP: T.Comma, DEF: function () {
-          r.push(AST.makeNodeForCat($.CONSUME(T.ACategory)));
+          r.push(AST.makeNodeForCat($.CONSUME(T.CAT)));
         }
       });
       */
@@ -295,14 +315,14 @@ function SelectParser(input) {
     });
 
   this.plainFact = $.RULE("plainFact", () =>
-    AST.makeNodeForFact($.CONSUME(T.AFact))
+    AST.makeNodeForFact($.CONSUME(T.FACT))
   );
 
   this.factOrAny = $.RULE("factOrAny", () =>
     $.OR([
         {
           ALT: function () {
-            return AST.makeNodeForFact($.CONSUME1(T.AFact));
+            return AST.makeNodeForFact($.CONSUME1(T.FACT));
           }
         },
         {
@@ -356,7 +376,7 @@ function SelectParser(input) {
             var toki = $.CONSUME(T.Integer);
             var numberarg = AST.makeNodeForInteger(toki);
             op.children[0] = numberarg;
-            var tokc = $.CONSUME(T.ACategory);
+            var tokc = $.CONSUME(T.CAT);
             var cat = AST.makeNodeForCat(tokc);
             op.children[1] = cat;
             return op;
@@ -370,7 +390,7 @@ function SelectParser(input) {
             var toki = $.CONSUME2(T.Integer);
             var numberarg = AST.makeNodeForInteger(toki);
             op.children[0] = numberarg;
-            var tokc = $.CONSUME2(T.ACategory);
+            var tokc = $.CONSUME2(T.CAT);
             var cat = AST.makeNodeForCat(tokc);
             op.children[1] = cat;
             return op;
@@ -384,12 +404,41 @@ function SelectParser(input) {
             var toki = $.CONSUME3(T.Integer);
             var numberarg = AST.makeNodeForInteger(toki);
             op.children[0] = numberarg;
-            var tokc = $.CONSUME3(T.ACategory);
+            var tokc = $.CONSUME3(T.CAT);
             var cat = AST.makeNodeForCat(tokc);
             op.children[1] = cat;
             return op;
           }
-        } /*,
+        },
+        {
+          ALT: () => {
+            var tok = $.CONSUME(T.existing);
+            var op = AST.makeNode(NT.OPExisting);
+            op.bearer = tok;
+            var tokc = $.CONSUME4(T.CAT);
+            var cat = AST.makeNodeForCat(tokc);
+            op.children[0] = cat;
+            return op;
+          }
+        },
+        {
+          ALT: () => {
+            var tok = $.CONSUME(T.not_existing);
+            var op = AST.makeNode(NT.OPNotExisting);
+            op.bearer = tok;
+            var tokc = $.CONSUME5(T.CAT);
+            var cat = AST.makeNodeForCat(tokc);
+            op.children[0] = cat;
+            return op;
+          }
+        }
+
+
+
+
+
+
+        /*,
         {
           ALT: () => {
             console.log( 'token index is ' + T.less_than );
@@ -399,7 +448,7 @@ function SelectParser(input) {
             var toki = $.CONSUME3(T.AnANY);
             var numberarg = AST.makeNodeForInteger(toki);
             op.children[0] = numberarg;
-            var tokc = $.CONSUME3(T.ACategory);
+            var tokc = $.CONSUME3(T.CAT);
             var cat = AST.makeNodeForCat(tokc);
             op.children[1] = cat;
             return op;
@@ -413,7 +462,7 @@ function SelectParser(input) {
     return $.OR([
         {
           ALT: () => {
-            var tok = $.CONSUME(T.ACategory);
+            var tok = $.CONSUME(T.CAT);
             var head = AST.makeNodeForCat(tok);
             var op = $.SUBRULE($.opFactAny, head);
             op.children[0] = head;
@@ -431,7 +480,7 @@ function SelectParser(input) {
             var toki = $.CONSUME(T.Integer);
             var numberarg = AST.makeNodeForInteger(toki);
             op.children[0] = numberarg;
-            var tokc = $.CONSUME2(T.ACategory);
+            var tokc = $.CONSUME2(T.CAT);
             var cat = AST.makeNodeForCat(tokc);
             op.children[1] = cat;
             return op;
@@ -550,50 +599,91 @@ function SelectParser(input) {
             $.CONSUME4(T.is);
           }
         }
-      ]);
+    ]);
   });
 
-     $.RULE("binaryFragOp", function() {
-       return $.OR([
-        {
-          ALT: function () {
-            return AST.makeNodeForToken(NT.OPContains, $.CONSUME(T.contains));
-          }
-        },
-        {
-          ALT: function () {
-            return AST.makeNodeForToken(NT.OPContains, $.CONSUME1(T.containing));
-          }
-        },
-        {
-          ALT: function () {
-              return AST.makeNodeForToken(NT.OPEndsWith, $.CONSUME2(T.ends_with));
-          }
-        },
-        {
-          ALT: function () {
-              return AST.makeNodeForToken(NT.OPEndsWith, $.CONSUME3(T.ending_with));
-          }
-        },
-        {
-          ALT: function () {
-            return AST.makeNodeForToken(NT.OPStartsWith, $.CONSUME4(T.starting_with));
-          }
-        },
-        {
-          ALT: function () {
-            return AST.makeNodeForToken(NT.OPStartsWith, $.CONSUME5(T.starts_with));
-          }
-        }
-      ]);
-  });
+  $.RULE("binaryFragOp", function() {
+    return $.OR([
+    {
+      ALT: function () {
+        return AST.makeNodeForToken(NT.OPContains, $.CONSUME(T.contains));
+      }
+    },
+    {
+      ALT: function () {
+        return AST.makeNodeForToken(NT.OPContains, $.CONSUME1(T.containing));
+      }
+    },
+    {
+      ALT: function () {
+          return AST.makeNodeForToken(NT.OPEndsWith, $.CONSUME2(T.ends_with));
+      }
+    },
+    {
+      ALT: function () {
+          return AST.makeNodeForToken(NT.OPEndsWith, $.CONSUME3(T.ending_with));
+      }
+    },
+    {
+      ALT: function () {
+        return AST.makeNodeForToken(NT.OPStartsWith, $.CONSUME4(T.starting_with));
+      }
+    },
+    {
+      ALT: function () {
+        return AST.makeNodeForToken(NT.OPStartsWith, $.CONSUME5(T.starts_with));
+      }
+    },
+    {
+      ALT: function () {
+        return $.SUBRULE2($.opBinaryCompare);
+      }
+    }
+  ]);
+});
+
+$.RULE("opBinaryCompare", function() {
+  return $.OR([
+  {
+    ALT: function () {
+      return AST.makeNodeForToken(NT.OPLT, $.CONSUME1(T.LT));
+    }
+  },
+  {
+    ALT: function () {
+      return AST.makeNodeForToken(NT.OPLE, $.CONSUME2(T.LE));
+    }
+  },
+  {
+    ALT: function () {
+      return AST.makeNodeForToken(NT.OPGT, $.CONSUME3(T.GT));
+    }
+  },
+  {
+    ALT: function () {
+      return AST.makeNodeForToken(NT.OPGE, $.CONSUME4(T.GE));
+    }
+  },
+  {
+    ALT: function () {
+      return AST.makeNodeForToken(NT.OPEQ, $.CONSUME5(T.EQ));
+    }
+  },
+  {
+    ALT: function () {
+      return AST.makeNodeForToken(NT.OPNE, $.CONSUME6(T.NE));
+    }
+  }
+  ]);
+});
+
 
 /// Where  First (CAT  GE  X  )
 
 /*
     $.RULE("catSetExpression", function() {
       $.OPTION($.SUBRULE($.unarySetOp));
-      $.CONSUME(T.ACategory);
+      $.CONSUME(T.CAT);
     })
 */
     //  lowest precedence thus it is first in the rule chain
@@ -678,7 +768,7 @@ function SelectParser(input) {
       var res = [];
       $.AT_LEAST_ONE_SEP({
         SEP: T.Comma, DEF : function () {
-           var atok =  $.CONSUME(T.ACategory);
+           var atok =  $.CONSUME(T.CAT);
           // console.log("token " + JSON.stringify(atok));
            res.push(atok);
         }

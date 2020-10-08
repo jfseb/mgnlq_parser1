@@ -52,7 +52,7 @@ export interface IParseError {
 export function getExpecting(message : string) : string {
     //    return "A"
     //Error: NoViableAltException: Expecting: one of these possible Token sequences:
-    //  1. [AFact]
+    //  1. [FACT]
     //  2. [AnANY]
     // todo extract and format alternatives...
     var arr = extractExpectArr(message).map(r => mapTokenStringToHumanString(r)).filter(r => !!r);
@@ -65,7 +65,7 @@ export function getExpecting(message : string) : string {
 
 export function mapTokenStringToHumanString(tokenstring : string ) : string {
     switch(tokenstring) {
-        case "AFact":
+        case "FACT":
             return "fact";
         case "AnANY":
             return "string fragment";

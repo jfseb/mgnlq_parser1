@@ -26,8 +26,20 @@ var ASTNodeType;
     ASTNodeType[ASTNodeType["OPMoreThan"] = 16] = "OPMoreThan";
     ASTNodeType[ASTNodeType["OPLessThan"] = 17] = "OPLessThan";
     ASTNodeType[ASTNodeType["OPExactly"] = 18] = "OPExactly";
-    ASTNodeType[ASTNodeType["NUMBER"] = 19] = "NUMBER";
-    ASTNodeType[ASTNodeType["DOM"] = 20] = "DOM";
+    ASTNodeType[ASTNodeType["OPLT"] = 19] = "OPLT";
+    ASTNodeType[ASTNodeType["OPLE"] = 20] = "OPLE";
+    ASTNodeType[ASTNodeType["OPNE"] = 21] = "OPNE";
+    ASTNodeType[ASTNodeType["OPEQ"] = 22] = "OPEQ";
+    ASTNodeType[ASTNodeType["OPGT"] = 23] = "OPGT";
+    ASTNodeType[ASTNodeType["OPGE"] = 24] = "OPGE";
+    ASTNodeType[ASTNodeType["OPOrderBy"] = 25] = "OPOrderBy";
+    ASTNodeType[ASTNodeType["OPOrderDescendingBy"] = 26] = "OPOrderDescendingBy";
+    ASTNodeType[ASTNodeType["OPExisting"] = 27] = "OPExisting";
+    ASTNodeType[ASTNodeType["OPNotExisting"] = 28] = "OPNotExisting";
+    ASTNodeType[ASTNodeType["OPLogicalAnd"] = 29] = "OPLogicalAnd";
+    ASTNodeType[ASTNodeType["OPLogicalOr"] = 30] = "OPLogicalOr";
+    ASTNodeType[ASTNodeType["NUMBER"] = 31] = "NUMBER";
+    ASTNodeType[ASTNodeType["DOM"] = 32] = "DOM";
 })(ASTNodeType = exports.ASTNodeType || (exports.ASTNodeType = {}));
 class NodeType {
     constructor(nt) {
@@ -57,6 +69,18 @@ const astNodeTypes = ["BINOP",
     "OPMoreThan",
     "OPLessThan",
     "OPExactly",
+    "OPLT",
+    "OPLE",
+    "OPNE",
+    "OPEQ",
+    "OPGT",
+    "OPGE",
+    "OPOrderBy",
+    "OPOrderDescendingBy",
+    "OPExisting",
+    "OPNotExisting",
+    "OPLogicalAnd",
+    "OPLogicalOr",
     "NUMBER",
     "DOM"
 ];

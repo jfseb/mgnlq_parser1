@@ -188,5 +188,974 @@
               }
             }
           }
-    }
+    },
+    {
+        "nr": 7,
+        "query": "sender, standort with less than 3 standort",
+        "match_json":[
+            {
+              "$match": "1"
+            },
+            {
+              "$and": "2"
+            },
+            [
+              "3"
+            ],
+            {
+              "$expr": "4"
+            },
+            {
+              "$lt": "5"
+            },
+            [
+              "6",
+              3
+            ],
+            {
+              "$switch": "7"
+            },
+            {
+              "branches": "8",
+              "default": 1
+            },
+            [
+              "9"
+            ],
+            {
+              "case": "10",
+              "then": "11"
+            },
+            {
+              "$isArray": "12"
+            },
+            {
+              "$size": "12"
+            },
+            "$standort"
+          ],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+    {
+        "nr": 8,
+        "query": "sender, standort with exactly 3 standort",
+        "match_json":[
+            {
+              "$match": "1"
+            },
+            {
+              "$and": "2"
+            },
+            [
+              "3"
+            ],
+            {
+              "$expr": "4"
+            },
+            {
+              "$eq": "5"
+            },
+            [
+              "6",
+              3
+            ],
+            {
+              "$switch": "7"
+            },
+            {
+              "branches": "8",
+              "default": 1
+            },
+            [
+              "9"
+            ],
+            {
+              "case": "10",
+              "then": "11"
+            },
+            {
+              "$isArray": "12"
+            },
+            {
+              "$size": "12"
+            },
+            "$standort"
+          ],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+
+    {
+        "nr": 9,
+        "query": "sender, standort with gründungsjahr < 1972",
+        "match_json":
+        [ { "$match": "1" },
+          { "$and": "2" },
+          [ "3" ],
+          { "gründungsjahr": "4" },
+          { "$lt": "5" },
+          "1972"
+          ],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+
+    {
+        "nr": 10,
+        "query": "sender, standort with gründungsjahr <= 1972",
+        "match_json":[ { "$match": "1" },
+          { "$and": "2" },
+          [ "3" ],
+          { "gründungsjahr": "4" },
+          { "$lte": "5" },
+          "1972" ],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+    {
+        "nr":11,
+        "query": "sender, standort with gründungsjahr = 1972",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "gründungsjahr": "4"
+          },
+          {
+            "$eq": "5"
+          },
+          "1972"
+        ],
+        "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+    {
+        "nr": 12,
+        "query": "sender, standort with gründungsjahr > 1972",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "gründungsjahr": "4"
+          },
+          {
+            "$gt": "5"
+          },
+          "1972"
+        ],
+        "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+
+    {
+        "nr": 112,
+        "query": "sender, standort with gründungsjahr >= 1972",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "gründungsjahr": "4"
+          },
+          {
+            "$gte": "5"
+          },
+          "1972"
+        ],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+    {
+        "nr": 13,
+        "query": "sender, standort with gründungsjahr != 1972",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "gründungsjahr": "4"
+          },
+          {
+            "$eq": "5"
+          },
+          "1972"
+        ],
+        "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+    {
+        "nr": 15,
+        "query": "sender, standort with less than 3 standort order by gründungsjahr",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "$expr": "4"
+          },
+          {
+            "$lt": "5"
+          },
+          [
+            "6",
+            3
+          ],
+          {
+            "$switch": "7"
+          },
+          {
+            "branches": "8",
+            "default": 1
+          },
+          [
+            "9"
+          ],
+          {
+            "case": "10",
+            "then": "11"
+          },
+          {
+            "$isArray": "12"
+          },
+          {
+            "$size": "12"
+          },
+          "$standort"
+        ],
+        "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+
+    {
+        "nr": 16,
+        "query": "sender, standort with less than 3 standort order by sendertyp",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "$expr": "4"
+          },
+          {
+            "$lt": "5"
+          },
+          [
+            "6",
+            3
+          ],
+          {
+            "$switch": "7"
+          },
+          {
+            "branches": "8",
+            "default": 1
+          },
+          [
+            "9"
+          ],
+          {
+            "case": "10",
+            "then": "11"
+          },
+          {
+            "$isArray": "12"
+          },
+          {
+            "$size": "12"
+          },
+          "$standort"
+        ],
+        "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+    {
+        "nr": 17,
+        "query": "sender, standort with less than 3 standort order descending by sender",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "$expr": "4"
+          },
+          {
+            "$lt": "5"
+          },
+          [
+            "6",
+            3
+          ],
+          {
+            "$switch": "7"
+          },
+          {
+            "branches": "8",
+            "default": 1
+          },
+          [
+            "9"
+          ],
+          {
+            "case": "10",
+            "then": "11"
+          },
+          {
+            "$isArray": "12"
+          },
+          {
+            "$size": "12"
+          },
+          "$standort"
+        ],
+        "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+    {
+        "nr": 18,
+        "query": "sender, standort with existing besitzer",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "besitzer": "4"
+          },
+          {
+            "$exists": true
+          }
+        ],
+        "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+    {
+        "nr": 19,
+        "query": "sender, standort with not existing besitzer",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "besitzer": null
+          }
+        ],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+
+    {
+        "nr": 20,
+        "query": "sender, standort with less than 3 standort order descending by standort",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "$expr": "4"
+          },
+          {
+            "$lt": "5"
+          },
+          [
+            "6",
+            3
+          ],
+          {
+            "$switch": "7"
+          },
+          {
+            "branches": "8",
+            "default": 1
+          },
+          [
+            "9"
+          ],
+          {
+            "case": "10",
+            "then": "11"
+          },
+          {
+            "$isArray": "12"
+          },
+          {
+            "$size": "12"
+          },
+          "$standort"],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+    {
+        "nr": 21,
+        "query": "sender, standort with standort < \"Mue\"",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "standort": "4"
+          },
+          {
+            "$lt": "5"
+          },
+          "Mue"
+        ],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+
+    {
+        "nr": 22,
+        "query": "sender, standort with less than 3 standort",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "$expr": "4"
+          },
+          {
+            "$lt": "5"
+          },
+          [
+            "6",
+            3
+          ],
+          {
+            "$switch": "7"
+          },
+          {
+            "branches": "8",
+            "default": 1
+          },
+          [
+            "9"
+          ],
+          {
+            "case": "10",
+            "then": "11"
+          },
+          {
+            "$isArray": "12"
+          },
+          {
+            "$size": "12"
+          },
+          "$standort"
+        ],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+
+    {
+        "nr": 23,
+        "query": "sender, standort with less than 3 standort",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "$expr": "4"
+          },
+          {
+            "$lt": "5"
+          },
+          [
+            "6",
+            3
+          ],
+          {
+            "$switch": "7"
+          },
+          {
+            "branches": "8",
+            "default": 1
+          },
+          [
+            "9"
+          ],
+          {
+            "case": "10",
+            "then": "11"
+          },
+          {
+            "$isArray": "12"
+          },
+          {
+            "$size": "12"
+          },
+          "$standort"
+        ],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+    },
+    {
+        "nr": 24,
+        "query": "sender, standort with less than 3 standort",
+        "match_json":[
+          {
+            "$match": "1"
+          },
+          {
+            "$and": "2"
+          },
+          [
+            "3"
+          ],
+          {
+            "$expr": "4"
+          },
+          {
+            "$lt": "5"
+          },
+          [
+            "6",
+            3
+          ],
+          {
+            "$switch": "7"
+          },
+          {
+            "branches": "8",
+            "default": 1
+          },
+          [
+            "9"
+          ],
+          {
+            "case": "10",
+            "then": "11"
+          },
+          {
+            "$isArray": "12"
+          },
+          {
+            "$size": "12"
+          },
+          "$standort"
+        ],
+          "projection":{
+            "$project": {
+              "_id": 0,
+              "sender": 1,
+              "standort": 1
+            }
+          },
+          "group":{
+            "$group": {
+              "_id": {
+                "sender": "$sender",
+                "standort": "$standort"
+              },
+              "sender": {
+                "$first": "$sender"
+              },
+              "standort": {
+                "$first": "$standort"
+              }
+            }
+          }
+        }
 ]

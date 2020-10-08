@@ -29,31 +29,31 @@ import { IFModel as IFModel} from 'mgnlq_model';
 
   WhiteSpace.GROUP = Lexer.SKIPPED;
 
-  import { Tokens as T }  from './tokens';
+  import { OperatorLookup as OperatorLookup, Tokens as T }  from './tokens';
   // whitespace is normally very common so it is placed first to speed up the lexer
   var allTokens = Object.keys(T).map(key => T[key]);
 
 
-export function makeToken(t : IFErBase.IWord, index : number, T : any ) {
+export function makeToken(t : IFErBase.IWord, index : number, OL : any ) {
   if (!t.rule) {
     throw new Error("Token without rule " + JSON.stringify(t));
   }
   if (t.rule.wordType === IFModel.WORDTYPE.CATEGORY) {
-    return { image : "CAT",  startOffset : index, bearer : t, tokenType : T["ACategory"].tokenType };
+    return { image : "CAT",  startOffset : index, bearer : t, tokenType : OperatorLookup.CAT.tokenType };
   };
   if (t.rule.wordType === 'F') {
-    return { image : "FACT",  startOffset : index, bearer : t, tokenType : T["AFact"].tokenType };
+    return { image : "FACT",  startOffset : index, bearer : t, tokenType : T.FACT.tokenType };
   }
   if (t.rule.wordType === 'N') {
     //console.log( 'tokentype is ' +  T["Integer"].tokenType  +  ' ' + JSON.stringify( T["Integer"] ));
     // TODO i parses as integer -> integer
-    return { image : "NUMBER",  startOffset : index, bearer : t, tokenType : T["Integer"].tokenType };
+    return { image : "NUMBER",  startOffset : index, bearer : t, tokenType : T.Integer.tokenType };
   }
   if (t.rule.wordType === 'D') {
-    return { image : "DOM",  startOffset : index, bearer : t, tokenType : T["ADomain"].tokenType };
+    return { image : "DOM",  startOffset : index, bearer : t, tokenType : T.DOM.tokenType };
   }
   if (t.rule.wordType === 'A') {
-    return { image : "ANY",  startOffset : index, bearer : t, tokenType : T["AnANY"].tokenType };
+    return { image : "ANY",  startOffset : index, bearer : t, tokenType : T.AnANY.tokenType };
   }
   if (t.rule.wordType === 'M') {
     var tlc = t.matchedString.toLowerCase();
@@ -62,32 +62,34 @@ export function makeToken(t : IFErBase.IWord, index : number, T : any ) {
     //debulog(Object.keys(T).indexOf("domain"));
     //debulog(">>>" + JSON.stringify(T["domain"]));
     //debulog("> token >>" + JSON.stringify(T[tlcClean]));
-    if (!T[tlcClean]) {
+    if (!OL[tlcClean]) {
       //debuglog(Object.keys(T).join('\" \"'));
-      throw new Error("unknown token of type M with " + t.matchedString);
+      throw new Error("unknown token of type M with >" + t.matchedString+ "<");
     }
     //debuglog(" here we go" + typeof T["domain"]);
     return { image : t.matchedString, bearer : t, startOffset : index, tokenType : T["domain"].tokenType };
   }
   if (t.rule.wordType === 'O') {
     var tlc = t.matchedString.toLowerCase();
-    var tlcClean = tlc.replace(/ /g,'_');
+    //var tlcClean = tlc; //  tlc.replace(/ /g,'_');
+    var opToken = OperatorLookup[tlc];
     //console.log(' here mapped with _ ' + tlcClean + ' ' + Object.keys(T));
-    if (!T[tlcClean]) {
-      debuglog(Object.keys(T).join('\" \"'));
-      throw new Error("unknown token of type O with " + t.matchedString);
+    if (!opToken) {
+      debuglog(Object.keys(OperatorLookup).join('\" \"'));
+      throw new Error("unknown token of type O with >" + t.matchedString + "< cleansed>" + (tlcClean) + "< not found in " + Object.getOwnPropertyNames(OperatorLookup).join('\n') +" , add to ");
       //process.exit(-1);
     }
     //console.log( ' here image  for O' + t.matchedString + ' ' + T[tlcClean].tokenType);
-    return { image : t.matchedString, bearer : t, startOffset : index, tokenType : T[tlcClean].tokenType };
+    return { image : t.matchedString, bearer : t, startOffset : index, tokenType : opToken.tokenType };
   }
   if (t.rule.wordType === 'I') {
     var tlc = t.matchedString.toLowerCase();
-    if (!T[tlc]) {
+    var opToken = T[tlc];
+    if (!opToken) {
       debuglog("unknown token of type I with " + t.matchedString);
       process.exit(-1);
     }
-    return { image : t.matchedString, bearer : t, startOffset : index, tokenType : T[tlc].tokenType };
+    return { image : t.matchedString, bearer : t, startOffset : index, tokenType : opToken.tokenType };
   }
   throw new Error("unknown token " + JSON.stringify(t));
 }
@@ -96,7 +98,7 @@ class XLexer {
    tokenize = function(sentence : IFErBase.ISentence) : any[]  {
     debuglog( ()=> ' sentence prior tokenize:' + JSON.stringify(sentence));
     return sentence.map( (t,index) => {
-         var u =  makeToken(t, index, T);
+         var u =  makeToken(t, index, OperatorLookup);
         debuglog("produced nr   " + index + " > " + JSON.stringify(u));
         return u;
     });
@@ -162,7 +164,7 @@ export function parseSentenceToAsts(s : string, model : IFModel.IModels, words :
       });
       return ast;
     } catch (e) {
-      debuglog(()=> 'error  ' + JSON.stringify(e.error_obj,undefined,2));
+      debuglog(()=> 'error  ' + JSON.stringify(e.error_obj,undefined,2) + (!e.error_obj? (e + ' ') + JSON.stringify(e): ''));
       debuglog(()=> ' sentence : ' + Sentence.dumpNice(sentence));
       var e2 = FormatError.formatError(e.error_obj,sentence);
       res2.errors = res2.errors || [];
