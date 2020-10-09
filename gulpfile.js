@@ -30,11 +30,11 @@ gulp.task('makeToken' , function(cb) {
 
 var merge = require('merge-stream');
 /**
- * compile tsc (including srcmaps)
+ * compile tsc (with external srcmaps)
  * @input srcDir
  * @output js
  */
-gulp.task('tsc', function () {
+gulp.task('tsce', function () {
   var tsProject = ts.createProject('tsconfig.json', { declaration: true, sourceMap : false, inlineSourceMap: true });
   var tsResult = tsProject.src() // gulp.src('lib/*.ts')
     .pipe(sourcemaps.init()) // This means sourcemaps will be generated
@@ -51,6 +51,18 @@ gulp.task('tsc', function () {
         return  src;
       }}
     )) // ,  { sourceRoot: './' } ))
+    // Now the sourcemaps are added to the .js file
+    .pipe(gulp.dest('js'));
+});
+
+// write inlineSourceMaps  ( this should be same as plain tsc execution on commandline)
+gulp.task('tsc', function () {
+  var tsProject = ts.createProject('tsconfig.json', { declaration: true, sourceMap : false, inlineSourceMap: true });
+  return tsProject.src() // gulp.src('lib/*.ts')
+    .pipe(sourcemaps.init()) // This means sourcemaps will be generated
+    .pipe(tsProject())
+  // return merge(tsResult, tsResult.js)
+    .pipe(sourcemaps.write()) // ,  { sourceRoot: './' } ))
     // Now the sourcemaps are added to the .js file
     .pipe(gulp.dest('js'));
 });

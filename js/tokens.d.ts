@@ -140,6 +140,6 @@ export declare const OperatorLookup: {
     the: chevrotain.TokenConstructor;
     where: chevrotain.TokenConstructor;
     with: chevrotain.TokenConstructor;
-    123: chevrotain.TokenConstructor;
+    "123": chevrotain.TokenConstructor;
     identifier: chevrotain.TokenConstructor;
 };

@@ -8,7 +8,5 @@ before_script:
 node_js:
  - 12
 after_script:
-  - tsc
   - npm run coveralls
-  - npm run coverallsX
 
