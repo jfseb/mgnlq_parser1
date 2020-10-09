@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.queryInternal = exports.remapResult = exports.projectResultToArray = exports.remapRecord = exports.query = exports.queryWithURI = exports.queryWithAuxCategories = exports.prepareQueries = exports.augmentCategoriesWithURI = exports.containsFixedCategories = exports.makeAggregateFromAst = exports.getDomainInfoForSentence = exports.getDomainForSentenceSafe = exports.ModelHandle = exports.MongoBridge = exports.makeMongoName = exports.JSONStringify = void 0;
 /**
  * @file
  * @module jfseb.mgnlq_parser1.mongoq

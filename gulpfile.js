@@ -100,6 +100,22 @@ gulp.task('doc', gulp.series('test', function (cb) {
     .pipe(jsdoc(cb));
 }));
 
+var jest = require('gulp-jest').default;
+
+const { runCLI } = require("jest");
+ 
+gulp.task('jest', function () {
+  process.env.NODE_ENV = 'test';
+  return gulp.src('test').pipe(jest({
+    "preprocessorIgnorePatterns": [
+      "./dist/", "./node_modules/"
+    ],
+    "automock": false
+  }));
+});
+
+
+
 const eslint = require('gulp-eslint');
 
 gulp.task('eslint', () => {

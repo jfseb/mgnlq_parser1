@@ -8,6 +8,7 @@
  * Basic domain based entity recognition
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.explainError = exports.makeError_EMPTY_INPUT = exports.makeError_NO_KNOWN_WORD = void 0;
 const debug = require("debug");
 const debuglog = debug('erbase');
 const debuglogV = debug('erbase');

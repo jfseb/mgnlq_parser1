@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.IFErBase = exports.Word = exports.CharSequence = exports.InputFilter = exports.Sentence = exports.ErError = exports.ErBase = void 0;
 // check which of these must be exposed
 const ErBase = require("./erbase");
 exports.ErBase = ErBase;

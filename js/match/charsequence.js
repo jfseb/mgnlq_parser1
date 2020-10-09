@@ -10,6 +10,7 @@
  *
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CharSequence = void 0;
 // <reference path="../../lib/node-4.d.ts" />
 // import * as debug from 'debug';
 // import * as utils from '../utils/utils';

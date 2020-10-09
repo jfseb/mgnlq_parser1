@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.augmentContext = exports.augmentContext1 = exports.sortByWeight = exports.matchRegExp = exports.reinForce = exports.reinForceSentence = exports.extractCategoryMap = exports.reinforceDistWeight = exports.expandMatchArr = exports.categorizeAWordWithOffsets = exports.categorizeAWord = exports.categorizeWordWithOffsetWithRankCutoffSingle = exports.categorizeWordWithOffsetWithRankCutoff = exports.RankWord = exports.extractArgsMap = exports.matchWord = exports.categorizeWordInternalWithOffsets = exports.postFilterWithOffset = exports.dropLowerRankedEqualResult = exports.categorizeSingleWordWithOffset = exports.checkOneRuleWithOffset = exports.checkOneRule = exports.cmpByResultThenRank = exports.cmpByResult = exports.compareContext = exports.spuriousAnotInB = exports.countAinB = exports.levenPenalty = exports.calcDistance = exports.mockDebug = void 0;
 /**
  * the input filter stage preprocesses a current context
  *

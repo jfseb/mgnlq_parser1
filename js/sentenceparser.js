@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.parse = exports.SelectLexer = exports.parseSentenceToAsts = exports.getLexer = exports.makeToken = void 0;
 // based on: http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance
 // and:  http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
 const er_index_1 = require("./match/er_index");

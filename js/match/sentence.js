@@ -11,6 +11,7 @@
  *
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.simplifyStringsWithBitIndex = exports.dumpNiceArr = exports.dumpNiceBitIndexed = exports.dumpNiceRuled = exports.dumpNice = exports.cutoffSentenceAtRatio = exports.cmpRankingProduct = exports.rankingProduct = exports.rankingGeometricMean = exports.getDistinctCategoriesInSentence = exports.findWordByCategory = void 0;
 // <reference path="../../lib/node-4.d.ts" />
 const debug = require("debug");
 const debuglog = debug('sentence');

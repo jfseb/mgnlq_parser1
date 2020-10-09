@@ -6,10 +6,10 @@
 
     var Tall = createToken({name: "all", pattern: /all/i });
 var Tand = createToken({name: "and", pattern: /and/i });
-var Tany = createToken({name: "any", pattern: /any/i });
-var Tat = createToken({name: "at", pattern: /at/i });
 var Ta = createToken({name: "a", pattern: /a/i });
 var TAnANY = createToken({name: "AnANY", pattern: /AnANY/ });
+var Tany = createToken({name: "any", pattern: /any/i });
+var Tat = createToken({name: "at", pattern: /at/i });
 var TCAT = createToken({name: "CAT", pattern: /CAT/ });
 var TComma = createToken({name: "Comma", pattern: /,/i });
 var Tcontaining = createToken({name: "containing", pattern: /containing/i });
@@ -20,12 +20,12 @@ var Tending_with = createToken({name: "ending_with", pattern: /ending_with/i });
 var Tending = createToken({name: "ending", pattern: /ending/i });
 var Tends_with = createToken({name: "ends_with", pattern: /ends_with/i });
 var Tends = createToken({name: "ends", pattern: /ends/i });
+var TEQ = createToken({name: "EQ", pattern: /=/i });
 var Tequals = createToken({name: "equals", pattern: /equals/i });
 var Tevery = createToken({name: "every", pattern: /every/i });
 var Texactly = createToken({name: "exactly", pattern: /exactly/i });
 var Texisting = createToken({name: "existing", pattern: /existing/i });
 var Te = createToken({name: "e", pattern: /e/i });
-var TEQ = createToken({name: "EQ", pattern: /=/i });
 var TFACT = createToken({name: "FACT", pattern: /FACT/ });
 var Tfirst = createToken({name: "first", pattern: /first/i });
 var Tfor = createToken({name: "for", pattern: /for/i });
@@ -79,10 +79,10 @@ var TIdentifier = createToken({name: "Identifier", pattern: /\w+/i });
     export const Tokens = {
    all : Tall ,
  and : Tand ,
- any : Tany ,
- at : Tat ,
  a : Ta ,
  AnANY : TAnANY ,
+ any : Tany ,
+ at : Tat ,
  CAT : TCAT ,
  Comma : TComma ,
  containing : Tcontaining ,
@@ -93,12 +93,12 @@ var TIdentifier = createToken({name: "Identifier", pattern: /\w+/i });
  ending : Tending ,
  ends_with : Tends_with ,
  ends : Tends ,
+ EQ : TEQ ,
  equals : Tequals ,
  every : Tevery ,
  exactly : Texactly ,
  existing : Texisting ,
  e : Te ,
- EQ : TEQ ,
  FACT : TFACT ,
  first : Tfirst ,
  for : Tfor ,
@@ -151,10 +151,10 @@ var TIdentifier = createToken({name: "Identifier", pattern: /\w+/i });
     export const OperatorLookup = {
        "all" : Tall ,
  "and" : Tand ,
- "any" : Tany ,
- "at" : Tat ,
  "a" : Ta ,
  "AnANY" : TAnANY ,
+ "any" : Tany ,
+ "at" : Tat ,
  "CAT" : TCAT ,
  "," : TComma ,
  "containing" : Tcontaining ,
@@ -165,12 +165,12 @@ var TIdentifier = createToken({name: "Identifier", pattern: /\w+/i });
  "ending" : Tending ,
  "ends with" : Tends_with ,
  "ends" : Tends ,
+ "=" : TEQ ,
  "equals" : Tequals ,
  "every" : Tevery ,
  "exactly" : Texactly ,
  "existing" : Texisting ,
  "e" : Te ,
- "=" : TEQ ,
  "FACT" : TFACT ,
  "first" : Tfirst ,
  "for" : Tfor ,

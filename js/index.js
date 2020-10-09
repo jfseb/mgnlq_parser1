@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.IFErBase = exports.Word = exports.CharSequence = exports.InputFilter = exports.Sentence = exports.ErError = exports.ErBase = exports.MongoQ = void 0;
 const MongoQ = require("./mongoq");
 exports.MongoQ = MongoQ;
 // check which of these must be exposed
 const er_index_1 = require("./match/er_index");
-exports.ErBase = er_index_1.ErBase;
+Object.defineProperty(exports, "ErBase", { enumerable: true, get: function () { return er_index_1.ErBase; } });
 const ErError = require("./match/ererror");
 exports.ErError = ErError;
 const Sentence = require("./match/sentence");

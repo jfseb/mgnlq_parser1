@@ -15,6 +15,7 @@
  *
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.WordType = exports.Word = exports.Category = void 0;
 const mgnlq_model_1 = require("mgnlq_model");
 const debug = require("debugf");
 var debuglog = debug('word');

@@ -7,6 +7,7 @@
  * (c) gerd forstmann 2017-2019
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.formatError = exports.extractExpectArr = exports.mapTokenStringToHumanString = exports.getExpecting = exports.getQualifierFromWordType = exports.getTokenQualifier = exports.getSentenceToken = exports.getTokenText = void 0;
 const debug = require("debugf");
 const debuglog = debug('formaterror');
 const mgnlq_model_1 = require("mgnlq_model");

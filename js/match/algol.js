@@ -5,6 +5,7 @@
  * Constant determining the algorithm
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DescribeValueListLengthCharLimit = exports.DescribeValueListMinCountValueList = exports.Top_N_WordCategorizations = exports.aReinforceDistWeight = exports.MaxSpacesPerCombinedWord = exports.Cutoff_rangeCloseMatch = exports.Cutoff_WordMatch = exports.Cutoff_LevenShtein = exports.calcDist = exports.RANKING_EPSILON = exports.Cutoff_Sentences = void 0;
 /**
  * Number of sentences which are not used
  */

@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.makeMongoQuery = exports.makeMongoProjection = exports.makeMongoMatchF = exports.makeMongoExplicitSort = exports.makeMongoSortFromAst = exports.makeMongoProjectionFromAst = exports.getCategoryList = exports.makeMongoColumnsFromAst = exports.makeMongoGroupFromAst = exports.extractExplicitSortFromAst = exports.makeMongoMatchFromAst = exports.amendCategoryList = exports.isArray = exports.getNumberArg = exports.addSortExpression = exports.addObjectProp = exports.addFilterExpr = exports.addFilterToMatch = exports.makeMongoName = exports.getFactForNode = exports.getCategoryForNode = exports.getCategoryForNodePair = exports.makeMongoDistinctGroup = void 0;
 const debug = require("debugf");
 const _ = require("lodash");
 //import * as Model from 'mgnlq_model';

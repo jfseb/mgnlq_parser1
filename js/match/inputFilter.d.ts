@@ -46,7 +46,7 @@ export declare function extractArgsMap(match: Array<string>, argsMap: {
     [key: number]: string;
 }): IFMatch.context;
 export declare const RankWord: {
-    hasAbove: (lst: IFMatch.ICategorizedString[], border: number) => boolean;
+    hasAbove: (lst: Array<IFMatch.ICategorizedString>, border: number) => boolean;
     takeFirstN: <T extends IFMatch.ICategorizedString>(lst: T[], n: number) => T[];
     takeAbove: <T_1 extends IFMatch.ICategorizedString>(lst: T_1[], border: number) => T_1[];
 };

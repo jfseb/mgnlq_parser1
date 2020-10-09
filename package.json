@@ -6,11 +6,15 @@
   "typings": "js/index.d.ts",
   "scripts": {
     "build": "gulp && tsc",
+    "testj": "jest",
+    "testjc": "jest --coverage",
     "test": "gulp test",
     "version": "npm show mgnlq_parser1@* version",
-    "coverage": "./node_modules/.bin/nyc --source-map false nodeunit test",
+    "coverage" : "jest --coverage",
+    "coveralls" : "jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "coveragex": "./node_modules/.bin/nyc --source-map false nodeunit test",
     "coverreportplain": "./node_modules/.bin/nyc --source-map false report --reporter=text-lcov ",
-    "coveralls": "./node_modules/.bin/nyc --source-map false report --reporter=text-lcov | coveralls"
+    "coverallsx": "./node_modules/.bin/nyc --source-map false report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -36,10 +40,13 @@
     "del": "^5.1.0",
     "gulp": "^4.0.0",
     "gulp-eslint": "^6.0.0",
+    "gulp-jest": "https://registry.npmjs.org/@jacobq/gulp-jest/-/gulp-jest-4.0.3-PR65.tgz",
     "gulp-jsdoc3": "^2.0.0",
     "gulp-nodeunit": "^0.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
+    "jest": "^26.5.2",
+    "jest-cli": "^26.5.2",
     "merge-stream": "^2.0.0",
     "mgnlq_testmodel_replay": "^0.1.6",
     "nyc": "^14.1.1",

@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.astToText = exports.dumpNodeNice = exports.typeToString = exports.makeNodeForInteger = exports.makeNodeForAny = exports.makeNodeForFact = exports.makeNodeForToken = exports.makeNodeForDomain = exports.makeNodeForCat = exports.makeNode = exports.NodeType = exports.ASTNodeType = void 0;
 // based on: http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance
 // and:  http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
 const debugf = require("debugf");

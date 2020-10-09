@@ -10,8 +10,8 @@ before_script:
   - tsc
 #  - gulp instrument
 node_js:
- - "8"
+ - "12"
 after_script:
-  - npm run coverage
+#  - npm run coverage
   - npm run coveralls
 
