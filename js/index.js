@@ -20,7 +20,4 @@ const Word = require("./match/word");
 exports.Word = Word;
 const IFErBase = require("./match/iferbase");
 exports.IFErBase = IFErBase;
-
-//# sourceMappingURL=index.js.map
-
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQ0EsbUNBQW1DO0FBQzFCLHdCQUFNO0FBR2YsdUNBQXVDO0FBRXZDLCtDQUFtRDtBQUMxQyx1RkFEVSxpQkFBTSxPQUNWO0FBQ2YsMkNBQTJDO0FBQ2xDLDBCQUFPO0FBQ2hCLDZDQUE2QztBQUNwQyw0QkFBUTtBQUNqQiwrREFBK0Q7QUFDL0QsOEJBQThCO0FBQzlCLG1EQUFtRDtBQUMxQyxrQ0FBVztBQUNwQixxREFBcUQ7QUFDNUMsb0NBQVk7QUFDckIscUNBQXNDO0FBQzdCLG9CQUFJO0FBQ2IsNkNBQTZDO0FBQ3BDLDRCQUFRIn0=
