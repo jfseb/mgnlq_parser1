@@ -11,7 +11,7 @@ var sourcemaps = require('gulp-sourcemaps');
  */
 var srcDir = 'src';
 var testDir = 'test';
-var sourcemaproot = '/projects/nodejs/botbuilder/mgnlq_parser1/';
+var sourcemaproot = './'; // /projects/nodejs/botbuilder/mgnlq_parser1/';
 
 
 gulp.task('watch', function () {
@@ -42,9 +42,9 @@ gulp.task('tsc', function () {
   return merge(tsResult, tsResult.js)
     .pipe(sourcemaps.write('.', {
       sourceRoot: function (file) {
-        file.sourceMap.sources[0] = sourcemaproot + 'src/' + file.sourceMap.sources[0];
-        // console.log('here is************* file' + JSON.stringify(file, undefined, 2))
-        return 'src/';
+        //file.sourceMap.sources[0] = /*sourcemaproot + 'src/' +*/ file.sourceMap.sources[0];
+        console.log('here is************* file' + JSON.stringify(file.sourceMap, undefined, 2));
+        return 'src';
       },
       mapSources: function (src) {
         //console.log('here we remap' + src);

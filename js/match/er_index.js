@@ -18,4 +18,7 @@ const Word = require("./word");
 exports.Word = Word;
 const IFErBase = require("./iferbase");
 exports.IFErBase = IFErBase;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXJfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvbWF0Y2gvZXJfaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQUEsdUNBQXVDO0FBQ3ZDLG1DQUFtQztBQUMxQix3QkFBTTtBQUVmLHFDQUFxQztBQUM1QiwwQkFBTztBQUNoQix1Q0FBdUM7QUFDOUIsNEJBQVE7QUFDakIsK0RBQStEO0FBQy9ELDhCQUE4QjtBQUM5Qiw2Q0FBNkM7QUFDcEMsa0NBQVc7QUFDcEIsK0NBQStDO0FBQ3RDLG9DQUFZO0FBQ3JCLCtCQUErQjtBQUN0QixvQkFBSTtBQUNiLHVDQUF1QztBQUM5Qiw0QkFBUSJ9
+
+//# sourceMappingURL=er_index.js.map
+
+//# sourceMappingURL=er_index.js.map

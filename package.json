@@ -12,6 +12,7 @@
     "testold": "jest && gulp test",
     "version": "npm show mgnlq_parser1@* version",
     "coverage": "jest --coverage",
+    "coverallsX": "jest --coverage && ls ./coverage/ && cat ./coverage/lcov.info",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "coveragex": "./node_modules/.bin/nyc --source-map false nodeunit test",
     "coverreportplain": "./node_modules/.bin/nyc --source-map false report --reporter=text-lcov ",
