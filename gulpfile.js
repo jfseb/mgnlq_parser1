@@ -82,7 +82,7 @@ gulp.task('clean', gulp.series('clean:models'));
 
 var nodeunit = require('gulp-nodeunit');
 
-gulp.task('test', gulp.series('tsc', function () {
+gulp.task('testold', gulp.series('tsc', function () {
   return gulp.src(['test/**/*.js'])
     .pipe(nodeunit({
       reporter: 'minimal'
@@ -93,18 +93,12 @@ gulp.task('test', gulp.series('tsc', function () {
     .pipe(gulp.dest('./out/lcov.info'));
 }));
 
-var jsdoc = require('gulp-jsdoc3');
-
-gulp.task('doc', gulp.series('test', function (cb) {
-  return gulp.src([srcDir + '/**/*.js', 'README.md', './js/**/*.js'], { read: false })
-    .pipe(jsdoc(cb));
-}));
 
 var jest = require('gulp-jest').default;
 
-const { runCLI } = require("jest");
+//const { runCLI } = require("jest");
  
-gulp.task('jest', function () {
+gulp.task('jestonly', function () {
   process.env.NODE_ENV = 'test';
   return gulp.src('test').pipe(jest({
     "preprocessorIgnorePatterns": [
@@ -124,17 +118,26 @@ gulp.task('eslint', () => {
   // Also, Be sure to return the stream from the task;
   // Otherwise, the task may end before the stream has finished.
   return gulp.src(['src/**/*.js', 'test/**/*.js', 'gulpfile.js'])
-    // eslint() attaches the lint output to the "eslint" property
-    // of the file object so it can be used by other modules.
-    .pipe(eslint())
-    // eslint.format() outputs the lint results to the console.
-    // Alternatively use eslint.formatEach() (see Docs).
-    .pipe(eslint.format())
-    // To have the process exit with an error code (1) on
-    // lint error, return the stream and pipe to failAfterError last.
-    .pipe(eslint.failAfterError());
+  // eslint() attaches the lint output to the "eslint" property
+  // of the file object so it can be used by other modules.
+  .pipe(eslint())
+  // eslint.format() outputs the lint results to the console.
+  // Alternatively use eslint.formatEach() (see Docs).
+  .pipe(eslint.format())
+  // To have the process exit with an error code (1) on
+  // lint error, return the stream and pipe to failAfterError last.
+  .pipe(eslint.failAfterError());
 });
 
+gulp.task('test', gulp.series('tsc', 'jestonly')); 
+
+
+var jsdoc = require('gulp-jsdoc3');
+
+gulp.task('doc', gulp.series('test', function (cb) {
+  return gulp.src([srcDir + '/**/*.js', 'README.md', './js/**/*.js'], { read: false })
+    .pipe(jsdoc(cb));
+}));
 
 // Default Task
 gulp.task('default', gulp.series('tsc', 'eslint', 'test', 'doc'));

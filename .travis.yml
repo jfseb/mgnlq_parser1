@@ -4,7 +4,7 @@ env:
 before_script:
   - unset FSD_COVERAGE
   - gulp tsc
-  - nodeunit test/parser.nunit.js -t testCatListMoreInFactAndFact2
+  - npm run test
   - unset DEBUG
   - gulp
   - tsc
