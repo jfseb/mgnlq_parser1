@@ -2,6 +2,7 @@ node_modules
 docs
 gen_tsc
 testmodel2/graph
+coverage/*
 *.bak
 *.tgz
 *.d.ts.map
