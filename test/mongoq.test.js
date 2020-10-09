@@ -3,7 +3,6 @@ var root = (process.env.FSD_COVERAGE) ? '../js_cov' : '../js';
 var mQ = require(root + '/ast2query/ast2MQuery.js');
 var MongoQ = require(root + '/mongoq.js');
 
-
 var SentenceParser = require(root + '/sentenceparser.js');
 
 var debuglog = require('debug')('mongoq.nunit');
