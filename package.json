@@ -55,11 +55,7 @@
     "chevrotain": "^0.27.3",
     "debugf": "^0.1.2",
     "lodash": "^4.17.20",
-<<<<<<< HEAD
-    "mgnlq_model": "^0.0.25",
-=======
     "mgnlq_model": "^0.0.211",
->>>>>>> f5dcf4b... source 0.11
     "mongoose": "^5.7.7"
   }
 }
