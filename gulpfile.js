@@ -11,8 +11,8 @@ var sourcemaps = require('gulp-sourcemaps');
  */
 var srcDir = 'src';
 var testDir = 'test';
-var sourcemaproot = './'; // /projects/nodejs/botbuilder/mgnlq_parser1/';
 
+//var sourcemaproot = './';
 
 gulp.task('watch', function () {
   return gulp.watch([srcDir + '/**/*.js', testDir + '/**/*.js', srcDir + '/**/*.tsx',  srcDir + '/**/*.ts', 'gulpfile.js'],
@@ -48,7 +48,7 @@ gulp.task('tsce', function () {
       },
       mapSources: function (src) {
         //console.log('here we remap' + src);
-        return  src;
+        return src;
       }}
     )) // ,  { sourceRoot: './' } ))
     // Now the sourcemaps are added to the .js file
@@ -108,8 +108,6 @@ gulp.task('testold', gulp.series('tsc', function () {
 
 var jest = require('gulp-jest').default;
 
-//const { runCLI } = require("jest");
- 
 gulp.task('jestonly', function () {
   process.env.NODE_ENV = 'test';
   return gulp.src('test').pipe(jest({
@@ -119,8 +117,6 @@ gulp.task('jestonly', function () {
     'automock': false
   }));
 });
-
-
 
 const eslint = require('gulp-eslint');
 
@@ -143,6 +139,11 @@ gulp.task('eslint', () => {
 
 gulp.task('test', gulp.series('tsc', 'jestonly')); 
 
+const gulpRun = require('gulp-run');
+
+gulp.task('pack', () => {
+  return gulpRun('npm pack').exec().pipe(gulp.dest('outpu'));
+});
 
 var jsdoc = require('gulp-jsdoc3');
 

@@ -1,7 +1,11 @@
 node_modules
 *.tgz
-*.md.bak
+docs
+logs
 *.bak
+*.lcov
+coverage/*
+*.md.bak
 **/*.bak
 *.txt
 **/*.d.ts.map
@@ -19,6 +23,7 @@ README.md
 .gitignore
 .travis.yml
 gulpfile.js
+.vscode/*
 abot_erbase-*
 **/*.map
 *.bak
@@ -27,7 +32,7 @@ abot_erbase-*
 *.md.bak
 gen2
 testmodel/_cache.js.zip
-node_modules
+
 docs
 logs
 src
@@ -45,12 +50,7 @@ test1x.json
 *.bak
 tsconfig.json
 tmp.json.zip
-README.md
-.eslintrc.json
-.npmignore
-.gitignore
-.travis.yml
-gulpfile.js
+
 **/*.map
 *.bak
 js_cov

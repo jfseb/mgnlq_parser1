@@ -1157,5 +1157,10 @@
               }
             }
           }
+        },
+        {
+          "nr": 25,
+          "query": "tables in domain IUPAC",
+          "parseError": "but found: 'FACT'"
         }
 ]

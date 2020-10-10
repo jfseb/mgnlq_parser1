@@ -1,22 +1,16 @@
 {
   "name": "mgnlq_parser1",
   "version": "0.0.12",
-  "description": "query parsing",
+  "description": "query parsing conversion to mongoose queries",
   "main": "js/index.js",
   "typings": "js/index.d.ts",
   "scripts": {
     "build": "gulp && tsc",
-    "testj": "jest",
-    "testjc": "jest --coverage",
-    "test": "jest",
+    "test": "gulp test",
     "testold": "jest && gulp test",
     "version": "npm show mgnlq_parser1@* version",
     "coverage": "jest --coverage",
-    "coverallsX": "jest --coverage && ls ./coverage/ && cat ./coverage/lcov.info",
-    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
-    "coveragex": "./node_modules/.bin/nyc --source-map false nodeunit test",
-    "coverreportplain": "./node_modules/.bin/nyc --source-map false report --reporter=text-lcov ",
-    "coverallsx": "./node_modules/.bin/nyc --source-map false report --reporter=text-lcov | coveralls"
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
@@ -25,6 +19,7 @@
   "keywords": [
     "typescript",
     "abot",
+    "mgnlq",
     "chevrotrain"
   ],
   "author": "jfsebpublic@gmail.com",
@@ -41,18 +36,18 @@
     "abot_utils": "^1.0.3",
     "del": "^5.1.0",
     "eslint-plugin-jest": "^24.1.0",
-    "gulp": "^4.0.0",
+    "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
     "gulp-jest": "https://registry.npmjs.org/@jacobq/gulp-jest/-/gulp-jest-4.0.3-PR65.tgz",
     "gulp-jsdoc3": "^2.0.0",
     "gulp-nodeunit": "^0.1.0",
+    "gulp-run": "^1.7.1",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
     "jest": "^26.5.2",
     "jest-cli": "^26.5.2",
     "merge-stream": "^2.0.0",
-    "mgnlq_testmodel_replay": "^0.1.6",
-    "nyc": "^14.1.1",
+    "mgnlq_testmodel_replay": "^0.1.8",
     "typescript": "^4.0.3"
   },
   "dependencies": {

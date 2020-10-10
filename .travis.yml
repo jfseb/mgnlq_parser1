@@ -1,12 +1,10 @@
 language: node_js
 env:
-  - debug=*
+  - debug=
 before_script:
   - unset FSD_COVERAGE
-  - gulp test
-#  - gulp instrument
+  - gulp
 node_js:
  - 12
 after_script:
   - npm run coveralls
-

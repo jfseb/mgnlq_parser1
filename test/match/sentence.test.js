@@ -27,19 +27,18 @@ const oSentence = [
 
 
 
-exports.testFindWordByCategory = function (test) {
+it('testFindWordByCategory', done => {
   // prepare
   // act
   const res = sentence.findWordByCategory(oSentence, 'catalog');
-  // check
-  test.deepEqual(res, { word : oSentence[2], index : 2}, 'correct result');
-  test.equal(res.word, oSentence[2], 'correct result');
-  test.done();
-};
+  expect(res).toEqual({ word : oSentence[2], index : 2});
+  expect(res.word).toEqual(oSentence[2]);
+  done();
+});
 
 
 
-exports.testGetDistinctCategoriesInSentence = function (test) {
+it('testGetDistinctCategoriesInSentence', done => {
   // prepare
   // act
   const res = sentence.getDistinctCategoriesInSentence([
@@ -53,34 +52,34 @@ exports.testGetDistinctCategoriesInSentence = function (test) {
     { 'matchedString': 'client', 'category': 'category' },
     { 'matchedString': '120', 'category': 'client' }
   ]);
-  // check
-  test.deepEqual(res, ['catalog', 'FLPD', 'client']);
-  test.done();
-};
+  expect(res).toEqual(['catalog', 'FLPD', 'client']);
+  done();
+});
 
 
 
-exports.testFindWordByCategoryNotFound = function (test) {
+it('testFindWordByCategoryNotFound', done => {
   // prepare
   // act
   const res = sentence.findWordByCategory(oSentence, 'notthese');
-  // check
-  test.deepEqual(res, {});
-  test.done();
-};
+  expect(res).toEqual({});
+  done();
+});
 
 
-exports.testRankingGeometricMean = function(test) {
-  test.equal(sentence.rankingGeometricMean( [{_ranking : 1 }, { _ranking : 1}] ), 1, 'correct 1');
-  test.equal(sentence.rankingGeometricMean( [{_ranking : 0.5 }, { _ranking : 0.5}] ), 0.5, 'correct 2');
-  test.equal(sentence.rankingGeometricMean( [] ), 1, 'correct 2');
-  test.equal(sentence.rankingGeometricMean( [{_ranking : 0.8 }] ), 0.8, 'correct 3');
-  test.equal(sentence.rankingGeometricMean( [{_ranking : 0.5 }, { _ranking : 1.0}] ), Math.pow(0.5,0.5), 'correct 5');
+it('testRankingGeometricMean', done => {
+  expect(sentence.rankingGeometricMean( [{_ranking : 1 }, { _ranking : 1}] )).toEqual(1);
+  expect(sentence.rankingGeometricMean( [{_ranking : 0.5 }, { _ranking : 0.5}] )).toEqual(0.5);
+  expect(sentence.rankingGeometricMean( [] )).toEqual(1);
+  expect(sentence.rankingGeometricMean( [{_ranking : 0.8 }] )).toEqual(0.8);
+  expect(sentence.rankingGeometricMean( [{_ranking : 0.5 }, { _ranking : 1.0}] )).toEqual(Math.pow(0.5,0.5));
 
-  test.done();
-};
+  done();
+});
 
-exports.testCmpRanking = function(test) {
-  test.ok(sentence.cmpRankingProduct([{ _ranking : 0.5},{ _ranking : 0.5 }] , [ { _ranking : 0.4}]) < 0, ' 2nd is weaker');
-  test.done();
-};
+it('testCmpRanking', done => {
+  expect(
+    sentence.cmpRankingProduct([{ _ranking : 0.5},{ _ranking : 0.5 }] , [ { _ranking : 0.4}]) < 0
+  ).toBeTruthy();
+  done();
+});

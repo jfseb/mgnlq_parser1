@@ -49,143 +49,138 @@ function releaseModel(theModel) {
 
 const ab = inputFilter;
 
-exports.testcountAinB = function (test) {
+it("testcountAinB", done => {
   var fut = inputFilter.countAinB;
-  test.equal(fut({ abc: 'def', hij: 1 }, { hijs: 4 }), 0, 'ok');
-  test.done();
-};
+  expect(fut({ abc: 'def', hij: 1 }, { hijs: 4 })).toEqual(0);
+  done();
+});
 
-exports.testcountAinBOne = function (test) {
+it("testcountAinBOne", done => {
   //  console.log(JSON.stringify(inputFilter, undefined, 2) + "yyyyyyyyyyyyyyyy")
   var fut = inputFilter.countAinB;
-  test.equal(fut({ abc: 'def', hij: 1 }, { hij: 2 }), 1, 'ok');
-  test.done();
-};
+  expect(fut({ abc: 'def', hij: 1 }, { hij: 2 })).toEqual(1);
+  done();
+});
 
-exports.testcountAinBCompareEQ = function (test) {
+it("testcountAinBCompareEQ", done => {
   var fut = inputFilter.countAinB;
-  test.equal(fut({ abc: 'def', hij: 1 }, { hij: 1 }, function (s1, s2) { return s1 && (s1 === s2); }), 1, 'ok');
-  test.done();
-};
+  expect(
+    fut({ abc: 'def', hij: 1 }, { hij: 1 }, function (s1, s2) { return s1 && (s1 === s2); })
+  ).toEqual(1);
+  done();
+});
 
-exports.testcountAinBCompareFN = function (test) {
+it("testcountAinBCompareFN", done => {
   var fut = inputFilter.countAinB;
-  test.equal(fut({ abc: 'def', hij: 1, klm: 'U' }, { hij: 1, klm: 'U' },
-    function (s1, s2) { return s1 && s1 === s2; }), 2, 'ok');
-  test.done();
-};
+  expect(fut({ abc: 'def', hij: 1, klm: 'U' }, { hij: 1, klm: 'U' },
+    function (s1, s2) { return s1 && s1 === s2; })).toEqual(2);
+  done();
+});
 
-exports.testcountAinBCompareMult1 = function (test) {
+it("testcountAinBCompareMult1", done => {
   var fut = inputFilter.countAinB;
-  test.equal(fut({ abc: 'def', hij: 1, klm: undefined }, { hij: 1, klm: 'U' },
-    function (s1, s2) { return s1 && s1 === s2; }), 1, 'ok');
-  test.done();
-};
+  expect(fut({ abc: 'def', hij: 1, klm: undefined }, { hij: 1, klm: 'U' },
+    function (s1, s2) { return s1 && s1 === s2; })).toEqual(1);
+  done();
+});
 
-exports.testcountAinBCompareMult = function (test) {
+it("testcountAinBCompareMult", done => {
   var fut = inputFilter.countAinB;
-  test.equal(fut({ abc: 'def', hij: 1, klm: 0 }, { hij: 1, klm: 0 },
-    function (s1, s2) { return s1 !== undefined && s1 === s2; }), 2, 'ok');
-  test.done();
-};
+  expect(fut({ abc: 'def', hij: 1, klm: 0 }, { hij: 1, klm: 0 },
+    function (s1, s2) { return s1 !== undefined && s1 === s2; })).toEqual(2);
+  done();
+});
 
-exports.testcountAinBCompareIgnore = function (test) {
+it("testcountAinBCompareIgnore", done => {
   var fut = inputFilter.countAinB;
-  test.equal(fut({ abc: 'def', hij: 1, klm: 0 }, { hij: 1, klm: 0 },
-    function (s1, s2) { return s1 !== undefined && s1 === s2; }, 'klm'), 1, 'ok');
-  test.done();
-};
+  expect(fut({ abc: 'def', hij: 1, klm: 0 }, { hij: 1, klm: 0 },
+    function (s1, s2) { return s1 !== undefined && s1 === s2; }, 'klm')).toEqual(1);
+  done();
+});
 
-exports.testcountAinBCompareIgnore2 = function (test) {
+it("testcountAinBCompareIgnore2", done => {
   var fut = inputFilter.countAinB;
-  test.equal(fut({ abc: 'def', hij: 1, klm: 0 }, { hij: 1, klm: 0 },
-    function (s1, s2) { return (s1 !== undefined) && (s1 === s2); }, ['klm', 'hij']), 0, 'ok');
-  test.done();
-};
+  expect(fut({ abc: 'def', hij: 1, klm: 0 }, { hij: 1, klm: 0 },
+    function (s1, s2) { return (s1 !== undefined) && (s1 === s2); }, ['klm', 'hij'])).toEqual(0);
+  done();
+});
 
-exports.testspuriouAnotInB = function (test) {
+it("testspuriouAnotInB", done => {
   var fut = inputFilter.spuriousAnotInB;
-  test.deepEqual(fut({ abc: 'def', hij: 1, klm: 0 }, { hij: 1, klm: 0 }, ['klm', 'hij']), 1, 'ok');
-  test.done();
-};
+  expect(fut({ abc: 'def', hij: 1, klm: 0 }, { hij: 1, klm: 0 }, ['klm', 'hij'])).toEqual(1);
+  done();
+});
 
-exports.testspuriouAnotInBIgnore = function (test) {
+it("testspuriouAnotInBIgnore", done => {
   var fut = inputFilter.spuriousAnotInB;
-  test.equal(fut({ abc: 'def', hij: 1, klm: 0 }, { hij: 1, klm: 0 }, ['abc', ' klm', 'hij']), 0, 'ok');
-  test.done();
-};
+  expect(
+    fut({ abc: 'def', hij: 1, klm: 0 }, { hij: 1, klm: 0 }, ['abc', ' klm', 'hij'])
+  ).toEqual(0);
+  done();
+});
 
-exports.testspuriouAnotInBIgnore2 = function (test) {
+it("testspuriouAnotInBIgnore2", done => {
   var fut = inputFilter.spuriousAnotInB;
-  test.equal(fut({ abc: 'def', 'u': 1, hij: 1, klm: 0 }, { c: 3, hij: 1, klm: 0 },
-    ['abc', ' klm', 'hij']), 1, 'ok');
-  test.done();
-};
+  expect(fut({ abc: 'def', 'u': 1, hij: 1, klm: 0 }, { c: 3, hij: 1, klm: 0 },
+    ['abc', ' klm', 'hij'])).toEqual(1);
+  done();
+});
 
-exports.testcompareContext = function (test) {
+it("testcompareContext", done => {
   var fut = inputFilter.compareContext;
   var a = { abc: 'def', hij: 1, klm: 0, ff: 'B' };
   var b = { hij: 1, klm: 0, ff: 'A', e: 1, c: 0, h: 2 };
-  test.deepEqual(fut(a, b),
-    {
-      equal: 2,
-      different: 1,
-      spuriousL: 1,
-      spuriousR: 3
-    },
-    'ok');
-  test.done();
-};
+  expect(fut(a, b)).toEqual({
+    equal: 2,
+    different: 1,
+    spuriousL: 1,
+    spuriousR: 3
+  });
+  done();
+});
 
-exports.testcompareContextIgnorePrivate = function (test) {
+it("testcompareContextIgnorePrivate", done => {
   var fut = inputFilter.compareContext;
   var a = { abc: 'def', _a: 1, _b: 3, hij: 1, klm: 0, ff: 'B' };
   var b = { hij: 1, _a: 1, _c: 3, _b: 4, klm: 0, ff: 'A', e: 1, c: 0, h: 2 };
-  test.deepEqual(fut(a, b),
-    {
-      equal: 2,
-      different: 1,
-      spuriousL: 1,
-      spuriousR: 3
-    },
-    'ok');
-  test.done();
-};
+  expect(fut(a, b)).toEqual({
+    equal: 2,
+    different: 1,
+    spuriousL: 1,
+    spuriousR: 3
+  });
+  done();
+});
 
-exports.testcompareContextIgnore = function (test) {
+it("testcompareContextIgnore", done => {
   var fut = inputFilter.compareContext;
   var a = { abc: 'def', hij: 1, klm: 0, ff: 'B' };
   var b = { hij: 1, klm: 0, ff: 'A', e: 1, c: 0, h: 2 };
-  test.deepEqual(fut(a, b, ['abc']),
-    {
-      equal: 2,
-      different: 1,
-      spuriousL: 0,
-      spuriousR: 3
-    },
-    'ok');
-  test.done();
-};
+  expect(fut(a, b, ['abc'])).toEqual({
+    equal: 2,
+    different: 1,
+    spuriousL: 0,
+    spuriousR: 3
+  });
+  done();
+});
 
-exports.test_matchWord = function (test) {
+it("test_matchWord", done => {
   const fn = inputFilter.matchWord;
 
-  // test.expect(3)
-  test.deepEqual(fn({
+  expect(fn({
     key: 'NoTPresent'
   },
     {
       systemObjectId: 'ClientSideTragetResol',
       systemObjectCategory: 'unit'
-    }),
-    undefined, 'not applicable to irrelevant key');
-  test.done();
-};
+    })).toEqual(undefined);
+  done();
+});
 
-exports.test_matchWordAlias = function (test) {
+it("test_matchWordAlias", done => {
   const fn = inputFilter.matchWord;
-  // test.expect(3)
-  test.deepEqual(fn({
+  expect(fn({
     key: 'systemObjectId',
     word: 'CSTR',
     follows: {
@@ -196,12 +191,11 @@ exports.test_matchWordAlias = function (test) {
     {
       systemObjectId: 'CSTR',
       systemObjectCategory: 'unit'
-    }),
-    undefined, 'not applicable to irrelevant key');
-  test.done();
-};
+    })).toEqual({"_weight": {"systemObjectId": 1}, "systemObjectCategory": "unit", "systemObjectId": "ClientSideTargetResolution"});
+  done();
+});
 
-exports.test_matchWordAliasMatchOthersTrue = function (test) {
+it("test_matchWordAliasMatchOthersTrue", done => {
   const fn = inputFilter.matchWord;
   // test.expect(3)
   var oRule = {
@@ -216,13 +210,12 @@ exports.test_matchWordAliasMatchOthersTrue = function (test) {
     systemObjectId: 'CSTR',
     systemObjectCategory: 'xunit'
   };
-  test.deepEqual(fn(oRule,
-    oValue, { matchothers: true }),
-    undefined, 'not applicable to irrelevant key');
-  test.done();
-};
+  expect(fn(oRule,
+    oValue, { matchothers: true })).toEqual(undefined);
+  done();
+});
 
-exports.test_matchWordAliasMatchOthersFalse = function (test) {
+it("test_matchWordAliasMatchOthersFalse", done => {
   const fn = inputFilter.matchWord;
   // test.expect(3)
   var oRule = {
@@ -238,21 +231,19 @@ exports.test_matchWordAliasMatchOthersFalse = function (test) {
     systemObjectCategory: 'xunit',
     abc: 'ABC'
   };
-  test.deepEqual(fn(oRule,
-    oValue, { matchothers: false }),
-    {
-      systemObjectId: 'ClientSideTargetResolution',
-      systemObjectCategory: 'xunit',
-      abc: 'ABC',
-      _weight: {
-        'systemObjectId': 1
-      }
+  expect(fn(oRule,
+    oValue, { matchothers: false })).toEqual({
+    systemObjectId: 'ClientSideTargetResolution',
+    systemObjectCategory: 'xunit',
+    abc: 'ABC',
+    _weight: {
+      'systemObjectId': 1
     }
-    , ' matched');
-  test.done();
-};
+  });
+  done();
+});
 
-exports.test_matchWordAliasMatchOthersFalseOverride = function (test) {
+it("test_matchWordAliasMatchOthersFalseOverride", done => {
   const fn = inputFilter.matchWord;
   // test.expect(3)
   var oRule = {
@@ -268,22 +259,20 @@ exports.test_matchWordAliasMatchOthersFalseOverride = function (test) {
     systemObjectCategory: 'xunit',
     abc: 'ABC'
   };
-  test.deepEqual(fn(oRule,
+  expect(fn(oRule,
     oValue, {
       matchothers: false,
       override: true
-    }),
-    {
-      systemObjectId: 'ClientSideTargetResolution',
-      systemObjectCategory: 'unit',
-      abc: 'ABC',
-      _weight: {
-        'systemObjectId': 1
-      }
+    })).toEqual({
+    systemObjectId: 'ClientSideTargetResolution',
+    systemObjectCategory: 'unit',
+    abc: 'ABC',
+    _weight: {
+      'systemObjectId': 1
     }
-    , ' matched and override');
-  test.done();
-};
+  });
+  done();
+});
 
 var oRuleWord = {
   type: 'word',
@@ -305,7 +294,7 @@ var oRuleWordLong = {
   }
 };
 
-exports.test_matchWordAlias = function (test) {
+it("test_matchWordAlias", done => {
   const fn = ab.matchWord;
   // test.expect(3)
   var oContext = {
@@ -314,20 +303,18 @@ exports.test_matchWordAlias = function (test) {
     abc: 'ABC'
   };
   var res = fn(oRuleWord, oContext);
-  // console.log(JSON.stringify(res))
-  test.deepEqual(res,
-    {
-      systemObjectId: 'ClientSideTargetResolution',
-      systemObjectCategory: 'unit',
-      abc: 'ABC',
-      _weight: {
-        'systemObjectId': 1
-      }
-    }, ' incorrect result');
-  test.done();
-};
+  expect(res).toEqual({
+    systemObjectId: 'ClientSideTargetResolution',
+    systemObjectCategory: 'unit',
+    abc: 'ABC',
+    _weight: {
+      'systemObjectId': 1
+    }
+  });
+  done();
+});
 
-exports.test_matchWordAliasDifferentCat = function (test) {
+it("test_matchWordAliasDifferentCat", done => {
   const fn = ab.matchWord;
   // test.expect(3)
 
@@ -337,20 +324,20 @@ exports.test_matchWordAliasDifferentCat = function (test) {
     abc: 'ABC'
   };
   var res = fn(oRuleWord, oContext);
-  test.deepEqual(res, {
+  expect(res).toEqual({
     systemObjectId: 'ClientSideTargetResolution',
     systemObjectCategory: 'xunit',
     abc: 'ABC',
     _weight: { 'systemObjectId': 1 }
   }
-  /* undefined */, ' no match');
-  test.done();
-};
+  /* undefined */);
+  done();
+});
 
 const enumRULETYPEWORD = 0;
 const enumRULETYPEREGEXP = 1;
 
-exports.test_applyRulesEqualChoice = function (test) {
+it("test_applyRulesEqualChoice", done => {
   // prepare
   var aRules = [
     {
@@ -378,15 +365,13 @@ exports.test_applyRulesEqualChoice = function (test) {
   };
   // act
   var res = ab.augmentContext(oContext, aRules);
-  // test
-  test.ok(res.length >= 2, 'found at least two');
-  // console.log(' =================>' + JSON.stringify(res, undefined, 2))
-  test.deepEqual(res[0].keyB, 'CategoryB', 'category respected');
-  test.deepEqual(res[1].keyB, 'CategoryC', 'category respected');
-  test.done();
-};
+  expect(res.length >= 2).toBeTruthy();
+  expect(res[0].keyB).toEqual('CategoryB');
+  expect(res[1].keyB).toEqual('CategoryC');
+  done();
+});
 
-exports.test_matchOthersTrue = function (test) {
+it("test_matchOthersTrue", done => {
   // prepare
   var aRules = [
     {
@@ -415,13 +400,12 @@ exports.test_matchOthersTrue = function (test) {
   };
   // act
   var res = ab.matchWord(aRules[0], oContext, { matchothers: true });
-  // test
-  test.ok(res === undefined, ' undefined ');
-  test.done();
-};
+  expect(res === undefined).toBeTruthy();
+  done();
+});
 
 
-exports.test_checkOneRuleA = function (test) {
+it("test_checkOneRuleA", done => {
   // prepare
   var aRule =
     {
@@ -433,19 +417,19 @@ exports.test_checkOneRuleA = function (test) {
         'keyB': 'CategoryB'
       }
     };
-  test.expect(1);
+  expect.assertions(1);
   // act
   try {
      var res = ab.checkOneRule('abc','abc', true, [], aRule, {});
-     test.equal(1,0);
+     expect(1).toEqual(0);
   } catch(e) {
-    test.equal(1,1);
+    expect(1).toEqual(1);
   }
-  test.done();
-};
+  done();
+});
 
 
-exports.test_checkOneRuleWordA = function (test) {
+it("test_checkOneRuleWordA", done => {
   // prepare
   var aRule = {
       word: 'valuea',
@@ -456,17 +440,17 @@ exports.test_checkOneRuleWordA = function (test) {
         'keyB': 'CategoryB'
       }
   };
-  test.expect(1);
+  expect.assertions(1);
   // act
   try {
      var res = ab.checkOneRule('abc','abc', true, [], aRule, {});
-     test.equal(1,0);
+     expect(1).toEqual(0);
   } catch(e) {
-    test.equal(1,1);
+    expect(1).toEqual(1);
   }
-  test.done();
-};
-exports.test_checkOneRuleWordAExactFalse = function (test) {
+  done();
+});
+it("test_checkOneRuleWordAExactFalse", done => {
   // prepare
   var aRule = {
     word: 'Valuea',
@@ -481,11 +465,11 @@ exports.test_checkOneRuleWordAExactFalse = function (test) {
   // act
   var res = [];
   ab.checkOneRule('Valuea','valuea', false, res, aRule, {});
-  test.equal(res && res.length, 1,' exact false ');
-  test.done();
-};
+  expect(res && res.length).toEqual(1);
+  done();
+});
 
-exports.test_checkOneRuleWordAExact = function (test) {
+it("test_checkOneRuleWordAExact", done => {
   // prepare
   var aRule = {
     word: 'Valuea',
@@ -497,25 +481,25 @@ exports.test_checkOneRuleWordAExact = function (test) {
       'keyB': 'CategoryB'
     }
   };
-  test.expect(4);
+  expect.assertions(4);
   // act
   var res = [];
   ab.checkOneRule('Valuea','valuea', true, res, aRule, {});
-  test.equal(res && res.length, 1,true);
+  expect(res && res.length).toEqual(1);
   res = [];
   ab.checkOneRule('VaLUEa','valueB', true, res, aRule, {});
-  test.equal(res && res.length, 0,false);
+  expect(res && res.length).toEqual(0);
   res = [];
 
   ab.checkOneRule('Valuea','valuea', false, res, aRule, {});
-  test.equal(res && res.length, 1,' exact false ');
+  expect(res && res.length).toEqual(1);
   res = [];
   ab.checkOneRule('VaLUEa','valuea', false, res, aRule, {});
-  test.equal(res && res.length, 1);
-  test.done();
-};
+  expect(res && res.length).toEqual(1);
+  done();
+});
 
-exports.test_checkOneRuleWordAExactOnly = function (test) {
+it("test_checkOneRuleWordAExactOnly", done => {
   // prepare
   var aRule = {
     word: 'Valuea',
@@ -528,28 +512,28 @@ exports.test_checkOneRuleWordAExactOnly = function (test) {
       'keyB': 'CategoryB'
     }
   };
-  test.expect(5);
+  expect.assertions(5);
   // act
   var res = [];
   ab.checkOneRule('Valueaa','valueaa', true, res, aRule, {});
-  test.equal(res && res.length, 0,true);
+  expect(res && res.length).toEqual(0);
   res = [];
   ab.checkOneRule('VaLUea','valuea', true, res, aRule, {});
-  test.equal(res && res.length, 1,false);
+  expect(res && res.length).toEqual(1);
   res = [];
   ab.checkOneRule('VaLUEaa','valueBa', true, res, aRule, {});
-  test.equal(res && res.length, 0,false);
+  expect(res && res.length).toEqual(0);
   res = [];
   ab.checkOneRule('Valueaa','valueaa', false, res, aRule, {});
-  test.equal(res && res.length, 0,true);
+  expect(res && res.length).toEqual(0);
   res = [];
   ab.checkOneRule('VaLUEaa','valueaa', false, res, aRule, {});
-  test.equal(res && res.length, 0);
-  test.done();
-};
+  expect(res && res.length).toEqual(0);
+  done();
+});
 
 
-exports.test_checkOneRuleWithOffsetA = function (test) {
+it("test_checkOneRuleWithOffsetA", done => {
   // prepare
   var aRule =
     {
@@ -565,19 +549,19 @@ exports.test_checkOneRuleWithOffsetA = function (test) {
     keyA: 'ValueA',
     keyB: 'NothingMatches'
   };
-  test.expect(1);
+  expect.assertions(1);
   // act
   try {
      var res = ab.checkOneRuleWithOffset('abc','abc', true, aRule, {});
-     test.equal(1,0);
+     expect(1).toEqual(0);
   } catch(e) {
-    test.equal(1,1);
+    expect(1).toEqual(1);
   }
-  test.done();
-};
+  done();
+});
 
 
-exports.test_checkOneRuleWithOffsetWordA= function (test) {
+it("test_checkOneRuleWithOffsetWordA", done => {
   // prepare
   var aRule = {
     word: 'Valuea',
@@ -589,25 +573,25 @@ exports.test_checkOneRuleWithOffsetWordA= function (test) {
       'keyB': 'CategoryB'
     }
   };
-  test.expect(4);
+  expect.assertions(4);
   // act
   var res = [];
   ab.checkOneRuleWithOffset('Valuea','valuea', true, res, aRule, {});
-  test.equal(res && res.length, 1,true);
+  expect(res && res.length).toEqual(1);
   res = [];
   ab.checkOneRuleWithOffset('VaLUEa','valueB', true, res, aRule, {});
-  test.equal(res && res.length, 0,false);
+  expect(res && res.length).toEqual(0);
   res = [];
 
   ab.checkOneRuleWithOffset('Valuea','valuea', false, res, aRule, {});
-  test.equal(res && res.length, 1,' exact false ');
+  expect(res && res.length).toEqual(1);
   res = [];
   ab.checkOneRuleWithOffset('VaLUEa','valuea', false, res, aRule, {});
-  test.equal(res && res.length, 1);
-  test.done();
-};
+  expect(res && res.length).toEqual(1);
+  done();
+});
 
-exports.test_checkOneRuleWithOffsetWordAExactOnly = function (test) {
+it("test_checkOneRuleWithOffsetWordAExactOnly", done => {
   // prepare
   var aRule = {
     word: 'Valuea',
@@ -620,27 +604,27 @@ exports.test_checkOneRuleWithOffsetWordAExactOnly = function (test) {
       'keyB': 'CategoryB'
     }
   };
-  test.expect(5);
+  expect.assertions(5);
   // act
   var res = [];
   ab.checkOneRuleWithOffset('Valueaa','valueaa', true, res, aRule, {});
-  test.equal(res && res.length, 0,true);
+  expect(res && res.length).toEqual(0);
   res = [];
   ab.checkOneRuleWithOffset('VaLUea','valuea', true, res, aRule, {});
-  test.equal(res && res.length, 1,false);
+  expect(res && res.length).toEqual(1);
   res = [];
   ab.checkOneRuleWithOffset('VaLUEaa','valueBa', true, res, aRule, {});
-  test.equal(res && res.length, 0,false);
+  expect(res && res.length).toEqual(0);
   res = [];
   ab.checkOneRuleWithOffset('Valueaa','valueaa', false, res, aRule, {});
-  test.equal(res && res.length, 0,true);
+  expect(res && res.length).toEqual(0);
   res = [];
   ab.checkOneRuleWithOffset('VaLUEaa','valueaa', false, res, aRule, {});
-  test.equal(res && res.length, 0);
-  test.done();
-};
+  expect(res && res.length).toEqual(0);
+  done();
+});
 
-exports.test_checkOneRuleWithOffsetWordNumbers = function (test) {
+it("test_checkOneRuleWithOffsetWordNumbers", done => {
   // prepare
   var bitIndexAllDomains = 0xFFF;
   var metaBitIndex = 0xFFF;
@@ -656,27 +640,27 @@ exports.test_checkOneRuleWithOffsetWordNumbers = function (test) {
     bitSentenceAnd: bitIndexAllDomains,
     _ranking: 0.95
   };
-  test.expect(5);
+  expect.assertions(5);
   // act
   var res = [];
   ab.checkOneRuleWithOffset('123','123', true, res, aRule, {});
-  test.equal(res && res.length, 1, JSON.stringify( res, undefined, 2));
+  expect(res && res.length).toEqual(1);
   res = [];
   ab.checkOneRuleWithOffset('one','one', true, res, aRule, {});
-  test.equal(res && res.length, 1, JSON.stringify( res, undefined, 2));
+  expect(res && res.length).toEqual(1);
   res = [];
   ab.checkOneRuleWithOffset('two','two', true, res, aRule, {});
-  test.equal(res && res.length, 1,JSON.stringify( res, undefined, 2));
+  expect(res && res.length).toEqual(1);
   res = [];
   ab.checkOneRuleWithOffset('four','four', false, res, aRule, {});
-  test.equal(res && res.length, 0,JSON.stringify( res, undefined, 2));
+  expect(res && res.length).toEqual(0);
   res = [];
   ab.checkOneRuleWithOffset('VaLUEaa','valueaa', false, res, aRule, {});
-  test.equal(res && res.length, 0, JSON.stringify( res, undefined, 2));
-  test.done();
-};
+  expect(res && res.length).toEqual(0);
+  done();
+});
 
-exports.test_matchOthersFalse = function (test) {
+it("test_matchOthersFalse", done => {
   // prepare
   var aRules = [
     {
@@ -706,12 +690,11 @@ exports.test_matchOthersFalse = function (test) {
   // act
   var res = ab.matchWord(aRules[0], oContext, { matchothers: false });
   debuglog('2222222222>' + JSON.stringify(res, undefined, 2));
-  // test
-  test.deepEqual(res.keyB, 'NothingMatches', ' categorypicked ');
-  test.done();
-};
+  expect(res.keyB).toEqual('NothingMatches');
+  done();
+});
 
-exports.test_matchOthersFalseOverride = function (test) {
+it("test_matchOthersFalseOverride", done => {
   // prepare
   var aRules = [
     {
@@ -741,10 +724,9 @@ exports.test_matchOthersFalseOverride = function (test) {
   // act
   var res = ab.matchWord(aRules[0], oContext, { matchothers: false, override: true });
   debuglog('2222222222>' + JSON.stringify(res, undefined, 2));
-  // test
-  test.deepEqual(res.keyB, 'CategoryB', ' categorypicked ');
-  test.done();
-};
+  expect(res.keyB).toEqual('CategoryB');
+  done();
+});
 
 /*
 exports.test_applyRules = function (test) {
@@ -949,7 +931,7 @@ exports.test_applyRulesLevenBestFitCategory = function (test) {
 };
 */
 
-exports.test_matchWordAliasOverride = function (test) {
+it("test_matchWordAliasOverride", done => {
   const fn = ab.matchWord;
   // test.expect(3)
 
@@ -960,19 +942,18 @@ exports.test_matchWordAliasOverride = function (test) {
   var res = fn(oRuleWord, oContext, {
     augment: true
   });
-  test.deepEqual(res,
-    {
-      systemObjectId: 'ClientSideTargetResolution',
-      systemObjectCategory: 'unit',
-      abc: 'ABC',
-      _weight: {
-        'systemObjectId': 1
-      }
-    }, ' incorrect result');
-  test.done();
-};
+  expect(res).toEqual({
+    systemObjectId: 'ClientSideTargetResolution',
+    systemObjectCategory: 'unit',
+    abc: 'ABC',
+    _weight: {
+      'systemObjectId': 1
+    }
+  });
+  done();
+});
 
-exports.test_matchWordAliasOverrideDifferent = function (test) {
+it("test_matchWordAliasOverrideDifferent", done => {
   const fn = ab.matchWord;
   // test.expect(3)
 
@@ -984,19 +965,18 @@ exports.test_matchWordAliasOverrideDifferent = function (test) {
   var res = fn(oRuleWord, oContext, {
     override: true
   });
-  test.deepEqual(res,
-    {
-      systemObjectId: 'ClientSideTargetResolution',
-      systemObjectCategory: 'unit',
-      abc: 'ABC',
-      _weight: {
-        'systemObjectId': 1
-      }
-    }, ' incorrect result');
-  test.done();
-};
+  expect(res).toEqual({
+    systemObjectId: 'ClientSideTargetResolution',
+    systemObjectCategory: 'unit',
+    abc: 'ABC',
+    _weight: {
+      'systemObjectId': 1
+    }
+  });
+  done();
+});
 
-exports.test_ruleLevenBeforeFallback = function (test) {
+it("test_ruleLevenBeforeFallback", done => {
   // prepare
   // there a
   var aRules = [
@@ -1032,52 +1012,45 @@ exports.test_ruleLevenBeforeFallback = function (test) {
   };
   // act
   var res = ab.augmentContext(oContext, aRules);
-  // test
-  test.ok(res.length >= 1, 'found at least one');
+  expect(res.length >= 1).toBeTruthy();
   debuglog(' =================>' + JSON.stringify(res, undefined, 2));
-  test.deepEqual(res[0].keyA, 'somewhatclose', 'category propagated');
-  test.deepEqual(res[0].keyB, 'System2', 'category picked');
+  expect(res[0].keyA).toEqual('somewhatclose');
+  expect(res[0].keyB).toEqual('System2');
 
   oContext = {
     keyA: 'gibts gar nicht'
   };
   // act
   res = ab.augmentContext(oContext, aRules);
-  // test
-  test.ok(res.length >= 1, 'found at least one');
+  expect(res.length >= 1).toBeTruthy();
   debuglog(' =================>' + JSON.stringify(res, undefined, 2));
-  test.deepEqual(res[0].keyA, 'gibts gar nicht', 'result propagated');
-  test.deepEqual(res[0].keyB, undefined, 'category picked');
-  test.done();
-  // test.deepEqual(res[1].keyB, 'CategoryC', 'category respected')
-};
+  expect(res[0].keyA).toEqual('gibts gar nicht');
+  expect(res[0].keyB).toEqual(undefined);
+  done();
+});
 
-exports.test_extractArgsMap = function (test) {
+it("test_extractArgsMap", done => {
   var res = ab.extractArgsMap(['A', 'B', 'C'], { 2: 'X2', 1: 'X1' });
-  test.deepEqual(res,
-    { 'X2': 'C', 'X1': 'B' }, ' incorrect result');
-  test.done();
-};
-exports.test_extractArgsMapUndef = function (test) {
+  expect(res).toEqual({ 'X2': 'C', 'X1': 'B' });
+  done();
+});
+it("test_extractArgsMapUndef", done => {
   var res = ab.extractArgsMap(['A', 'B', 'C'], undefined);
-  test.deepEqual(res,
-    {}, ' incorrect result');
-  test.done();
-};
-exports.test_extractArgsMapEmptyMatch = function (test) {
+  expect(res).toEqual({});
+  done();
+});
+it("test_extractArgsMapEmptyMatch", done => {
   var res = ab.extractArgsMap(['A', '', 'C'], { 2: 'X2', 1: 'X1' });
-  test.deepEqual(res,
-    { 'X2': 'C' }, ' incorrect result');
-  test.done();
-};
-exports.test_extractArgsMapOutOfRange = function (test) {
+  expect(res).toEqual({ 'X2': 'C' });
+  done();
+});
+it("test_extractArgsMapOutOfRange", done => {
   var res = ab.extractArgsMap(['A', '', 'C'], { 2: 'X2', 4: 'X1' });
-  test.deepEqual(res,
-    { 'X2': 'C' }, ' incorrect result');
-  test.done();
-};
+  expect(res).toEqual({ 'X2': 'C' });
+  done();
+});
 
-exports.test_matchWordNonMatched = function (test) {
+it("test_matchWordNonMatched", done => {
   const fn = ab.matchWord;
   // test.expect(3)
   var oContext = {
@@ -1086,12 +1059,11 @@ exports.test_matchWordNonMatched = function (test) {
     abc: 'ABC'
   };
   var res = fn(oRuleWord, oContext);
-  test.deepEqual(res,
-    undefined, ' incorrect result');
-  test.done();
-};
+  expect(res).toEqual(undefined);
+  done();
+});
 
-exports.test_matchWordLevenClose = function (test) {
+it("test_matchWordLevenClose", done => {
   const fn = ab.matchWord;
   // test.expect(3)
   var oContext = {
@@ -1100,20 +1072,18 @@ exports.test_matchWordLevenClose = function (test) {
     abc: 'ABC'
   };
   var res = fn(oRuleWordLong, oContext);
-  // console.log('Res is ' + res)
-  test.deepEqual(res,
-    {
-      systemObjectId: 'ClientSideTargetResolution',
-      systemObjectCategory: 'unit',
-      abc: 'ABC',
-      _weight: {
-        'systemObjectId':  0.9923076923076923
-      }
-    }, ' incorrect result ');
-  test.done();
-};
+  expect(res).toEqual({
+    systemObjectId: 'ClientSideTargetResolution',
+    systemObjectCategory: 'unit',
+    abc: 'ABC',
+    _weight: {
+      'systemObjectId':  0.9923076923076923
+    }
+  });
+  done();
+});
 
-exports.test_ruleRegexp = function (test) {
+it("test_ruleRegexp", done => {
   // prepare
   // there a
   var aRules = [
@@ -1139,34 +1109,31 @@ exports.test_ruleRegexp = function (test) {
   };
   // act
   var res = ab.augmentContext(oContext, aRules);
-  // test
-  test.ok(res.length >= 1, 'found at least one');
+  expect(res.length >= 1).toBeTruthy();
   debuglog(' =================>' + JSON.stringify(res, undefined, 2));
-  test.deepEqual(res[0].keyA, 'ABC', 'category propagated');
-  test.deepEqual(res[0].keyB, 'System3', 'category picked');
+  expect(res[0].keyA).toEqual('ABC');
+  expect(res[0].keyB).toEqual('System3');
 
   oContext = {
     keyA: 'ABCD'
   };
   // act
   res = ab.augmentContext(oContext, aRules);
-  // test
-  test.ok(res.length >= 1, 'found at least one');
+  expect(res.length >= 1).toBeTruthy();
   debuglog(' =================>' + JSON.stringify(res, undefined, 2));
-  test.deepEqual(res[0].keyA, 'ABCD', 'result propagated');
-  test.deepEqual(res[0].keyB, 'System4', 'category picked');
+  expect(res[0].keyA).toEqual('ABCD');
+  expect(res[0].keyB).toEqual('System4');
   // test.deepEqual(res[1].keyB, 'CategoryC', 'category respected')
   oContext = {
     keyA: 'ABCDE'
   };
   // act
   res = ab.augmentContext(oContext, aRules);
-  // test
-  test.ok(res.length === 0, 'found nothing');
-  test.done();
-};
+  expect(res.length === 0).toBeTruthy();
+  done();
+});
 
-exports.test_ruleRegexpExtraction = function (test) {
+it("test_ruleRegexpExtraction", done => {
   // prepare
   // there a
   var aRules = [
@@ -1188,17 +1155,16 @@ exports.test_ruleRegexpExtraction = function (test) {
   };
   // act
   var res = ab.augmentContext(oContext, aRules);
-  // test
-  test.ok(res.length >= 1, 'found at least one');
+  expect(res.length >= 1).toBeTruthy();
   debuglog(' =================>' + JSON.stringify(res, undefined, 2));
-  test.deepEqual(res[0].keyA, 'UV2CLNT123', 'category propagated');
-  test.deepEqual(res[0].keyB, 'System3', 'category picked');
-  test.deepEqual(res[0].systemId, 'uv2', 'extract1 picked');
-  test.deepEqual(res[0].client, '123', 'extract2 picked');
-  test.done();
-};
+  expect(res[0].keyA).toEqual('UV2CLNT123');
+  expect(res[0].keyB).toEqual('System3');
+  expect(res[0].systemId).toEqual('uv2');
+  expect(res[0].client).toEqual('123');
+  done();
+});
 
-exports.test_ruleRegexpExtractionReplacing = function (test) {
+it("test_ruleRegexpExtractionReplacing", done => {
   // prepare
   // there a
   var aRules = [
@@ -1220,14 +1186,13 @@ exports.test_ruleRegexpExtractionReplacing = function (test) {
   };
   // act
   var res = ab.augmentContext(oContext, aRules);
-  // test
-  test.ok(res.length >= 1, 'found at least one');
+  expect(res.length >= 1).toBeTruthy();
   debuglog(' =================>' + JSON.stringify(res, undefined, 2));
-  test.deepEqual(res[0].keyB, 'System3', 'category propagated');
-  test.deepEqual(res[0].systemId, 'uv2', 'category picked');
-  test.deepEqual(res[0].client, '123', 'category picked');
-  test.done();
-};
+  expect(res[0].keyB).toEqual('System3');
+  expect(res[0].systemId).toEqual('uv2');
+  expect(res[0].client).toEqual('123');
+  done();
+});
 /*
 exports.test_matchSthElse = function (test) {
   const fn = ab.matchWord;
@@ -1281,22 +1246,20 @@ exports.test_applyRulesWithCategory = function (test) {
 };
 */
 
-exports.testinputFilter = function (test) {
+it("testinputFilter", done => {
   const fn = ab.augmentContext;
-  // test.expect(3)
-  test.deepEqual(fn({
+  expect(fn({
     systemObjectId: 'ClientSideTragetResol',
     systemObjectCategory: 'unit'
   }, [
     {
       type: 1
     }
-  ]),
-    [], 'return undefined');
-  test.done();
-};
+  ])).toEqual([]);
+  done();
+});
 
-
+/*
 function getRules() {
   return getModel().then(
     (model) => {
@@ -1304,6 +1267,7 @@ function getRules() {
     }
   )
 }
+*/
 
 
 function releaseRules(theModel) {
@@ -1339,10 +1303,10 @@ function releaseRules(mongoose) {
 
 //var theModel = Model.loadModels();
 
-exports.testCategorizeAWordWithOffest = function (test) {
+it("testCategorizeAWordWithOffset", done => {
     getRules().then( (args) => { var [rules,mongoose] = args;
  var res = inputFilter.categorizeAWord('ApplicationComponent', rules,  'not relevant', {}, {});
-  test.deepEqual(res, [ { string: 'ApplicationComponent',
+  expect(res).toEqual([ { string: 'ApplicationComponent',
     matchedString: 'ApplicationComponent',
     category: 'category',
     rule:
@@ -1385,15 +1349,15 @@ exports.testCategorizeAWordWithOffest = function (test) {
        _ranking: 0.95,
        lowercaseword: 'applicationcomponent' },
     _ranking: 0.95 } ]);
-  test.done();
+  done();
   releaseRules(mongoose);
     });
-};
+});
 
-exports.testCategorizeANumberWordWithOffest = function (test) {
+it("testCategorizeANumberWordWithOffsectXX", done => {
   getRules().then( (args) => { var [rules,mongoose] = args;
 var res = inputFilter.categorizeAWord('1234', rules,  'not relevant', {}, {});
-test.deepEqual(res, [ { string: '1234',
+expect(res).toEqual([ { string: '1234',
 matchedString: '1234',
 rule:
  { category: 'number',
@@ -1408,15 +1372,15 @@ rule:
    _ranking: 0.95 },
 category: 'number',
 _ranking: 0.95 } ]);
-test.done();
+done();
 releaseRules(mongoose);
   });
-};
+});
 
-exports.testCategorizeANumber12WordWithOffest = function (test) {
+it("testCategorizeANumber12WordWithOffest", done => {
   getRules().then( (args) => { var [rules,mongoose] = args;
 var res = inputFilter.categorizeAWord('12', rules,  'not relevant', {}, {});
-test.deepEqual(res, [ { string: '12',
+expect(res).toEqual([ { string: '12',
 matchedString: '12',
 category: 'element number',
 rule:
@@ -1446,25 +1410,25 @@ rule:
    _ranking: 0.95 },
 category: 'number',
 _ranking: 0.95 } ]);
-test.done();
+done();
 releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testCategorizeANumber_One_WordWithOffest = function (test) {
+it("testCategorizeANumber_One_WordWithOffest", done => {
   getRules().then( (args) => { var [rules,mongoose] = args;
 var res = inputFilter.categorizeAWord('One', rules, 'not relevant', {}, {});
-test.deepEqual(res, [ ]); // TODO
-test.done();
+expect(res).toEqual([ ]);
+done();
 releaseRules(mongoose);
   });
-};
+});
 
-exports.testCategorizeANumber_one_WordWithOffest = function (test) {
+it("testCategorizeANumber_one_WordWithOffest", done => {
   getRules().then( (args) => { var [rules,mongoose] = args;
 var res = inputFilter.categorizeAWord('one', rules, 'not relevant', {}, {});
-test.deepEqual(res, [ { string: 'one',
+expect(res).toEqual([ { string: 'one',
 matchedString: 'one',
 rule:
  { category: 'number',
@@ -1479,23 +1443,23 @@ rule:
    _ranking: 0.95 },
 category: 'number',
 _ranking: 0.95 } ]);
-test.done();
+done();
 releaseRules(mongoose);
   });
-};
+});
 
 
 
 
-exports.testCategorizeAWordWithOffest = function (test) {
+it("testCategorizeAFioriWordWithOffset", done => {
     getRules().then( (args) => { var [rules,mongoose] = args;
  var res = inputFilter.categorizeAWord('Fiori', rules,  'not relevant', {}, {});
 
  var res2 = inputFilter.categorizeAWordWithOffsets('Fiori', rules,  'not relevant', {}, {});
 
-  test.deepEqual(res, []);
+  expect(res).toEqual([]);
 
-  test.deepEqual(res2, [ { string: 'Fiori',
+  expect(res2).toEqual([ { string: 'Fiori',
     matchedString: 'AppName',
     category: 'category',
     rule:
@@ -1509,7 +1473,7 @@ exports.testCategorizeAWordWithOffest = function (test) {
        lowercaseword: 'fiori',
        _ranking: 0.95,
        range:
-        { low: 0,
+        { low: -0,
           high: 1,
           rule:
            { category: 'category',
@@ -1536,7 +1500,7 @@ exports.testCategorizeAWordWithOffest = function (test) {
        lowercaseword: 'fiori',
        _ranking: 0.95,
        range:
-        { low: 0,
+        { low: -0,
           high: 1,
           rule:
            { category: 'category',
@@ -1563,7 +1527,7 @@ exports.testCategorizeAWordWithOffest = function (test) {
        lowercaseword: 'fiori',
        _ranking: 0.95,
        range:
-        { low: 0,
+        { low: -0,
           high: 1,
           rule:
            { category: 'domain',
@@ -1590,7 +1554,7 @@ exports.testCategorizeAWordWithOffest = function (test) {
        lowercaseword: 'fiori',
        _ranking: 0.95,
        range:
-        { low: 0,
+        { low: -0,
           high: 1,
           rule:
            { category: 'domain',
@@ -1602,14 +1566,12 @@ exports.testCategorizeAWordWithOffest = function (test) {
              wordType: 'F',
              _ranking: 0.95,
              lowercaseword: 'fiori bom' } } },
-    _ranking: 0.95 } ], 'contains ranged');
+    _ranking: 0.95 } ]);
 
-  test.done();
+  done();
   releaseRules(mongoose);
     });
-};
-
-
+});
 
 
 process.on('unhandledRejection', function onError(err) {
@@ -1619,42 +1581,42 @@ process.on('unhandledRejection', function onError(err) {
   throw err;
 });
 
-exports.testcompByEqualResultThenRank = function(test) {
+it("testcompByEqualResultThenRank", done => {
   var tobecompared = [
     {"string":"ApplicaitonComponent","rule":{"category":"category","matchedString":"ApplicationComponent","type":0,"word":"ApplicationComponent","lowercaseword":"applicationcomponent","bitindex":2,"wordType":"C","bitSentenceAnd":2,"_ranking":0.95},"matchedString":"ApplicationComponent","category":"category","_ranking":0.9405,"levenmatch":0.99},
     {"string":"ApplicaitonComponent","rule":{"category":"category","matchedString":"ApplicationComponent","type":0,"word":"ApplicationComponent","lowercaseword":"applicationcomponent","bitindex":4,"wordType":"C","bitSentenceAnd":4,"_ranking":0.95},"matchedString":"ApplicationComponent","category":"category","_ranking":0.9405,"levenmatch":0.99},
     {"string":"ApplicaitonComponent","rule":{"category":"category","matchedString":"ApplicationComponent","type":0,"word":"ApplicationComponent","bitindex":16,"bitSentenceAnd":16,"exactOnly":false,"wordType":"F","_ranking":0.95,"lowercaseword":"applicationcomponent"},"matchedString":"ApplicationComponent","category":"category","_ranking":0.9405,"levenmatch":0.99},
     {"string":"ApplicaitonComponent","rule":{"category":"category","matchedString":"ApplicationComponent","type":0,"word":"Application Component","bitindex":2,"bitSentenceAnd":2,"wordType":"C","_ranking":0.95,"lowercaseword":"application component"},"matchedString":"ApplicationComponent","category":"category","_ranking":0.9314523809523809,"levenmatch":0.9804761904761905}];
-  test.equal(inputFilter.cmpByResultThenRank(tobecompared[0],tobecompared[0]),0);
-  test.equal(inputFilter.cmpByResultThenRank(tobecompared[0],tobecompared[1]),-2, ' compare 0 and 1');
-  test.equal(inputFilter.cmpByResult(tobecompared[0],tobecompared[3]),0);
-  test.equal(inputFilter.cmpByResultThenRank(tobecompared[0],tobecompared[3]) < 0, true, ' compare 0 3 full');
-  test.done();
-}
+  expect(inputFilter.cmpByResultThenRank(tobecompared[0],tobecompared[0])).toEqual(0);
+  expect(inputFilter.cmpByResultThenRank(tobecompared[0],tobecompared[1])).toEqual(-2);
+  expect(inputFilter.cmpByResult(tobecompared[0],tobecompared[3])).toEqual(0);
+  expect(inputFilter.cmpByResultThenRank(tobecompared[0],tobecompared[3]) < 0).toEqual(true);
+  done();
+})
 
 
 
-exports.testdropLowerRankedEqualResult = function(test) {
+it("testdropLowerRankedEqualResult", done => {
   var tobefiltered = [
     {"string":"ApplicaitonComponent","rule":{"category":"category","matchedString":"ApplicationComponent","type":0,"word":"ApplicationComponent","lowercaseword":"applicationcomponent","bitindex":2,"wordType":"C","bitSentenceAnd":2,"_ranking":0.95},"matchedString":"ApplicationComponent","category":"category","_ranking":0.9405,"levenmatch":0.99},
     {"string":"ApplicaitonComponent","rule":{"category":"category","matchedString":"ApplicationComponent","type":0,"word":"ApplicationComponent","lowercaseword":"applicationcomponent","bitindex":4,"wordType":"C","bitSentenceAnd":4,"_ranking":0.95},"matchedString":"ApplicationComponent","category":"category","_ranking":0.9405,"levenmatch":0.99},
     {"string":"ApplicaitonComponent","rule":{"category":"category","matchedString":"ApplicationComponent","type":0,"word":"ApplicationComponent","bitindex":16,"bitSentenceAnd":16,"exactOnly":false,"wordType":"F","_ranking":0.95,"lowercaseword":"applicationcomponent"},"matchedString":"ApplicationComponent","category":"category","_ranking":0.9405,"levenmatch":0.99},
     {"string":"ApplicaitonComponent","rule":{"category":"category","matchedString":"ApplicationComponent","type":0,"word":"Application Component","bitindex":2,"bitSentenceAnd":2,"wordType":"C","_ranking":0.95,"lowercaseword":"application component"},"matchedString":"ApplicationComponent","category":"category","_ranking":0.9314523809523809,"levenmatch":0.9804761904761905}];
     var dropped = tobefiltered[3]._ranking;
-  test.equal(tobefiltered.filter(el => { return el._ranking === dropped}).length, 1, ' still present');
+  expect(tobefiltered.filter(el => { return el._ranking === dropped}).length).toEqual(1);
   var res = inputFilter.dropLowerRankedEqualResult(tobefiltered);
-  test.equal(res.length + 1, tobefiltered.length, 'correct length');
-  test.equal(res.filter(el => { el._ranking === dropped}).length, 0, 'now gone');
-  test.done();
-}
+  expect(res.length + 1).toEqual(tobefiltered.length);
+  expect(res.filter(el => { el._ranking === dropped}).length).toEqual(0);
+  done();
+})
 
 
 
-exports.testCategorizeAWordWithOffsetCloseBoth = function (test) {
+it("testCategorizeAWordWithOffsetCloseBoth", done => {
     getRules().then( (args) => { var [rules,mongoose] = args;
       // note the typo !
  var res = inputFilter.categorizeAWordWithOffsets('ApplicaitonComponent', rules,  'not relevant', {}, {});
-  test.deepEqual(res, [ { string: 'ApplicaitonComponent',
+  expect(res).toEqual([ { string: 'ApplicaitonComponent',
     rule:
      { category: 'category',
        matchedString: 'ApplicationComponent',
@@ -1700,10 +1662,10 @@ exports.testCategorizeAWordWithOffsetCloseBoth = function (test) {
     category: 'category',
     _ranking: 0.9405,
     levenmatch: 0.99 } ]);
-  test.done();
-  releaseRules(mongoose);
+    releaseRules(mongoose);
+    done();
     });
-};
+});
 
 /*
 exports.testCategorizeStringBadRule = function (test) {
@@ -1765,8 +1727,8 @@ var mRulesStrict = Model.splitRules( [
 
 
 
-exports.testExpand0 = function (test) {
-  test.ok(1);
+it("testExpand0", done => {
+  expect(1).toBeTruthy();
   var src = [[
     [{ string: 'a', a: 1 },
     { string: 'b', a: 1 }],
@@ -1775,20 +1737,20 @@ exports.testExpand0 = function (test) {
     { string: '3', a: 1 }]
   ]];
   var res = ab.expandMatchArr(src);
-  test.deepEqual(res, [[{ string: 'a', a: 1 }, { string: '1', a: 1 }],
+  expect(res).toEqual([[{ string: 'a', a: 1 }, { string: '1', a: 1 }],
   [{ string: 'b', a: 1 }, { string: '1', a: 1 }],
   [{ string: 'a', a: 1 }, { string: '2', a: 1 }],
   [{ string: 'b', a: 1 }, { string: '2', a: 1 }],
   [{ string: 'a', a: 1 }, { string: '3', a: 1 }],
-  [{ string: 'b', a: 1 }, { string: '3', a: 1 }]], 'correct result');
+  [{ string: 'b', a: 1 }, { string: '3', a: 1 }]]);
 
-  test.done();
-};
+  done();
+});
 
 
 
-exports.testExpand1 = function (test) {
-  test.ok(1);
+it("testExpand1", done => {
+  expect(1).toBeTruthy();
 
   var src = [[[{ string: 'cat1 and ab', a: 1 }]],
     [[{ 'string': 'cat1', b1: 1 },
@@ -1807,18 +1769,18 @@ exports.testExpand1 = function (test) {
   ];
 
   var res = ab.expandMatchArr(src);
-  test.deepEqual(res, [[{ string: 'cat1 and ab', a: 1 }],
+  expect(res).toEqual([[{ string: 'cat1 and ab', a: 1 }],
   [{ string: 'cat1', b1: 1 }, { string: 'and ab', b2: 1 }],
   [{ string: 'cat1', b1: 2 }, { string: 'and ab', b2: 1 }],
   [{ string: 'cat1 and' }, { string: 'ab', c21: 1 }],
   [{ string: 'cat1 and' }, { string: 'ab', c21: 2 }],
-  [{ string: 'cat1 and' }, { string: 'ab', c21: 3 }]], 'correct result');
+  [{ string: 'cat1 and' }, { string: 'ab', c21: 3 }]]);
 
-  test.done();
-};
+  done();
+});
 
-exports.testExpandMult = function (test) {
-  test.ok(1);
+it("testExpandMult", done => {
+  expect(1).toBeTruthy();
 
   var src = [[[{
     string: 'cat1 and ab',
@@ -1846,13 +1808,13 @@ exports.testExpandMult = function (test) {
   { string: 'ab', matchedString: 'ab', category: 'unknown' }]]];
   // 1 +  2 x 1  + 1 x 2 + 2 x 1 x 2
   var res = ab.expandMatchArr(src);
-  test.equal(res.length, 9, 'correct length');
-  test.done();
-};
+  expect(res.length).toEqual(9);
+  done();
+});
 
 
 
-exports.testExtractCategory = function (test) {
+it("testExtractCategory", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
 
   var sentence = [
@@ -1866,17 +1828,16 @@ exports.testExtractCategory = function (test) {
 
   var res = ab.extractCategoryMap(sentence);
 
-  test.deepEqual(res,
-    {
-      'wiki': [{ pos: 0 }, { pos: 5 }],
-      'catalog': [{ pos: 2 }]
-    }, 'correct map');
-  test.done();
-};
+  expect(res).toEqual({
+    'wiki': [{ pos: 0 }, { pos: 5 }],
+    'catalog': [{ pos: 2 }]
+  });
+  done();
+});
 
 
 
-exports.testreinforceSentence = function (test) {
+it("testreinforceSentence", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
 
   var sentence = [
@@ -1918,18 +1879,18 @@ exports.testreinforceSentence = function (test) {
     { string: 'wiki', matchedString: 'wiki', category: 'category', _ranking: 1 }
   ];
 
-  test.deepEqual(res, resline, 'correct reinforced string');
-  test.done();
-};
+  expect(res).toEqual(resline);
+  done();
+});
 
 
-exports.testCalcDistnance = function (test) {
+it("testCalcDistnance", done => {
   var res = InputFilter.calcDistance('literary','life');
-  test.equal(res, 0.8634945397815913);
-  test.done();
-}
+  expect(res).toEqual(0.8634945397815913);
+  done();
+})
 
-exports.testreinforceMetaDomainSentence = function (test) {
+it("testreinforceMetaDomainSentence", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
 
   var sentence = [
@@ -1971,12 +1932,12 @@ exports.testreinforceMetaDomainSentence = function (test) {
     { string: 'wiki', matchedString: 'wiki', category: 'category', _ranking: 1 }
   ];
 
-  test.deepEqual(res, resline, 'correct reinforced string');
-  test.done();
-};
+  expect(res).toEqual(resline);
+  done();
+});
 
 
-exports.testreinforce = function (test) {
+it("testreinforce", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   var sentence = [
     { string: 'wiki', matchedString: 'wiki', category: 'category', _ranking: 1 },
@@ -2022,11 +1983,11 @@ exports.testreinforce = function (test) {
 
 
   var res = ab.reinForce(u);
-  test.deepEqual(res[0], resline, 'line 0 ok');
-  test.deepEqual(res[1], resline, 'line 1 ok');
-  test.deepEqual(res[2], resline, 'line 2 ok');
-  test.done();
-};
+  expect(res[0]).toEqual(resline);
+  expect(res[1]).toEqual(resline);
+  expect(res[2]).toEqual(resline);
+  done();
+});
 
 
 const ratherMaybe =  [ ["what" , "waht"],
@@ -2039,10 +2000,10 @@ const ratherNot = [
   [ "semantic objects", "semantic action" ],
 ];
 
-exports.testCalcDistanceClasses = function(test) {
+it("testCalcDistanceClasses", done => {
   ratherMaybe.forEach(function(s) {
     var dist = ab.calcDistance(s[0],s[1]);
-    test.equal(dist > Algol.Cutoff_WordMatch , true, ` ${dist} for ${s[0]} !== ${s[1]} is larger than cutoff`);
+    expect(dist > Algol.Cutoff_WordMatch).toEqual(true);
   })
-  test.done();
-};
+  done();
+});

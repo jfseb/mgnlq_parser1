@@ -69,162 +69,162 @@ test('test_CatFilterDOM', ()=> {
   });
 });
 
-exports.test_CatFilterDOMmultiFact = function (test) {
+it('test_CatFilterDOMmultiFact', done => {
   [ 'in', 'with', 'for', 'relating'].forEach(function(op) {
     var inputText = op + ' DOM in FACT, FACT';
     try {
       parseInput(inputText,'catFilter');
     } catch(e) {
       console.log(e);
-      test.equal(1,0);
+      expect(1).toEqual(0);
     }
-    test.equal(1,1);
+    expect(1).toEqual(1);
   });
-  test.done();
-};
+  done();
+});
 
-exports.test_CatFilterDOM2 = function (test) {
+it('test_CatFilterDOM2', done => {
   [ 'in', 'with', 'for', 'relating' ].forEach(function(op) {
     var inputText = op + ' domain DOM';
     try {
       parseInput(inputText,'catFilter');
     } catch(e) {
       console.log(e);
-      test.equal(1,0);
+      expect(1).toEqual(0);
     }
-    test.equal(1,1);
+    expect(1).toEqual(1);
   });
-  test.done();
-};
+  done();
+});
 
 
 
-exports.testUnarySetOp = function (test) {
+it('testUnarySetOp', done => {
   [ 'All', 'First', 'Newest', 'Oldest','Any', 'Latest', 'Last', 'Every', 'All', 'At least one', 'Every'].forEach(function(val) {
     var inputText = `${val}`;
     parseInput(inputText,'unarySetOp');
-    test.equal(1,1, 'for ' + val);
+    expect(1).toEqual(1);
   });
-  test.done();
-};
+  done();
+});
 
 
-exports.testCatListMore = function (test) {
+it('testCatListMore', done => {
   [ 'First', 'Newest', 'Oldest', 'All'].forEach(function(op) {
     var inputText = 'CAT, CAT, CAT';
     parseInput(inputText,'catListOpMore');
-    test.equal(1,1);
+    expect(1).toEqual(1);
   });
-  test.done();
-};
+  done();
+});
 
 
 
 
-exports.testCatListMoreInFact = function (test) {
+it('testCatListMoreInFact', done => {
   [ 'First', 'Newest', 'Oldest', 'All'].forEach(function() {
     var inputText = 'CAT In FACT';
     parseInput(inputText,'catListOpMore');
-    test.equal(1,1);
+    expect(1).toEqual(1);
   });
-  test.done();
-};
+  done();
+});
 
-exports.testCatListMoreInFactCommaFact = function (test) {
+it('testCatListMoreInFactCommaFact', done => {
   var inputText = 'CAT, CAT in FACT, FACT'; // in FACT and FACT';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
-exports.testCatListMoreInFactAndFact2 = function (test) {
+it('testCatListMoreInFactAndFact2', done => {
   var inputText = 'CAT, CAT, CAT in FACT'; // in FACT and FACT';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
 
-exports.testCatListMoreInFactCommaFact = function (test) {
+it('testCatListMoreInFactCommaFact', done => {
   var inputText = 'CAT, CAT in FACT, FACT';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
-exports.testCatListMoreInFactCommaFact2 = function (test) {
+it('testCatListMoreInFactCommaFact2', done => {
   var inputText = 'CAT, CAT in FACT, CAT FACT';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
-exports.testCatListMoreInFactAndFact2 = function (test) {
+it('testCatListMoreInFactAndFact2', done => {
   var inputText = 'CAT, CAT in FACT and FACT;';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
-exports.testCatListMoreInFactAndFact2 = function (test) {
+it('testCatListMoreInFactAndFact2', done => {
   var inputText = 'CAT, CAT with FACT and FACT;';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
-exports.testCatListMoreInFactAndFact3 = function (test) {
+it('testCatListMoreInFactAndFact3', done => {
   var inputText = 'CAT, CAT with FACT and FACT and FACT;';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
-exports.testCatListMoreInFactAndFactorFact = function (test) {
+it('testCatListMoreInFactAndFactorFact', done => {
   var inputText = 'CAT, CAT with FACT and FACT or FACT;';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
-exports.testCatListMoreInFactAndCatFact = function (test) {
+it('testCatListMoreInFactAndCatFact', done => {
   var inputText = 'CAT, CAT with FACT and CAT FACT;';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
-exports.testCatListMoreInFactAndCatFact2 = function (test) {
+it('testCatListMoreInFactAndCatFact2', done => {
   var inputText = 'CAT, CAT for CAT FACT and CAT FACT;';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
 
-exports.testCatListMoreInFactCFAndCF = function (test) {
+it('testCatListMoreInFactCFAndCF', done => {
   var inputText = 'CAT, CAT with CAT FACT , FACT , CAT FACT';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
 //'CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT'
 
-exports.testCatListMoreInFactCFFCFnoComma = function (test) {
+it('testCatListMoreInFactCFFCFnoComma', done => {
   var inputText = 'CAT, CAT with CAT FACT FACT  CAT FACT';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
 
-exports.testCatListMoreInFactCFCFFnocomma = function (test) {
+it('testCatListMoreInFactCFCFFnocomma', done => {
   var inputText = 'CAT CAT CAT CAT with CAT FACT CAT FACT FACT';
   parseInput(inputText,'catListOpMore');
-  test.equal(1,1);
-  test.done();
-};
+  expect(1).toEqual(1);
+  done();
+});
 
 /*
 exports.testCatSEtExpression = function (test) {
@@ -253,14 +253,14 @@ exports.testCatListMoreCATisFact = function (test) {
 
 
 
-exports.testCatListMoreInFaommaABC = function (test) {
+it('testCatListMoreInFaommaABC', done => {
   ['contains', 'containing', 'ends_with', 'ending_with', 'starts_with', 'starting_with'].forEach((op)=> {
     var inputText = `CAT CAT CAT CAT with CAT FACT CAT ${op} FACT FACT`;
     parseInput(inputText,'catListOpMore');
-    test.equal(1,1);
+    expect(1).toEqual(1);
   });
-  test.done();
-};
+  done();
+});
 
 
 /*

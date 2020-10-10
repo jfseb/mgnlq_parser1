@@ -1,5 +1,5 @@
 /**
- * @file inputFilter
+ * @file erbase.test.js
  * @copyright (c) 2016-2016 Gerd Forstmann
  */
 
@@ -17,8 +17,6 @@ const Sentence = require(root + '/match/sentence.js');
 
 
 const utils = require('abot_utils');
-
-//const inputFiterRules = require(root + '/match/inputFilterRules.js');
 
 const InputFilter = require(root + '/match/inputFilter.js');
 
@@ -85,7 +83,7 @@ if (!debuglog.enabled) {
 }
 
 
-exports.testEvaluteRangeRulesToPosition = function (test) {
+it("testEvaluteRangeRulesToPosition", done => {
   var tokens = ["ABC", "def"];
   var fusable = [false, true, false];
 
@@ -112,7 +110,7 @@ exports.testEvaluteRangeRulesToPosition = function (test) {
     ]
   ];
   Erbase.evaluateRangeRulesToPosition(tokens, fusable, categorizedWords);
-  test.deepEqual(categorizedWords, [[
+  expect(categorizedWords).toEqual([[
     {
       string: "ABC def",
       matchedString: "AbC DeF",
@@ -122,16 +120,16 @@ exports.testEvaluteRangeRulesToPosition = function (test) {
       rule: innerRule
     }]
     , []
-  ], 'correct moved and cleansed res');
-  test.done();
-}
+  ]);
+  done();
+})
 
 var r = [
   { "category": "category", "matchedString": "fiori intent", "bitindex": 4, "word": "intent", "type": 0, "lowercaseword": "intent", "_ranking": 0.95, "range": { "low": -1, "high": 0, "rule": { "category": "category", "matchedString": "fiori intent", "type": 0, "word": "fiori intents", "bitindex": 4, "_ranking": 0.95, "lowercaseword": "fiori intents" } } },
   { "category": "category", "matchedString": "fiori intent", "bitindex": 4, "word": "intent", "type": 0, "lowercaseword": "intent", "_ranking": 0.95, "range": { "low": -1, "high": 0, "rule": { "category": "category", "matchedString": "fiori intent", "type": 0, "word": "fiori intent", "lowercaseword": "fiori intent", "bitindex": 4, "_ranking": 0.95 } } }];
 
 
-exports.testEvaluteRangeRulesToPositionSloppyMatch = function (test) {
+it("testEvaluteRangeRulesToPositionSloppyMatch", done => {
   var tokens = ["ABC", "duf"];
   var fusable = [false, true, false];
 
@@ -158,7 +156,7 @@ exports.testEvaluteRangeRulesToPositionSloppyMatch = function (test) {
     ]
   ];
   Erbase.evaluateRangeRulesToPosition(tokens, fusable, categorizedWords);
-  test.deepEqual(categorizedWords, [[{
+  expect(categorizedWords).toEqual([[{
     string: 'ABC duf',
     rule:
     {
@@ -174,14 +172,13 @@ exports.testEvaluteRangeRulesToPositionSloppyMatch = function (test) {
     levenmatch: 0.9637495091079358,
     span: 2
   }],
-  []]
-    , 'correct moved and cleansed res');
-  test.done();
-}
+  []]);
+  done();
+})
 
 
 
-exports.testEvaluteRangeRulesToPositionVerySloppyMatch = function (test) {
+it("testEvaluteRangeRulesToPositionVerySloppyMatch", done => {
   var tokens = ["XXX", "def"];
   var fusable = [false, true, false];
 
@@ -208,9 +205,9 @@ exports.testEvaluteRangeRulesToPositionVerySloppyMatch = function (test) {
     ]
   ];
   Erbase.evaluateRangeRulesToPosition(tokens, fusable, categorizedWords);
-  test.deepEqual(categorizedWords, [[], []]);
-  test.done();
-}
+  expect(categorizedWords).toEqual([[], []]);
+  done();
+})
 
 //export function evaluateRangeRulesToPosition(tokens: string[], fusable : boolean[], categorizedWords : IMatch.ICategorizedStringRanged[][]) {
 
@@ -262,29 +259,29 @@ exports.group = {
   },
   */
 
-exports.testTokenizeStringElNames = function (test) {
+it("testTokenizeStringElNames", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
     // debuglog(JSON.stringify(ifr, undefined, 2))
     //console.log(theModel.mRules);
     var res = Erbase.tokenizeString('elament names b', rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.categorizedWords), [[],
+    expect(simplifyStringsWithBitIndex(res.categorizedWords)).toEqual([[],
     ['names=>element name/category C16',
       'names=>element name/category F32',
       'names=>element name/category C64',
       'names=>sender/category C2',
       'names=>sender/category F32'],
-    ['b=>B/element symbol F16']], ' correct result ');
-    test.done();
+    ['b=>B/element symbol F16']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
 
-exports.testTokenizeStringElNamesAlpha = function (test) {
+it("testTokenizeStringElNamesAlpha", done => {
 
   getRules().then((args) => {
     var [rules, mongoose] = args;
@@ -293,14 +290,11 @@ exports.testTokenizeStringElNamesAlpha = function (test) {
     //console.log(theModel.mRules);
     var res = Erbase.tokenizeString('Alpha Cantauri B', rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log(JSON.stringify(res));
-    test.deepEqual(simplifyStrings(res.categorizedWords),
-      [[], [], ['B=>B/element symbol']]
-      , ' correct result ');
-    test.done();
+    expect(simplifyStrings(res.categorizedWords)).toEqual([[], [], ['B=>B/element symbol']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 function canonicSort(arrofarr) {
   var res = [];
@@ -311,40 +305,37 @@ function canonicSort(arrofarr) {
 }
 
 
-exports.testTokenizeTCodeGRM3 = function (test) {
+it("testTokenizeTCodeGRM3", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
     // debuglog(JSON.stringify(ifr, undefined, 2))
     //console.log(theModel.mRules);
     var res = Erbase.tokenizeString(' Application Component, fiori intent, Backendcatalog for GRM3.', rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log(JSON.stringify(res));
-    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
-      [['Application Component=>ApplicationComponent/category/2 C4',
-        'Application Component=>ApplicationComponent/category/2 C8',
-        'Application Component=>ApplicationComponent/category/2 F32'],
-      ['Component=>ApplicationComponent/category C4',
-        'Component=>ApplicationComponent/category C8',
-        'Component=>ApplicationComponent/category F32'],
-      ['fiori intent=>fiori intent/category/2 C4',
-        'fiori intent=>fiori intent/category/2 C8',
-        'fiori intent=>fiori intent/category/2 F32'],
-      ['intent=>fiori intent/category C4',
-        'intent=>fiori intent/category C8',
-        'intent=>fiori intent/category F32'],
-      ['Backendcatalog=>BackendCatalogId/category C8',
-        'Backendcatalog=>BackendCatalogId/category F32'],
-      ['for=>for/filler I512'],
-      ['GRM3=>GRM3/TransactionCode F4',
-        'GRM3=>GRM3/TransactionCode F8',
-        'GRM3=>GRM3/appId F4']]
-      , ' correct result ');
-    test.done();
+    expect(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords))).toEqual([['Application Component=>ApplicationComponent/category/2 C4',
+      'Application Component=>ApplicationComponent/category/2 C8',
+      'Application Component=>ApplicationComponent/category/2 F32'],
+    ['Component=>ApplicationComponent/category C4',
+      'Component=>ApplicationComponent/category C8',
+      'Component=>ApplicationComponent/category F32'],
+    ['fiori intent=>fiori intent/category/2 C4',
+      'fiori intent=>fiori intent/category/2 C8',
+      'fiori intent=>fiori intent/category/2 F32'],
+    ['intent=>fiori intent/category C4',
+      'intent=>fiori intent/category C8',
+      'intent=>fiori intent/category F32'],
+    ['Backendcatalog=>BackendCatalogId/category C8',
+      'Backendcatalog=>BackendCatalogId/category F32'],
+    ['for=>for/filler I512'],
+    ['GRM3=>GRM3/TransactionCode F4',
+      'GRM3=>GRM3/TransactionCode F8',
+      'GRM3=>GRM3/appId F4']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
-exports.testContaining2CCNoAlias = function (test) {
+it("testContaining2CCNoAlias", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
     var s = 'fiori apps, support component with \"fiori app\" containing \"ampi\" and ApplicationComponent containing \"FIO\"';
@@ -353,8 +344,7 @@ exports.testContaining2CCNoAlias = function (test) {
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ 'fiori apps=>AppName/category/2 C4',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ 'fiori apps=>AppName/category/2 C4',
     'support component=>ApplicationComponent/category/2 C4',
     'with=>with/filler I512',
     'fiori app=>AppName/category C4',
@@ -373,23 +363,21 @@ exports.testContaining2CCNoAlias = function (test) {
     'and=>and/filler I512',
     'ApplicationComponent=>ApplicationComponent/category F32',
     'containing=>containing/operator O512',
-    'FIO=>FIO/any A4096' ] ]
-      , ' correct result ');
-    test.done();
+    'FIO=>FIO/any A4096' ] ]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 // TODO contains yield empty!
-exports.testContains2CC = function (test) {
+it("testContains2CC", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
     var s = 'fiori apps, support component with \"fiori app\" contains \"ampi\" and ApplicationComponent contains \"FIO\"';
     var res = Erbase.processString(s, rules, words );
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ 'fiori apps=>AppName/category/2 C4',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ 'fiori apps=>AppName/category/2 C4',
     'support component=>ApplicationComponent/category/2 C4',
     'with=>with/filler I512',
     'fiori app=>AppName/category C4',
@@ -408,16 +396,15 @@ exports.testContains2CC = function (test) {
     'and=>and/filler I512',
     'ApplicationComponent=>ApplicationComponent/category F32',
     'contains=>containing/operator O512',
-    'FIO=>FIO/any A4096' ] ]
-      , ' correct result ');
-    test.done();
+    'FIO=>FIO/any A4096' ] ]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testContaining2XAS = function (test) {
+it("testContaining2XAS", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
     var s = 'fioriapps, support component with \"fiori app\" containing "ampi" and  ApplicationComponent containing "FIO"';
@@ -427,8 +414,7 @@ exports.testContaining2XAS = function (test) {
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ 'fioriapps=>AppName/category C4',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ 'fioriapps=>AppName/category C4',
     'support component=>ApplicationComponent/category/2 C4',
     'with=>with/filler I512',
     'fiori app=>AppName/category C4',
@@ -447,52 +433,22 @@ exports.testContaining2XAS = function (test) {
     'and=>and/filler I512',
     'ApplicationComponent=>ApplicationComponent/category F32',
     'containing=>containing/operator O512',
-    'FIO=>FIO/any A4096' ] ]
-      , ' correct result ');
+    'FIO=>FIO/any A4096' ] ]);
 
 }
-/*
-    var res = Erbase.tokenizeString(s, rules, words);
-    debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    console.log(JSON.stringify(res));
-    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
-    [ [ 'fiori apps=>AppName/category/2 C4',
-    'fiori apps=>AppName/category/2 F32' ],
-  [],
-  [ 'support component=>ApplicationComponent/category/2 C4',
-    'support component=>ApplicationComponent/category/2 C8',
-    'support component=>ApplicationComponent/category/2 F32' ],
-  [ 'component=>ApplicationComponent/category C4',
-    'component=>ApplicationComponent/category C8',
-    'component=>ApplicationComponent/category F32' ],
-  [ 'with=>with/filler I512' ],
-  [ 'fiori app=>AppName/category C4',
-    'fiori app=>AppName/category F32' ],
-  [ 'containing=>containing/operator O512' ],
-  [],
-  [ 'and=>and/filler I512' ],
-  [ 'ApplicationComponent=>ApplicationComponent/category C4',
-    'ApplicationComponent=>ApplicationComponent/category C8',
-    'ApplicationComponent=>ApplicationComponent/category F32' ],
-  [ 'containing=>containing/operator O512' ],
-  [] ]
-      , ' correct result ');
-      */
-    test.done();
+done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testContains2XAC = function (test) {
+it("testContains2XAC", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
     var s = 'fiori apps, support component with \"fiori app\" contains \"ampi\" and ApplicationComponent contains \"FIO\"';
     var res = Erbase.tokenizeString(s, rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log(JSON.stringify(res));
-    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
-    [ [ 'fiori apps=>AppName/category/2 C4',
+    expect(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords))).toEqual([ [ 'fiori apps=>AppName/category/2 C4',
     'fiori apps=>AppName/category/2 F32' ],
   [],
   [ 'support component=>ApplicationComponent/category/2 C4',
@@ -511,22 +467,19 @@ exports.testContains2XAC = function (test) {
     'ApplicationComponent=>ApplicationComponent/category C8',
     'ApplicationComponent=>ApplicationComponent/category F32' ],
   [ 'contains=>containing/operator O512' ],
-  [] ]
-      , ' correct result ');
-    test.done();
+  [] ]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
-exports.testContains21xNQ= function (test) {
+it("testContains21xNQ", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
     var s = 'fiori apps, support component witj ApplicationComponent contains sdfs';
     var res = Erbase.tokenizeString(s, rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log(JSON.stringify(res));
-    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
-    [ [ 'fiori apps=>AppName/category/2 C4',
+    expect(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords))).toEqual([ [ 'fiori apps=>AppName/category/2 C4',
     'fiori apps=>AppName/category/2 F32' ],
   [],
   [ 'support component=>ApplicationComponent/category/2 C4',
@@ -540,23 +493,20 @@ exports.testContains21xNQ= function (test) {
     'ApplicationComponent=>ApplicationComponent/category C8',
     'ApplicationComponent=>ApplicationComponent/category F32' ],
   [ 'contains=>containing/operator O512' ],
-  [] ],
-  'correct result ');
-    test.done();
+  [] ]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testContains2XACNQ = function (test) {
+it("testContains2XACNQ", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
     var s = 'fiori apps, support component with \"fiori app\" contains ampi and ApplicationComponent contains FIO     ApplicationComponent starting with FIO';
     var res = Erbase.tokenizeString(s, rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log(JSON.stringify(res));
-    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
-    [ [ 'fiori apps=>AppName/category/2 C4',
+    expect(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords))).toEqual([ [ 'fiori apps=>AppName/category/2 C4',
     'fiori apps=>AppName/category/2 F32' ],
   [],
   [ 'support component=>ApplicationComponent/category/2 C4',
@@ -581,15 +531,14 @@ exports.testContains2XACNQ = function (test) {
     'ApplicationComponent=>ApplicationComponent/category F32' ],
   [ 'starting with=>starting with/operator/2 O512' ],
   [ 'with=>with/filler I512' ],
-  [] ],
-  'correct result ');
-    test.done();
+  [] ]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testTokenizeInteger = function (test) {
+it("testTokenizeInteger", done => {
   debugger;
   getRules().then((args) => {
     debugger;
@@ -598,73 +547,65 @@ exports.testTokenizeInteger = function (test) {
     //console.log(theModel.mRules);
     var res = Erbase.tokenizeString('1, 1234 .', rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log(JSON.stringify(res));
-    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
-      [['1=>1/element number F16', '1=>1/number N512'],
-      ['1234=>1234/number N512']]
-      , ' correct result ');
-    test.done();
+    expect(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords))).toEqual([['1=>1/element number F16', '1=>1/number N512'],
+    ['1234=>1234/number N512']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
-exports.testTokenizeIntegers = function (test) {
+it("testTokenizeIntegers", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
     // debuglog(JSON.stringify(ifr, undefined, 2))
     //console.log(theModel.mRules);
     var res = Erbase.tokenizeString(' Application Component, 1, 2, and, or, 3, 4, 10, 12, 15, 203, 2034, one, two.', rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords)),
-      [['Application Component=>ApplicationComponent/category/2 C4',
-        'Application Component=>ApplicationComponent/category/2 C8',
-        'Application Component=>ApplicationComponent/category/2 F32'],
-      ['Component=>ApplicationComponent/category C4',
-        'Component=>ApplicationComponent/category C8',
-        'Component=>ApplicationComponent/category F32'],
-      ['1=>1/element number F16', '1=>1/number N512'],
-      ['2=>2/element number F16', '2=>2/number N512'],
-      ['and=>and/filler I512'],
-      [],
-      ['3=>3/element number F16', '3=>3/number N512'],
-      ['4=>4/element number F16', '4=>4/number N512'],
-      ['10=>10/element number F16', '10=>10/number N512'],
-      ['12=>12/element number F16', '12=>12/number N512'],
-      ['15=>15/element number F16', '15=>15/number N512'],
-      ['203=>203/number N512'],
-      ['2034=>2034/number N512'],
-      ['one=>one/number N512'],
-      ['two=>two/number N512']]
-      , ' correct result ');
-    test.done();
+    expect(canonicSort(simplifyStringsWithBitIndex(res.categorizedWords))).toEqual([['Application Component=>ApplicationComponent/category/2 C4',
+      'Application Component=>ApplicationComponent/category/2 C8',
+      'Application Component=>ApplicationComponent/category/2 F32'],
+    ['Component=>ApplicationComponent/category C4',
+      'Component=>ApplicationComponent/category C8',
+      'Component=>ApplicationComponent/category F32'],
+    ['1=>1/element number F16', '1=>1/number N512'],
+    ['2=>2/element number F16', '2=>2/number N512'],
+    ['and=>and/filler I512'],
+    [],
+    ['3=>3/element number F16', '3=>3/number N512'],
+    ['4=>4/element number F16', '4=>4/number N512'],
+    ['10=>10/element number F16', '10=>10/number N512'],
+    ['12=>12/element number F16', '12=>12/number N512'],
+    ['15=>15/element number F16', '15=>15/number N512'],
+    ['203=>203/number N512'],
+    ['2034=>2034/number N512'],
+    ['one=>one/number N512'],
+    ['two=>two/number N512']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testTokenizeCategoriesIn = function (test) {
+it("testTokenizeCategoriesIn", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
     // debuglog(JSON.stringify(ifr, undefined, 2))
     //console.log(theModel.mRules);
     var res = Erbase.tokenizeString('categories in Fiori BOM', rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log(JSON.stringify(res));
-    test.deepEqual(simplifyStringsWithBitIndex(res.categorizedWords),
-      [['categories=>category/category C32',
-        'categories=>category/category F32',
-        'categories=>category/category C256'],
-      ['in=>In/element symbol F16', 'in=>in/filler I512'],
-      ['Fiori BOM=>FioriBOM/domain/2 D4',
-        'Fiori BOM=>FioriBOM/domain/2 F32'],
-      []]
-      , ' correct result ');
-    test.done();
+    expect(simplifyStringsWithBitIndex(res.categorizedWords)).toEqual([['categories=>category/category C32',
+      'categories=>category/category F32',
+      'categories=>category/category C256'],
+    ['in=>In/element symbol F16', 'in=>in/filler I512'],
+    ['Fiori BOM=>FioriBOM/domain/2 D4',
+      'Fiori BOM=>FioriBOM/domain/2 F32'],
+    []]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
-exports.testProcessStringCatDomainSynonym = function (test) {
+it("testProcessStringCatDomainSynonym", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -674,22 +615,20 @@ exports.testProcessStringCatDomainSynonym = function (test) {
     var s = 'categories in Fiori BOM';
     var res = Erbase.processString(s, rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['categories=>category/category C32',
-        'in=>in/filler I512',
-        'Fiori BOM=>FioriBOM/domain/2 F32'],
-      ['categories=>category/category F32',
-        'in=>in/filler I512',
-        'Fiori BOM=>FioriBOM/domain/2 F32']],
-      ' correct result ');
-    test.done();
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['categories=>category/category C32',
+      'in=>in/filler I512',
+      'Fiori BOM=>FioriBOM/domain/2 F32'],
+    ['categories=>category/category F32',
+      'in=>in/filler I512',
+      'Fiori BOM=>FioriBOM/domain/2 F32']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testProcessStringAmbigQuery = function (test) {
+it("testProcessStringAmbigQuery", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -701,44 +640,39 @@ exports.testProcessStringAmbigQuery = function (test) {
     //console.log(theModel.mRules);
     var restok = Erbase.tokenizeString(s, rules, words);
     debuglog('res > ' + JSON.stringify(restok, undefined, 2));
-    //console.log(JSON.stringify(res));
-    test.deepEqual(simplifyStringsWithBitIndex(restok.categorizedWords),
-      [['ApplicationComponent=>ApplicationComponent/category C2',
-        'ApplicationComponent=>ApplicationComponent/category C4',
-        'ApplicationComponent=>ApplicationComponent/category F16'],
-      ['devclass=>devclass/category C4',
-        'devclass=>devclass/category F16',
-        'devclass=>devclass/category C64'],
-      ['BackEndCatalogId=>BackendCatalogId/category C4',
-        'BackEndCatalogId=>BackendCatalogId/category F16'],
-      ['for=>for/filler I256'],
-      ['TransactionCode=>TransactionCode/category C2',
-        'TransactionCode=>TransactionCode/category C4',
-        'TransactionCode=>TransactionCode/category F16'],
-      ['S_ALR_87012394=>S_ALR_87012394/appId F2',
-        'S_ALR_87012394=>S_ALR_87012394/TransactionCode F2',
-        'S_ALR_87012394=>S_ALR_87012394/TransactionCode F4']]
-      , ' correct result ');
+    expect(simplifyStringsWithBitIndex(restok.categorizedWords)).toEqual([['ApplicationComponent=>ApplicationComponent/category C4',
+      'ApplicationComponent=>ApplicationComponent/category C8',
+      'ApplicationComponent=>ApplicationComponent/category F32'],
+    ['devclass=>devclass/category C8',
+      'devclass=>devclass/category F32',
+      'devclass=>devclass/category C128'],
+    ['BackEndCatalogId=>BackendCatalogId/category C8',
+      'BackEndCatalogId=>BackendCatalogId/category F32'],
+    ['for=>for/filler I512'],
+    ['TransactionCode=>TransactionCode/category C4',
+      'TransactionCode=>TransactionCode/category C8',
+      'TransactionCode=>TransactionCode/category F32'],
+    ['S_ALR_87012394=>S_ALR_87012394/appId F4',
+      'S_ALR_87012394=>S_ALR_87012394/TransactionCode F4',
+      'S_ALR_87012394=>S_ALR_87012394/TransactionCode F8']]);
 
 
     var res = Erbase.processString(s, rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['ApplicationComponent=>ApplicationComponent/category C8',
-        'devclass=>devclass/category C8',
-        'BackEndCatalogId=>BackendCatalogId/category C8',
-        'for=>for/filler I512',
-        'TransactionCode=>TransactionCode/category C8',
-        'S_ALR_87012394=>S_ALR_87012394/TransactionCode F8']],
-      ' correct result ');
-    test.done();
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['ApplicationComponent=>ApplicationComponent/category C8',
+      'devclass=>devclass/category C8',
+      'BackEndCatalogId=>BackendCatalogId/category C8',
+      'for=>for/filler I512',
+      'TransactionCode=>TransactionCode/category C8',
+      'S_ALR_87012394=>S_ALR_87012394/TransactionCode F8']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testProcessStringAmbigQuery = function (test) {
+it("testProcessStringAmbigQuery", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -757,20 +691,18 @@ exports.testProcessStringAmbigQuery = function (test) {
       Sentence.simplifyStringsWithBitIndex(s);
     });
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['ApplicationComponent=>ApplicationComponent/category C8',
-        'devclass=>devclass/category C8',
-        'BackEndCatalogId=>BackendCatalogId/category C8',
-        'for=>for/filler I512',
-        'TransactionCode=>TransactionCode/category C8',
-        'S_ALR_87012394=>S_ALR_87012394/TransactionCode F8']],
-      ' correct result ');
-    test.done();
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['ApplicationComponent=>ApplicationComponent/category C8',
+      'devclass=>devclass/category C8',
+      'BackEndCatalogId=>BackendCatalogId/category C8',
+      'for=>for/filler I512',
+      'TransactionCode=>TransactionCode/category C8',
+      'S_ALR_87012394=>S_ALR_87012394/TransactionCode F8']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
-exports.testProcessStringelementNames = function (test) {
+it("testProcessStringelementNames", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -781,18 +713,16 @@ exports.testProcessStringelementNames = function (test) {
     var res = Erbase.processString('elaement names nickel ', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['elaement names=>element name/category/2 C16',
-        'nickel=>nickel/element name F16']]
-      , ' correct result ');
-    test.done();
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['elaement names=>element name/category/2 C16',
+      'nickel=>nickel/element name F16']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testProcessStringCatQuery1 = function (test) {
+it("testProcessStringCatQuery1", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -802,20 +732,18 @@ exports.testProcessStringCatQuery1 = function (test) {
     var s = 'ApplicationComponent with ApplicaitonComponent W0052';
     var res = Erbase.processString(s, rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['ApplicationComponent=>ApplicationComponent/category C4',
-        'with=>with/filler I512',
-        'ApplicaitonComponent=>ApplicationComponent/category C4',
-        'W0052=>W0052/appId F4']],
-      ' correct result ');
-    test.done();
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['ApplicationComponent=>ApplicationComponent/category C4',
+      'with=>with/filler I512',
+      'ApplicaitonComponent=>ApplicationComponent/category C4',
+      'W0052=>W0052/appId F4']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testProcessStringCatQuery = function (test) {
+it("testProcessStringCatQuery", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -825,25 +753,23 @@ exports.testProcessStringCatQuery = function (test) {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var res = Erbase.processString(s, rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['SemanticObject=>SemanticObject/category C4',
-        'SemanticAction=>SemanticAction/category C4',
-        'BSPName=>BSPName/category C4',
-        'ApplicationComponent=>ApplicationComponent/category C4',
-        'with=>with/filler I512',
-        'ApplicaitonComponent=>ApplicationComponent/category C4',
-        'CO-FIO=>CO-FIO/ApplicationComponent F4',
-        'appId=>appId/category C4',
-        'W0052=>W0052/appId F4',
-        'SAP_TC_FIN_CO_COMMON=>SAP_TC_FIN_CO_COMMON/TechnicalCatalog F4']],
-      ' correct result ');
-    test.done();
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['SemanticObject=>SemanticObject/category C4',
+      'SemanticAction=>SemanticAction/category C4',
+      'BSPName=>BSPName/category C4',
+      'ApplicationComponent=>ApplicationComponent/category C4',
+      'with=>with/filler I512',
+      'ApplicaitonComponent=>ApplicationComponent/category C4',
+      'CO-FIO=>CO-FIO/ApplicationComponent F4',
+      'appId=>appId/category C4',
+      'W0052=>W0052/appId F4',
+      'SAP_TC_FIN_CO_COMMON=>SAP_TC_FIN_CO_COMMON/TechnicalCatalog F4']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testTokenizeStringStartingWith = function (test) {
+it("testTokenizeStringStartingWith", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -854,35 +780,33 @@ exports.testTokenizeStringStartingWith = function (test) {
     var res = Erbase.tokenizeString('SemanticObject, SemanticAction with SemanticObject starting with Sup', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(res.categorizedWords[4],
-      [{
-        string: 'starting with',
-        matchedString: 'starting with',
+    expect(res.categorizedWords[4]).toEqual([{
+      string: 'starting with',
+      matchedString: 'starting with',
+      category: 'operator',
+      rule:
+      {
         category: 'operator',
-        rule:
-        {
-          category: 'operator',
-          word: 'starting with',
-          lowercaseword: 'starting with',
-          type: 0,
-          matchedString: 'starting with',
-          bitindex: 512,
-          bitSentenceAnd: 511,
-          wordType: 'O',
-          _ranking: 0.9
-        },
-        _ranking: 0.9,
-        span: 2
-      }]
-      , ' correct result ');
+        word: 'starting with',
+        lowercaseword: 'starting with',
+        type: 0,
+        matchedString: 'starting with',
+        bitindex: 512,
+        bitSentenceAnd: 511,
+        wordType: 'O',
+        _ranking: 0.9
+      },
+      _ranking: 0.9,
+      span: 2
+    }]);
 
-    test.done();
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testProcessStringStartingWith = function (test) {
+it("testProcessStringStartingWith", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
   getRules().then((args) => {
@@ -892,56 +816,52 @@ exports.testProcessStringStartingWith = function (test) {
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['SemanticObject=>SemanticObject/category C4',
-        'SemanticAction=>SemanticAction/category C4',
-        'with=>with/filler I512',
-        'SemanticObject=>SemanticObject/category C4',
-        'starting with=>starting with/operator/2 O512',
-        'Sup=>Sup/any A4096'],
-      ['SemanticObject=>SemanticObject/category C8',
-        'SemanticAction=>SemanticAction/category C8',
-        'with=>with/filler I512',
-        'SemanticObject=>SemanticObject/category C8',
-        'starting with=>starting with/operator/2 O512',
-        'Sup=>Sup/any A4096'],
-      ['SemanticObject=>SemanticObject/category F32',
-        'SemanticAction=>SemanticAction/category F32',
-        'with=>with/filler I512',
-        'SemanticObject=>SemanticObject/category F32',
-        'starting with=>starting with/operator/2 O512',
-        'Sup=>Sup/any A4096']]
-      , ' correct result ');
-    test.deepEqual(res.sentences[0][5],
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['SemanticObject=>SemanticObject/category C4',
+      'SemanticAction=>SemanticAction/category C4',
+      'with=>with/filler I512',
+      'SemanticObject=>SemanticObject/category C4',
+      'starting with=>starting with/operator/2 O512',
+      'Sup=>Sup/any A4096'],
+    ['SemanticObject=>SemanticObject/category C8',
+      'SemanticAction=>SemanticAction/category C8',
+      'with=>with/filler I512',
+      'SemanticObject=>SemanticObject/category C8',
+      'starting with=>starting with/operator/2 O512',
+      'Sup=>Sup/any A4096'],
+    ['SemanticObject=>SemanticObject/category F32',
+      'SemanticAction=>SemanticAction/category F32',
+      'with=>with/filler I512',
+      'SemanticObject=>SemanticObject/category F32',
+      'starting with=>starting with/operator/2 O512',
+      'Sup=>Sup/any A4096']]);
+    expect(res.sentences[0][5]).toEqual({
+      string: 'Sup',
+      matchedString: 'Sup',
+      category: 'any',
+      rule:
       {
-        string: 'Sup',
-        matchedString: 'Sup',
         category: 'any',
-        rule:
-        {
-          category: 'any',
-          word: 'Sup',
-          lowercaseword: 'sup',
-          type: 0,
-          matchedString: 'Sup',
-          exactOnly: true,
-          bitindex: 4096,
-          bitSentenceAnd: 4095,
-          wordType: 'A',
-          _ranking: 0.9
-        },
+        word: 'Sup',
+        lowercaseword: 'sup',
+        type: 0,
+        matchedString: 'Sup',
+        exactOnly: true,
+        bitindex: 4096,
+        bitSentenceAnd: 4095,
+        wordType: 'A',
         _ranking: 0.9
-      }
-      , ' correct result ');
+      },
+      _ranking: 0.9
+    });
 
 
-    test.done();
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testProcessStringContainsOK = function (test) {
+it("testProcessStringContainsOK", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
   getRules().then((args) => {
@@ -950,8 +870,7 @@ exports.testProcessStringContainsOK = function (test) {
     var res = Erbase.processString('SemanticObject contains Sup', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ 'SemanticObject=>SemanticObject/category C4',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ 'SemanticObject=>SemanticObject/category C4',
     'contains=>containing/operator O512',
     'Sup=>Sup/any A4096' ],
   [ 'SemanticObject=>SemanticObject/category C8',
@@ -959,14 +878,13 @@ exports.testProcessStringContainsOK = function (test) {
     'Sup=>Sup/any A4096' ],
   [ 'SemanticObject=>SemanticObject/category F32',
     'contains=>containing/operator O512',
-    'Sup=>Sup/any A4096' ] ]
-      , ' correct result ');
-    test.done();
+    'Sup=>Sup/any A4096' ] ]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
-exports.testProcessStringContainingOK = function (test) {
+it("testProcessStringContainingOK", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
   getRules().then((args) => {
@@ -975,8 +893,7 @@ exports.testProcessStringContainingOK = function (test) {
     var res = Erbase.processString('SemanticObject containing Sup', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ 'SemanticObject=>SemanticObject/category C4',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ 'SemanticObject=>SemanticObject/category C4',
     'containing=>containing/operator O512',
     'Sup=>Sup/any A4096' ],
   [ 'SemanticObject=>SemanticObject/category C8',
@@ -984,15 +901,14 @@ exports.testProcessStringContainingOK = function (test) {
     'Sup=>Sup/any A4096' ],
   [ 'SemanticObject=>SemanticObject/category F32',
     'containing=>containing/operator O512',
-    'Sup=>Sup/any A4096' ] ]
-      , ' correct result ');
-    test.done();
+    'Sup=>Sup/any A4096' ] ]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testProcessStringContains = function (test) {
+it("testProcessStringContains", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
   getRules().then((args) => {
@@ -1001,8 +917,7 @@ exports.testProcessStringContains = function (test) {
     var res = Erbase.processString('SemanticObject, SemanticAction with SemanticObject containing Sup', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ 'SemanticObject=>SemanticObject/category C4',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ 'SemanticObject=>SemanticObject/category C4',
     'SemanticAction=>SemanticAction/category C4',
     'with=>with/filler I512',
     'SemanticObject=>SemanticObject/category C4',
@@ -1019,222 +934,179 @@ exports.testProcessStringContains = function (test) {
     'with=>with/filler I512',
     'SemanticObject=>SemanticObject/category F32',
     'containing=>containing/operator O512',
-    'Sup=>Sup/any A4096' ] ]
-      , ' correct result ');
-      /*
-    test.deepEqual(res.sentences[0][4],
-      {
-        string: 'Sup',
-        matchedString: 'Sup',
-        category: 'any',
-        rule:
-        {
-          category: 'any',
-          word: 'Sup',
-          lowercaseword: 'sup',
-          type: 0,
-          matchedString: 'Sup',
-          exactOnly: true,
-          bitindex: 4096,
-          bitSentenceAnd: 4095,
-          wordType: 'A',
-          _ranking: 0.9
-        },
-        _ranking: 0.9
-      }
-      , ' correct result '); */
-
-
-    test.done();
+    'Sup=>Sup/any A4096' ] ]);
+      done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testWithMoreThan3 = function (test) {
+it("testWithMoreThan3", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
 
     var res = Erbase.tokenizeString('12 with more than standort', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(res.categorizedWords[0],
-      [{
-        string: '12',
-        matchedString: '12',
+    expect(res.categorizedWords[0]).toEqual([{
+      string: '12',
+      matchedString: '12',
+      category: 'element number',
+      rule:
+      {
         category: 'element number',
-        rule:
-        {
-          category: 'element number',
-          matchedString: '12',
-          type: 0,
-          word: '12',
-          bitindex: 16,
-          bitSentenceAnd: 16,
-          exactOnly: false,
-          wordType: 'F',
-          _ranking: 0.95,
-          lowercaseword: '12'
-        },
-        _ranking: 0.95
-      },
-      {
-        string: '12',
         matchedString: '12',
-        rule:
-        {
-          category: 'number',
-          matchedString: 'one',
-          type: 1,
-          regexp: {},
-          matchIndex: 0,
-          word: '<number>',
-          bitindex: 512,
-          wordType: 'N',
-          bitSentenceAnd: 511,
-          _ranking: 0.95
-        },
+        type: 0,
+        word: '12',
+        bitindex: 16,
+        bitSentenceAnd: 16,
+        exactOnly: false,
+        wordType: 'F',
+        _ranking: 0.95,
+        lowercaseword: '12'
+      },
+      _ranking: 0.95
+    },
+    {
+      string: '12',
+      matchedString: '12',
+      rule:
+      {
         category: 'number',
-        _ranking: 0.95
-      }]
-      , ' correct result ');
-
-    test.deepEqual(res.categorizedWords[1],
-      [ { string: 'with',
-      matchedString: 'with',
-      category: 'filler',
-      rule:
-       { category: 'filler',
-         type: 0,
-         word: 'with',
-         lowercaseword: 'with',
-         matchedString: 'with',
-         exactOnly: true,
-         bitindex: 512,
-         bitSentenceAnd: 511,
-         wordType: 'I',
-         _ranking: 0.9 },
-      _ranking: 0.9 } ]
-      , ' correct result ');
-    test.deepEqual(res.categorizedWords[2],
-      [ { string: 'more than',
-      matchedString: 'more than',
-      category: 'operator',
-      rule:
-       { category: 'operator',
-         word: 'more than',
-         lowercaseword: 'more than',
-         type: 0,
-         matchedString: 'more than',
-         bitindex: 512,
-         bitSentenceAnd: 511,
-         wordType: 'O',
-         _ranking: 0.9 },
-      _ranking: 0.9,
-      span: 2 } ]
-      , ' correct result ');
-    test.deepEqual(res.categorizedWords[3],
-      []
-      , ' correct result ');
-    test.deepEqual(res.categorizedWords[4],
-      [{
-        string: 'standort',
-        matchedString: 'standort',
-        category: 'category',
-        rule:
-        {
-          category: 'category',
-          matchedString: 'standort',
-          type: 0,
-          word: 'standort',
-          lowercaseword: 'standort',
-          bitindex: 2,
-          wordType: 'C',
-          bitSentenceAnd: 2,
-          _ranking: 0.95
-        },
+        matchedString: 'one',
+        type: 1,
+        regexp: {},
+        matchIndex: 0,
+        word: '<number>',
+        bitindex: 512,
+        wordType: 'N',
+        bitSentenceAnd: 511,
         _ranking: 0.95
       },
+      category: 'number',
+      _ranking: 0.95
+    }]);
+
+    expect(res.categorizedWords[1]).toEqual([ { string: 'with',
+    matchedString: 'with',
+    category: 'filler',
+    rule:
+     { category: 'filler',
+       type: 0,
+       word: 'with',
+       lowercaseword: 'with',
+       matchedString: 'with',
+       exactOnly: true,
+       bitindex: 512,
+       bitSentenceAnd: 511,
+       wordType: 'I',
+       _ranking: 0.9 },
+    _ranking: 0.9 } ]);
+    expect(res.categorizedWords[2]).toEqual([ { string: 'more than',
+    matchedString: 'more than',
+    category: 'operator',
+    rule:
+     { category: 'operator',
+       word: 'more than',
+       lowercaseword: 'more than',
+       type: 0,
+       matchedString: 'more than',
+       bitindex: 512,
+       bitSentenceAnd: 511,
+       wordType: 'O',
+       _ranking: 0.9 },
+    _ranking: 0.9,
+    span: 2 } ]);
+    expect(res.categorizedWords[3]).toEqual([]);
+    expect(res.categorizedWords[4]).toEqual([{
+      string: 'standort',
+      matchedString: 'standort',
+      category: 'category',
+      rule:
       {
-        string: 'standort',
-        matchedString: 'standort',
         category: 'category',
-        rule:
-        {
-          category: 'category',
-          matchedString: 'standort',
-          type: 0,
-          word: 'standort',
-          bitindex: 32,
-          bitSentenceAnd: 32,
-          exactOnly: false,
-          wordType: 'F',
-          _ranking: 0.95,
-          lowercaseword: 'standort'
-        },
+        matchedString: 'standort',
+        type: 0,
+        word: 'standort',
+        lowercaseword: 'standort',
+        bitindex: 2,
+        wordType: 'C',
+        bitSentenceAnd: 2,
         _ranking: 0.95
-      }]
-      , ' correct result ');
-    test.deepEqual(res.categorizedWords[5],
-      undefined
-      , ' correct result ');
+      },
+      _ranking: 0.95
+    },
+    {
+      string: 'standort',
+      matchedString: 'standort',
+      category: 'category',
+      rule:
+      {
+        category: 'category',
+        matchedString: 'standort',
+        type: 0,
+        word: 'standort',
+        bitindex: 32,
+        bitSentenceAnd: 32,
+        exactOnly: false,
+        wordType: 'F',
+        _ranking: 0.95,
+        lowercaseword: 'standort'
+      },
+      _ranking: 0.95
+    }]);
+    expect(res.categorizedWords[5]).toEqual(undefined);
 
     var res = Erbase.processString('12 with more than standort', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ '12=>12/number N512',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ '12=>12/number N512',
     'with=>with/filler I512',
     'more than=>more than/operator/2 O512',
     'standort=>standort/category C2' ],
   [ '12=>12/number N512',
     'with=>with/filler I512',
     'more than=>more than/operator/2 O512',
-    'standort=>standort/category F32' ] ]
-      , ' correct distinct result 2 ');
+    'standort=>standort/category F32' ] ]);
 
-    test.done();
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
-exports.testWithSmallerOp = function (test) {
+it("testWithSmallerOp", done => {
   getRules().then((args) => {
     var [rules, model] = args;
     var res = Erbase.processString('sendertyp gründungsjahr < 133434 sender', rules, words, model.operators);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ 'sendertyp=>sendertyp/category C2',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ 'sendertyp=>sendertyp/category C2',
     'gründungsjahr=>gründungsjahr/category C2',
     '<=></operator O512',
     '133434=>133434/any A4096',
-    'sender=>sender/category C2' ] ]
-      , ' correct distinct result 2 ');
+    'sender=>sender/category C2' ] ]);
 
-    test.done();
+    done();
     releaseRules(model);
   });
-};
+});
 
 
-exports.testWithLessThanxxxx = function (test) {
+it("testWithLessThanxxxx", done => {
   getRules().then((args) => {
     var [rules, model] = args;
     var res = Erbase.processString('12 with less than 13 standort', rules, words, model.operators);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ '12=>12/number N512',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ '12=>12/number N512',
     'with=>with/filler I512',
     'less than=>less than/operator/2 O512',
     '13=>13/number N512',
-    'standort=>standort/category C2' ] ]
-      , ' correct distinct result 2 ');
+    'standort=>standort/category C2' ] ]);
 
-    test.done();
+    done();
     releaseRules(model);
   });
-};
+});
 
 
 var operatorTestCases = {
@@ -1299,7 +1171,7 @@ var operatorTestCases = {
 };
 
 
-exports.testOperators = function (test) {
+it("testOperators", done => {
   getRules().then((args) => {
     var [rules, model] = args;
     Object.getOwnPropertyNames(operatorTestCases).forEach(key => {
@@ -1307,51 +1179,45 @@ exports.testOperators = function (test) {
       var result = operatorTestCases[key];
       var res = Erbase.processString(sentence, rules, words, model.operators);
       debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-      test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-        result, ' correct distinct result for ' + sentence);
+      expect(simplifyStringsWithBitIndex(res.sentences)).toEqual(result);
     });
-    test.done();
+    done();
     releaseRules(model);
   });
-};
-exports.testWithMoreThanoNC = function (test) {
+});
+it("testWithMoreThanoNC", done => {
   getRules().then((args) => {
     var [rules, model] = args;
     var res = Erbase.processString('which has more than 13 standort', rules, words, model.operators);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    // TODO ambiguity between  "which has more than" and "whish has less than"
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ 'which has more than=>more than/operator/4 O512',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ 'which has more than=>more than/operator/4 O512',
     '13=>13/number N512',
     'standort=>standort/category C2' ],
   [ 'which has more than=>less than/operator/4 O512',
     '13=>13/number N512',
-    'standort=>standort/category C2' ] ]
-      , ' correct distinct result 2 ');
+    'standort=>standort/category C2' ] ]);
 
-    test.done();
+    done();
     releaseRules(model);
   });
-};
+});
 
-exports.testWithMoreThanoNF = function (test) {
+it("testWithMoreThanoNF", done => {
   getRules().then((args) => {
     var [rules, model] = args;
     var res = Erbase.processString('with more than 13 berlin', rules, words, model.operators);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      []
-      , ' correct distinct result 2 ');
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([]);
 
-    test.done();
+    done();
     releaseRules(model);
   });
-};
+});
 
 
-exports.testWithMoreThan0o2 = function (test) {
+it("testWithMoreThan0o2", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -1361,182 +1227,168 @@ exports.testWithMoreThan0o2 = function (test) {
 
     var res = Erbase.tokenizeString('12 with more than 13 standort', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(res.categorizedWords[0],
-      [{
-        string: '12',
-        matchedString: '12',
+    expect(res.categorizedWords[0]).toEqual([{
+      string: '12',
+      matchedString: '12',
+      category: 'element number',
+      rule:
+      {
         category: 'element number',
-        rule:
-        {
-          category: 'element number',
-          matchedString: '12',
-          type: 0,
-          word: '12',
-          bitindex: 16,
-          bitSentenceAnd: 16,
-          exactOnly: false,
-          wordType: 'F',
-          _ranking: 0.95,
-          lowercaseword: '12'
-        },
+        matchedString: '12',
+        type: 0,
+        word: '12',
+        bitindex: 16,
+        bitSentenceAnd: 16,
+        exactOnly: false,
+        wordType: 'F',
+        _ranking: 0.95,
+        lowercaseword: '12'
+      },
+      _ranking: 0.95
+    },
+    {
+      string: '12',
+      matchedString: '12',
+      rule:
+      {
+        category: 'number',
+        matchedString: 'one',
+        type: 1,
+        regexp: {},
+        matchIndex: 0,
+        word: '<number>',
+        bitindex: 512,
+        wordType: 'N',
+        bitSentenceAnd: 511,
         _ranking: 0.95
       },
-      {
-        string: '12',
-        matchedString: '12',
-        rule:
-        {
-          category: 'number',
-          matchedString: 'one',
-          type: 1,
-          regexp: {},
-          matchIndex: 0,
-          word: '<number>',
-          bitindex: 512,
-          wordType: 'N',
-          bitSentenceAnd: 511,
-          _ranking: 0.95
-        },
-        category: 'number',
-        _ranking: 0.95
-      }]
-      , ' correct result ');
+      category: 'number',
+      _ranking: 0.95
+    }]);
 
-    test.deepEqual(res.categorizedWords[1],
-      [ { string: 'with',
-      matchedString: 'with',
-      category: 'filler',
+    expect(res.categorizedWords[1]).toEqual([ { string: 'with',
+    matchedString: 'with',
+    category: 'filler',
+    rule:
+     { category: 'filler',
+       type: 0,
+       word: 'with',
+       lowercaseword: 'with',
+       matchedString: 'with',
+       exactOnly: true,
+       bitindex: 512,
+       bitSentenceAnd: 511,
+       wordType: 'I',
+       _ranking: 0.9 },
+    _ranking: 0.9 } ]);
+    expect(res.categorizedWords[2]).toEqual([ { string: 'more than',
+    matchedString: 'more than',
+    category: 'operator',
+    rule:
+     { category: 'operator',
+       word: 'more than',
+       lowercaseword: 'more than',
+       type: 0,
+       matchedString: 'more than',
+       bitindex: 512,
+       bitSentenceAnd: 511,
+       wordType: 'O',
+       _ranking: 0.9 },
+    _ranking: 0.9,
+    span: 2 } ]);
+    expect(res.categorizedWords[3]).toEqual([]);
+    expect(res.categorizedWords[4]).toEqual([{
+      string: '13',
+      matchedString: '13',
+      category: 'element number',
       rule:
-       { category: 'filler',
-         type: 0,
-         word: 'with',
-         lowercaseword: 'with',
-         matchedString: 'with',
-         exactOnly: true,
-         bitindex: 512,
-         bitSentenceAnd: 511,
-         wordType: 'I',
-         _ranking: 0.9 },
-      _ranking: 0.9 } ]
-      , ' correct result ');
-    test.deepEqual(res.categorizedWords[2],
-      [ { string: 'more than',
-      matchedString: 'more than',
-      category: 'operator',
-      rule:
-       { category: 'operator',
-         word: 'more than',
-         lowercaseword: 'more than',
-         type: 0,
-         matchedString: 'more than',
-         bitindex: 512,
-         bitSentenceAnd: 511,
-         wordType: 'O',
-         _ranking: 0.9 },
-      _ranking: 0.9,
-      span: 2 } ]
-      , ' correct result ');
-    test.deepEqual(res.categorizedWords[3],
-      []
-      , ' correct result ');
-    test.deepEqual(res.categorizedWords[4],
-      [{
-        string: '13',
-        matchedString: '13',
+      {
         category: 'element number',
-        rule:
-        {
-          category: 'element number',
-          matchedString: '13',
-          type: 0,
-          word: '13',
-          bitindex: 16,
-          bitSentenceAnd: 16,
-          exactOnly: false,
-          wordType: 'F',
-          _ranking: 0.95,
-          lowercaseword: '13'
-        },
-        _ranking: 0.95
-      },
-      {
-        string: '13',
         matchedString: '13',
-        rule:
-        {
-          category: 'number',
-          matchedString: 'one',
-          type: 1,
-          regexp: {},
-          matchIndex: 0,
-          word: '<number>',
-          bitindex: 512,
-          wordType: 'N',
-          bitSentenceAnd: 511,
-          _ranking: 0.95
-        },
+        type: 0,
+        word: '13',
+        bitindex: 16,
+        bitSentenceAnd: 16,
+        exactOnly: false,
+        wordType: 'F',
+        _ranking: 0.95,
+        lowercaseword: '13'
+      },
+      _ranking: 0.95
+    },
+    {
+      string: '13',
+      matchedString: '13',
+      rule:
+      {
         category: 'number',
-        _ranking: 0.95
-      }]
-      , ' correct result ');
-    test.deepEqual(res.categorizedWords[5],
-      [{
-        string: 'standort',
-        matchedString: 'standort',
-        category: 'category',
-        rule:
-        {
-          category: 'category',
-          matchedString: 'standort',
-          type: 0,
-          word: 'standort',
-          lowercaseword: 'standort',
-          bitindex: 2,
-          wordType: 'C',
-          bitSentenceAnd: 2,
-          _ranking: 0.95
-        },
+        matchedString: 'one',
+        type: 1,
+        regexp: {},
+        matchIndex: 0,
+        word: '<number>',
+        bitindex: 512,
+        wordType: 'N',
+        bitSentenceAnd: 511,
         _ranking: 0.95
       },
+      category: 'number',
+      _ranking: 0.95
+    }]);
+    expect(res.categorizedWords[5]).toEqual([{
+      string: 'standort',
+      matchedString: 'standort',
+      category: 'category',
+      rule:
       {
-        string: 'standort',
-        matchedString: 'standort',
         category: 'category',
-        rule:
-        {
-          category: 'category',
-          matchedString: 'standort',
-          type: 0,
-          word: 'standort',
-          bitindex: 32,
-          bitSentenceAnd: 32,
-          exactOnly: false,
-          wordType: 'F',
-          _ranking: 0.95,
-          lowercaseword: 'standort'
-        },
+        matchedString: 'standort',
+        type: 0,
+        word: 'standort',
+        lowercaseword: 'standort',
+        bitindex: 2,
+        wordType: 'C',
+        bitSentenceAnd: 2,
         _ranking: 0.95
-      }]
-      , ' correct result ');
+      },
+      _ranking: 0.95
+    },
+    {
+      string: 'standort',
+      matchedString: 'standort',
+      category: 'category',
+      rule:
+      {
+        category: 'category',
+        matchedString: 'standort',
+        type: 0,
+        word: 'standort',
+        bitindex: 32,
+        bitSentenceAnd: 32,
+        exactOnly: false,
+        wordType: 'F',
+        _ranking: 0.95,
+        lowercaseword: 'standort'
+      },
+      _ranking: 0.95
+    }]);
 
     var res = Erbase.processString('12 with more than 13 standort', rules, words, mongoose.operators);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ '12=>12/number N512',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ '12=>12/number N512',
     'with=>with/filler I512',
     'more than=>more than/operator/2 O512',
     '13=>13/number N512',
-    'standort=>standort/category C2' ] ]
-      , ' correct distinct result 2 ');
+    'standort=>standort/category C2' ] ]);
 
-    test.done();
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testWithMoreThan = function (test) {
+it("testWithMoreThan", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -1547,29 +1399,26 @@ exports.testWithMoreThan = function (test) {
     var res = Erbase.tokenizeString('sender, standort with standort more than 12 standorten', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(res.categorizedWords[4],
-      [ { string: 'more than',
-      matchedString: 'more than',
-      category: 'operator',
-      rule:
-       { category: 'operator',
-         word: 'more than',
-         lowercaseword: 'more than',
-         type: 0,
-         matchedString: 'more than',
-         bitindex: 512,
-         bitSentenceAnd: 511,
-         wordType: 'O',
-         _ranking: 0.9 },
-      _ranking: 0.9,
-      span: 2 } ]
-      , ' correct result ');
+    expect(res.categorizedWords[4]).toEqual([ { string: 'more than',
+    matchedString: 'more than',
+    category: 'operator',
+    rule:
+     { category: 'operator',
+       word: 'more than',
+       lowercaseword: 'more than',
+       type: 0,
+       matchedString: 'more than',
+       bitindex: 512,
+       bitSentenceAnd: 511,
+       wordType: 'O',
+       _ranking: 0.9 },
+    _ranking: 0.9,
+    span: 2 } ]);
 
     var res = Erbase.processString('sender, standort with standort more than 12 standorten', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ 'sender=>sender/category C2',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ 'sender=>sender/category C2',
     'standort=>standort/category C2',
     'with=>with/filler I512',
     'standort=>standort/category C2',
@@ -1582,14 +1431,12 @@ exports.testWithMoreThan = function (test) {
     'standort=>standort/category F32',
     'more than=>more than/operator/2 O512',
     '12=>12/number N512',
-    'standorten=>standort/category F32' ] ]
-      , ' correct distinct result ');
+    'standorten=>standort/category F32' ] ]);
 
     var res = Erbase.processString('sender, standort with standort 12 with more than 14 standrt', rules, words, mongoose.operators);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-    [ [ 'sender=>sender/category C2',
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([ [ 'sender=>sender/category C2',
     'standort=>standort/category C2',
     'with=>with/filler I512',
     'standort=>standort/category C2',
@@ -1597,8 +1444,7 @@ exports.testWithMoreThan = function (test) {
     'with=>with/filler I512',
     'more than=>more than/operator/2 O512',
     '14=>14/number N512',
-    'standrt=>standort/category C2' ] ]
-      , ' correct distinct result 2 ');
+    'standrt=>standort/category C2' ] ]);
 
 
 
@@ -1606,22 +1452,18 @@ exports.testWithMoreThan = function (test) {
     var res = Erbase.processString('sender, standort with standort 12 with more than standrt', rules, words, mongoose.operators);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      []
-      , ' correct distinct result 2 ');
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([]);
     var res = Erbase.processString('sender, standort with standort 12 with more than standort', rules, words, mongoose.operators);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      []
-      , ' correct distinct result 2 ');
-    test.done();
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testProcessStringSameDistinct = function (test) {
+it("testProcessStringSameDistinct", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -1632,42 +1474,40 @@ exports.testProcessStringSameDistinct = function (test) {
     var res = Erbase.processString('element name with element name starting with ABC', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['element name=>element name/category/2 C16',
-        'with=>with/filler I512',
-        'element name=>element name/category/2 C16',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element name=>element name/category/2 F32',
-        'with=>with/filler I512',
-        'element name=>element name/category/2 F32',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element name=>element name/category/2 C64',
-        'with=>with/filler I512',
-        'element name=>element name/category/2 C64',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element name=>element number/category/2 C16',
-        'with=>with/filler I512',
-        'element name=>element number/category/2 C16',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element name=>element number/category/2 F32',
-        'with=>with/filler I512',
-        'element name=>element number/category/2 F32',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096']]
-      , ' correct distinct result ');
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['element name=>element name/category/2 C16',
+      'with=>with/filler I512',
+      'element name=>element name/category/2 C16',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element name=>element name/category/2 F32',
+      'with=>with/filler I512',
+      'element name=>element name/category/2 F32',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element name=>element name/category/2 C64',
+      'with=>with/filler I512',
+      'element name=>element name/category/2 C64',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element name=>element number/category/2 C16',
+      'with=>with/filler I512',
+      'element name=>element number/category/2 C16',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element name=>element number/category/2 F32',
+      'with=>with/filler I512',
+      'element name=>element number/category/2 F32',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096']]);
 
-    test.done();
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testProcessStringAsymmetric = function (test) {
+it("testProcessStringAsymmetric", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -1677,45 +1517,43 @@ exports.testProcessStringAsymmetric = function (test) {
 
     var res = Erbase.processString('element name, element number, element weight with element name starting with ABC', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['element name=>element name/category/2 C16',
-        'element number=>element number/category/2 C16',
-        'element weight=>atomic weight/category/2 C16',
-        'with=>with/filler I512',
-        'element name=>element name/category/2 C16',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element name=>element name/category/2 F32',
-        'element number=>element number/category/2 F32',
-        'element weight=>atomic weight/category/2 F32',
-        'with=>with/filler I512',
-        'element name=>element name/category/2 F32',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element name=>element number/category/2 C16',
-        'element number=>element name/category/2 C16',
-        'element weight=>atomic weight/category/2 C16',
-        'with=>with/filler I512',
-        'element name=>element number/category/2 C16',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element name=>element number/category/2 F32',
-        'element number=>element name/category/2 F32',
-        'element weight=>atomic weight/category/2 F32',
-        'with=>with/filler I512',
-        'element name=>element number/category/2 F32',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096']]
-      , ' correct distinct result ');
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['element name=>element name/category/2 C16',
+      'element number=>element number/category/2 C16',
+      'element weight=>atomic weight/category/2 C16',
+      'with=>with/filler I512',
+      'element name=>element name/category/2 C16',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element name=>element name/category/2 F32',
+      'element number=>element number/category/2 F32',
+      'element weight=>atomic weight/category/2 F32',
+      'with=>with/filler I512',
+      'element name=>element name/category/2 F32',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element name=>element number/category/2 C16',
+      'element number=>element name/category/2 C16',
+      'element weight=>atomic weight/category/2 C16',
+      'with=>with/filler I512',
+      'element name=>element number/category/2 C16',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element name=>element number/category/2 F32',
+      'element number=>element name/category/2 F32',
+      'element weight=>atomic weight/category/2 F32',
+      'with=>with/filler I512',
+      'element name=>element number/category/2 F32',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096']]);
 
-    test.done();
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testProcessStringAlmostSameWordDistinct = function (test) {
+it("testProcessStringAlmostSameWordDistinct", done => {
   /* test that "element names" and "element name" are suitably close to allow to eliminate distinct interpretations */
 
   getRules().then((args) => {
@@ -1723,34 +1561,31 @@ exports.testProcessStringAlmostSameWordDistinct = function (test) {
 
     var res = Erbase.processString('element names, element number, element weight, \"element name\" with element name starting with \"ABC\"', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['element names=>element name/category/2 C16',
-        'element number=>element number/category/2 C16',
-        'element weight=>atomic weight/category/2 C16',
-        'element name=>element name/category C16',
-        'with=>with/filler I512',
-        'element name=>element name/category/2 C16',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element names=>element name/category/2 F32',
-        'element number=>element number/category/2 F32',
-        'element weight=>atomic weight/category/2 F32',
-        'element name=>element name/category F32',
-        'with=>with/filler I512',
-        'element name=>element name/category/2 F32',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096']]
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['element names=>element name/category/2 C16',
+      'element number=>element number/category/2 C16',
+      'element weight=>atomic weight/category/2 C16',
+      'element name=>element name/category C16',
+      'with=>with/filler I512',
+      'element name=>element name/category/2 C16',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element names=>element name/category/2 F32',
+      'element number=>element number/category/2 F32',
+      'element weight=>atomic weight/category/2 F32',
+      'element name=>element name/category F32',
+      'with=>with/filler I512',
+      'element name=>element name/category/2 F32',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096']]);
 
-      , ' correct distinct result ');
-
-    test.done();
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testProcessStringAlmostSameWordDistinctReverse = function (test) {
+it("testProcessStringAlmostSameWordDistinctReverse", done => {
   /* test that "element names" and "element name" are suitably close to allow to eliminate distinct interpretations */
 
   getRules().then((args) => {
@@ -1758,50 +1593,48 @@ exports.testProcessStringAlmostSameWordDistinctReverse = function (test) {
 
     var res = Erbase.processString('element names, element number, element weight, element name with element name starting with \"ABC\"', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['element names=>element name/category/2 C16',
-        'element number=>element number/category/2 C16',
-        'element weight=>atomic weight/category/2 C16',
-        'element name=>element name/category/2 C16',
-        'with=>with/filler I512',
-        'element name=>element name/category/2 C16',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element names=>element name/category/2 F32',
-        'element number=>element number/category/2 F32',
-        'element weight=>atomic weight/category/2 F32',
-        'element name=>element name/category/2 F32',
-        'with=>with/filler I512',
-        'element name=>element name/category/2 F32',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element names=>element number/category/2 C16',
-        'element number=>element name/category/2 C16',   // TODO: eliminate this here or later ( after querying?) as an alternative is present which is equivalent
-        'element weight=>atomic weight/category/2 C16',
-        'element name=>element number/category/2 C16',
-        'with=>with/filler I512',
-        'element name=>element number/category/2 C16',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element names=>element number/category/2 F32',
-        'element number=>element name/category/2 F32',
-        'element weight=>atomic weight/category/2 F32',
-        'element name=>element number/category/2 F32',
-        'with=>with/filler I512',
-        'element name=>element number/category/2 F32',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096']]
-      , ' correct distinct result ');
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['element names=>element name/category/2 C16',
+      'element number=>element number/category/2 C16',
+      'element weight=>atomic weight/category/2 C16',
+      'element name=>element name/category/2 C16',
+      'with=>with/filler I512',
+      'element name=>element name/category/2 C16',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element names=>element name/category/2 F32',
+      'element number=>element number/category/2 F32',
+      'element weight=>atomic weight/category/2 F32',
+      'element name=>element name/category/2 F32',
+      'with=>with/filler I512',
+      'element name=>element name/category/2 F32',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element names=>element number/category/2 C16',
+      'element number=>element name/category/2 C16',   // TODO: eliminate this here or later ( after querying?) as an alternative is present which is equivalent
+      'element weight=>atomic weight/category/2 C16',
+      'element name=>element number/category/2 C16',
+      'with=>with/filler I512',
+      'element name=>element number/category/2 C16',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element names=>element number/category/2 F32',
+      'element number=>element name/category/2 F32',
+      'element weight=>atomic weight/category/2 F32',
+      'element name=>element number/category/2 F32',
+      'with=>with/filler I512',
+      'element name=>element number/category/2 F32',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096']]);
 
-    test.done();
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
 
-exports.testProcessStringDistinctSourceWordsOK = function (test) {
+it("testProcessStringDistinctSourceWordsOK", done => {
   /* test that "aliases" are not removed if they are the *best* choice */
 
   getRules().then((args) => {
@@ -1809,29 +1642,27 @@ exports.testProcessStringDistinctSourceWordsOK = function (test) {
 
     var res = Erbase.processString('element weight, atomic weight with element weight starting with \"ABC\"', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['element weight=>atomic weight/category/2 C16',
-        'atomic weight=>atomic weight/category/2 C16',
-        'with=>with/filler I512',
-        'element weight=>atomic weight/category/2 C16',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096'],
-      ['element weight=>atomic weight/category/2 F32',
-        'atomic weight=>atomic weight/category/2 F32',
-        'with=>with/filler I512',
-        'element weight=>atomic weight/category/2 F32',
-        'starting with=>starting with/operator/2 O512',
-        'ABC=>ABC/any A4096']]
-      , ' correct distinct result ');
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['element weight=>atomic weight/category/2 C16',
+      'atomic weight=>atomic weight/category/2 C16',
+      'with=>with/filler I512',
+      'element weight=>atomic weight/category/2 C16',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096'],
+    ['element weight=>atomic weight/category/2 F32',
+      'atomic weight=>atomic weight/category/2 F32',
+      'with=>with/filler I512',
+      'element weight=>atomic weight/category/2 F32',
+      'starting with=>starting with/operator/2 O512',
+      'ABC=>ABC/any A4096']]);
 
-    test.done();
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testProcessStringelementNamesSep = function (test) {
+it("testProcessStringelementNamesSep", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -1842,19 +1673,17 @@ exports.testProcessStringelementNamesSep = function (test) {
     var res = Erbase.processString('elaement,  names nickel ', rules, words);
     debuglog('\nres > ' + JSON.stringify(res, undefined, 2));
 
-    test.deepEqual(simplifySentence(res.sentences),
-      []
-      , ' correct result ');
-    test.done();
+    expect(simplifySentence(res.sentences)).toEqual([]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
 
-exports.testExpandEmtpy = function (test) {
-  test.ok(1);
+it("testExpandEmtpy", done => {
+  expect(1).toBeTruthy();
   var src = [
     [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } },
     { string: 'b', a: 1 , rule: { bitSentenceAnd: 0x02 }}],
@@ -1862,45 +1691,45 @@ exports.testExpandEmtpy = function (test) {
     [{ string: '3', a: 1 , rule: { bitSentenceAnd: 0x02 }}]
   ];
   var res = Erbase.expandTokenMatchesToSentences(['a', 'b', 'c'], src);
-  test.deepEqual(res.sentences, []);
-  test.done();
-};
+  expect(res.sentences).toEqual([]);
+  done();
+});
 
-exports.testExpandNoBits = function (test) {
-  test.ok(1);
+it("testExpandNoBits", done => {
+  expect(1).toBeTruthy();
   var src = [
     [{ string: 'a', a: 1 },
     { string: 'b', a: 1 }],
     [{ string: '3', a: 1 }, { string: 'c', a: 1 }]
   ];
   var res = Erbase.expandTokenMatchesToSentences(['a', 'b', 'c'], src);
-  test.deepEqual(res.sentences, [[{ string: 'a', a: 1 }, { string: '3', a: 1 }],
+  expect(res.sentences).toEqual([[{ string: 'a', a: 1 }, { string: '3', a: 1 }],
   [{ string: 'b', a: 1 }, { string: '3', a: 1 }],
   [{ string: 'a', a: 1 }, { string: 'c', a: 1 }],
   [{ string: 'b', a: 1 }, { string: 'c', a: 1 }]]);
-  test.done();
-};
+  done();
+});
 
-exports.testExpandWithBits = function (test) {
-  test.ok(1);
+it("testExpandWithBits", done => {
+  expect(1).toBeTruthy();
   var src = [
     [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } },
     { string: 'b', a: 1, rule: { bitSentenceAnd: 0x01 } }],
     [{ string: '3', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: 'c', a: 1, rule: { bitSentenceAnd: 0x01 } }]
   ];
   var res = Erbase.expandTokenMatchesToSentences2(['a', 'b', 'c'], src);
-  test.deepEqual(res.sentences, [
+  expect(res.sentences).toEqual([
     [{ string: 'a', a: 1, rule: { bitSentenceAnd: 2 } },
     { string: '3', a: 1, rule: { bitSentenceAnd: 2 } }],
     [{ string: 'b', a: 1, rule: { bitSentenceAnd: 1 } },
     { string: 'c', a: 1, rule: { bitSentenceAnd: 1 } }]]);
-  test.done();
-};
+  done();
+});
 
 
 
-exports.testExpandSpan = function (test) {
-  test.ok(1);
+it("testExpandSpan", done => {
+  expect(1).toBeTruthy();
   var src = [
     [{ string: 'a', a: 1 },
     { string: 'a b', a: 1, span: 2 }],
@@ -1908,13 +1737,13 @@ exports.testExpandSpan = function (test) {
     [{ string: '3', a: 1 }]
   ];
   var res = Erbase.expandTokenMatchesToSentences([], src);
-  test.deepEqual(res.sentences, [
+  expect(res.sentences).toEqual([
     [{ string: 'a b', a: 1, span: 2 }, { string: '3', a: 1 }]]);
-  test.done();
-};
+  done();
+});
 
-exports.testExpandEmtpyErrors = function (test) {
-  test.ok(1);
+it("testExpandEmtpyErrors", done => {
+  expect(1).toBeTruthy();
   var src = [
     [{ string: 'a', a: 1 },
     { string: 'xx', a: 1 }],
@@ -1922,16 +1751,15 @@ exports.testExpandEmtpyErrors = function (test) {
     [{ string: '3', a: 1 }]
   ];
   var res = Erbase.expandTokenMatchesToSentences(['a', 'b', 'c', 'd'], src);
-  test.deepEqual(res.sentences, []);
-  test.deepEqual(res.errors.length, 1);
-  //console.log(JSON.stringify(res.errors,undefined,2));
-  test.deepEqual(res.errors[0].context.token, 'b');
-  test.done();
-};
+  expect(res.sentences).toEqual([]);
+  expect(res.errors.length).toEqual(1);
+  expect(res.errors[0].context.token).toEqual('b');
+  done();
+});
 
 
-exports.testExpandEmtpy2Errors = function (test) {
-  test.ok(1);
+it("testExpandEmtpy2Errors", done => {
+  expect(1).toBeTruthy();
   var src = [
     [{ string: 'a', a: 1 },
     { string: 'b', a: 1 }],
@@ -1940,16 +1768,16 @@ exports.testExpandEmtpy2Errors = function (test) {
     [{ string: '3', a: 1 }]
   ];
   var res = Erbase.expandTokenMatchesToSentences(['a', 'b', 'c', 'd', 'e'], src);
-  test.deepEqual(res.sentences, []);
-  test.deepEqual(res.errors.length, 2);
-  test.deepEqual(res.errors[0].context.token, 'b');
-  test.deepEqual(res.errors[1].context.token, 'c');
-  test.done();
-};
+  expect(res.sentences).toEqual([]);
+  expect(res.errors.length).toEqual(2);
+  expect(res.errors[0].context.token).toEqual('b');
+  expect(res.errors[1].context.token).toEqual('c');
+  done();
+});
 
 
-exports.testExpand0 = function (test) {
-  test.ok(1);
+it("testExpand0", done => {
+  expect(1).toBeTruthy();
   var src = [
     [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } },
     { string: 'b', a: 1, rule: { bitSentenceAnd: 0x02 } }],
@@ -1958,17 +1786,19 @@ exports.testExpand0 = function (test) {
     { string: '3', a: 1.,rule: { bitSentenceAnd: 0x02 } }]
   ];
   var res = Erbase.expandTokenMatchesToSentences([], src);
-  test.deepEqual(res.sentences, [[{ string: 'a', a: 1 ,rule: { bitSentenceAnd: 0x02 }}, { string: '1', a: 1,rule: { bitSentenceAnd: 0x02 } }],
-  [{ string: 'b', a: 1,rule: { bitSentenceAnd: 0x02 } }, { string: '1', a: 1, rule: { bitSentenceAnd: 0x02 } }],
-  [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '2', a: 1, rule: { bitSentenceAnd: 0x02 } }],
-  [{ string: 'b', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '2', a: 1, rule: { bitSentenceAnd: 0x02 } }],
-  [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '3', a: 1, rule: { bitSentenceAnd: 0x02 } }],
-  [{ string: 'b', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '3', a: 1, rule: { bitSentenceAnd: 0x02 } }]], 'correct result');
-  test.done();
-};
+  expect(res.sentences).toEqual(
+    [[{ string: 'a', a: 1 ,rule: { bitSentenceAnd: 0x02 }}, { string: '1', a: 1,rule: { bitSentenceAnd: 0x02 } }],
+    [{ string: 'b', a: 1,rule: { bitSentenceAnd: 0x02 } }, { string: '1', a: 1, rule: { bitSentenceAnd: 0x02 } }],
+    [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '2', a: 1, rule: { bitSentenceAnd: 0x02 } }],
+    [{ string: 'b', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '2', a: 1, rule: { bitSentenceAnd: 0x02 } }],
+    [{ string: 'a', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '3', a: 1, rule: { bitSentenceAnd: 0x02 } }],
+    [{ string: 'b', a: 1, rule: { bitSentenceAnd: 0x02 } }, { string: '3', a: 1, rule: { bitSentenceAnd: 0x02 } }]]
+  );
+  done();
+});
 
 
-exports.testTokenizeStringOrbitBitFiltered = function (test) {
+it("testTokenizeStringOrbitBitFiltered", done => {
 
   getRules().then((args) => {
     var [rules, mongoose] = args;
@@ -1978,22 +1808,21 @@ exports.testTokenizeStringOrbitBitFiltered = function (test) {
     //var augmentedRules = ErIndex.augmentedRules(theModel.rules);
     var res = Erbase.processString2('orbit of the earth', rules, {});
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStrings(res.sentences), [
+    expect(simplifyStrings(res.sentences)).toEqual([
       ['orbit=>orbits/category',
         'of=>of/filler',
         'the=>the/filler',
-        'earth=>earth/object name']], ' correct result ');
-    test.done();
+        'earth=>earth/object name']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
 
 
-exports.testTokenizeStringOrbitEbase = function (test) {
+it("testTokenizeStringOrbitEbase", done => {
 
 
   getRules().then((args) => {
@@ -2003,8 +1832,7 @@ exports.testTokenizeStringOrbitEbase = function (test) {
     //console.log(theModel.mRules);
     var res = Erbase.processString('orbit of the earth', rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStrings(res.sentences), [
+    expect(simplifyStrings(res.sentences)).toEqual([
 
       /*  [ 'orbit=>orbits/category',
         'of=>of/filler',
@@ -2013,16 +1841,16 @@ exports.testTokenizeStringOrbitEbase = function (test) {
       ['orbit=>orbits/category',
         'of=>of/filler',
         'the=>the/filler',
-        'earth=>earth/object name']], ' correct result ');
-    test.done();
+        'earth=>earth/object name']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 //var theModel2 = Model.loadModels('testmodel2',true);
 
 
-exports.testCategorizeWordOffsetIntents = function (test) {
+it("testCategorizeWordOffsetIntents", done => {
 
 
   getRules().then((args) => {
@@ -2033,15 +1861,14 @@ exports.testCategorizeWordOffsetIntents = function (test) {
     debuglog(JSON.stringify(seenIt, undefined, 2));
     var filter = seenIt.filter(word => word.rule && word.rule.range && (word.rule.range.low === -1) && word.rule.range.high === 0);
     var filter2 = seenIt.filter(word => word.rule && !word.rule.range);
-    //console.log(JSON.stringify(filter,undefined,2));
-    test.equal(filter.length, 6, 'got four with range');
-    test.equal(filter2.length, 3, ' got one plain');
-    test.done();
+    expect(filter.length).toEqual(6);
+    expect(filter2.length).toEqual(3);
+    done();
     releaseRules(mongoose);
   });
-}
+})
 
-exports.testCategorizeWordOffsetIntentsSloppy = function (test) {
+it("testCategorizeWordOffsetIntentsSloppy", done => {
   getRules().then((args) => {
     var [rules, mongoose] = args;
 
@@ -2051,16 +1878,15 @@ exports.testCategorizeWordOffsetIntentsSloppy = function (test) {
     debuglog(JSON.stringify(seenIt, undefined, 2));
     var filter = seenIt.filter(word => word.rule && word.rule.range && (word.rule.range.low === -1) && word.rule.range.high === 0);
     var filter2 = seenIt.filter(word => word.rule && !word.rule.range);
-    //console.log(JSON.stringify(filter,undefined,2));
-    test.equal(filter.length, 12, 'got eight with range');
-    test.equal(filter2.length, 6, 'got two without');
-    test.done();
+    expect(filter.length).toEqual(12);
+    expect(filter2.length).toEqual(6);
+    done();
     releaseRules(mongoose);
   });
-}
+})
 
 
-exports.testCategorizeWordOffsetSemantic = function (test) {
+it("testCategorizeWordOffsetSemantic", done => {
 
 
   getRules2().then((args) => {
@@ -2071,15 +1897,14 @@ exports.testCategorizeWordOffsetSemantic = function (test) {
     debuglog(JSON.stringify(seenIt, undefined, 2));
     var filter = seenIt.filter(word => word.rule && word.rule.range);
     var filter2 = seenIt.filter(word => word.rule && !word.rule.range);
-    //console.log(JSON.stringify(filter,undefined,2));
-    test.equal(filter.length, 4, 'got two with range');
-    test.equal(filter2.length, 0, 'got two without range');
-    test.done();
+    expect(filter.length).toEqual(4);
+    expect(filter2.length).toEqual(0);
+    done();
     releaseRules(mongoose);
   });
-}
+})
 
-exports.testProcessStringSemantic = function (test) {
+it("testProcessStringSemantic", done => {
 
   getRules2().then((args) => {
     var [rules, mongoose] = args;
@@ -2089,17 +1914,15 @@ exports.testProcessStringSemantic = function (test) {
     // console.log("wordmap: " + JSON.stringify(theModel2.rules.wordMap["element"]));
     var res = Erbase.processString('Semantic OBjects', rules, {});
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['Semantic OBjects=>SemanticObject/category/2 C4'],
-      ['Semantic OBjects=>SemanticObject/category/2 F32']
-      ], ' correct result ');
-    test.done();
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['Semantic OBjects=>SemanticObject/category/2 C4'],
+    ['Semantic OBjects=>SemanticObject/category/2 F32']
+    ]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
-exports.testProcessStringOData = function (test) {
+it("testProcessStringOData", done => {
   // console.log("all" + JSON.stringify(rx, undefined,2));
   // console.log("wordmap: " + JSON.stringify(theModel2.rules.wordMap["element"]));
   /*
@@ -2116,16 +1939,15 @@ exports.testProcessStringOData = function (test) {
     var res = Erbase.processString('OData Services for UI2SHellService', rules, {});
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     debuglog('res > ' + JSON.stringify(res.errors, undefined, 2));
-    test.deepEqual(res.errors[0].text, 'I do not understand "UI2SHellService".', 'correct error message');
-    //console.log('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStrings(res.sentences), [], ' correct result ');
-    test.done();
+    expect(res.errors[0].text).toEqual('I do not understand "UI2SHellService".');
+    expect(simplifyStrings(res.sentences)).toEqual([]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
-exports.testProcessStringODataOK = function (test) {
+it("testProcessStringODataOK", done => {
   // console.log("all" + JSON.stringify(rx, undefined,2));
   // console.log("wordmap: " + JSON.stringify(theModel2.rules.wordMap["element"]));
   /*
@@ -2145,23 +1967,20 @@ exports.testProcessStringODataOK = function (test) {
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     debuglog('res > ' + JSON.stringify(res.errors, undefined, 2));
 
-    //console.log('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStringsWithBitIndex(res.sentences),
-      [['OData Services=>PrimaryODataServiceName/category/2 C4',
-        'for=>for/filler I512',
-        'fiori intent=>fiori intent/category/2 C4'],
-      ['OData Services=>PrimaryODataServiceName/category/2 F32',
-        'for=>for/filler I512',
-        'fiori intent=>fiori intent/category/2 F32']]
-      , ' correct result ');
-    test.done();
+    expect(simplifyStringsWithBitIndex(res.sentences)).toEqual([['OData Services=>PrimaryODataServiceName/category/2 C4',
+      'for=>for/filler I512',
+      'fiori intent=>fiori intent/category/2 C4'],
+    ['OData Services=>PrimaryODataServiceName/category/2 F32',
+      'for=>for/filler I512',
+      'fiori intent=>fiori intent/category/2 F32']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testCategorizeWordOffset = function (test) {
+it("testCategorizeWordOffset", done => {
   var token = "element";
 
 
@@ -2171,14 +1990,13 @@ exports.testCategorizeWordOffset = function (test) {
     var seenIt = InputFilter.categorizeAWordWithOffsets(token, rules, "element number 10", {}, {});
     debuglog(JSON.stringify(seenIt, undefined, 2));
     var filter = seenIt.filter(word => word.rule && (word.rule.range.low === 0) && word.rule.range.high === 1);
-    //console.log(JSON.stringify(filter,undefined,2));
-    test.equal(filter.length > 0, true);
-    test.done();
+    expect(filter.length > 0).toEqual(true);
+    done();
     releaseRules(mongoose);
   });
-}
+})
 
-exports.testprocessStringModel2 = function (test) {
+it("testprocessStringModel2", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -2194,8 +2012,7 @@ exports.testprocessStringModel2 = function (test) {
     // console.log("wordmap: " + JSON.stringify(theModel2.rules.wordMap["element"]));
     var res = Erbase.processString('element number 10', rules, {});
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    //console.log('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStrings(res.sentences), [['element number=>element number/category/2',
+    expect(simplifyStrings(res.sentences)).toEqual([['element number=>element number/category/2',
       '10=>10/element number'],
     ['element number=>element number/category/2', '10=>10/number'],
     ['element number=>element number/category/2', '10=>10/number'],
@@ -2203,15 +2020,15 @@ exports.testprocessStringModel2 = function (test) {
       '10=>10/element number'],
     ['element number=>element name/category/2', '10=>10/number'],
     ['element number=>element name/category/2', '10=>10/number'],
-    ['element number=>element name/category/2', '10=>10/number']], ' correct result ');
-    test.done();
+    ['element number=>element name/category/2', '10=>10/number']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 
 
-exports.testTokenizeStringOrbitWhatis = function (test) {
+it("testTokenizeStringOrbitWhatis", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules);
 
@@ -2220,29 +2037,23 @@ exports.testTokenizeStringOrbitWhatis = function (test) {
 
     var res = Erbase.processString('orbit of the earth', rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStrings(res.sentences),
-
-      [ /*[ 'orbit=>orbits/category',
-    'of=>of/filler',
-    'the=>the/filler',
-    'earth=>earth/element name' ], */
-        ['orbit=>orbits/category',
-          'of=>of/filler',
-          'the=>the/filler',
-          'earth=>earth/object name']]
-
-
-      //  [ 'orbit of=>orbital period/category',
-      //    'the=>the/filler',
-      //    'earth=>earth/object name' ]
-
-      //  [ 'orbit of the=>orbits/category', 'earth=>earth/element name' ],
-      //  [ 'orbit of the=>orbits/category', 'earth=>earth/object name' ]
-      , ' correct result ');
-    test.done();
+    expect(simplifyStrings(res.sentences)).toEqual(//  [ 'orbit of=>orbital period/category',
+    //    'the=>the/filler',
+    //    'earth=>earth/object name' ]
+    //  [ 'orbit of the=>orbits/category', 'earth=>earth/element name' ],
+    //  [ 'orbit of the=>orbits/category', 'earth=>earth/object name' ]
+    [ /*[ 'orbit=>orbits/category',
+  'of=>of/filler',
+  'the=>the/filler',
+  'earth=>earth/element name' ], */
+      ['orbit=>orbits/category',
+        'of=>of/filler',
+        'the=>the/filler',
+        'earth=>earth/object name']]);
+    done();
     releaseRules(mongoose);
   });
-};
+});
 
 /*
 exports.testProcessStringGovernmentType = function (test) {
@@ -2264,7 +2075,7 @@ exports.testProcessStringGovernmentType = function (test) {
 */
 
 
-exports.testTokenizeStringOrbitCompletelyNothingEbase = function (test) {
+it("testTokenizeStringOrbitCompletelyNothingEbase", done => {
   // debuglog(JSON.stringify(ifr, undefined, 2))
   //console.log(theModel.mRules)
 
@@ -2273,10 +2084,10 @@ exports.testTokenizeStringOrbitCompletelyNothingEbase = function (test) {
 
     var res = Erbase.processString('orbit of Nomacthforthis the earth', rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual(simplifyStrings(res.sentences), []);
-    test.deepEqual(res.errors[0].err_code, "NO_KNOWN_WORD");
-    test.deepEqual(res.errors[0].text, "I do not understand \"Nomacthforthis\".");
-    test.done();
+    expect(simplifyStrings(res.sentences)).toEqual([]);
+    expect(res.errors[0].err_code).toEqual("NO_KNOWN_WORD");
+    expect(res.errors[0].text).toEqual("I do not understand \"Nomacthforthis\".");
+    done();
     releaseRules(mongoose);
   });
-};
+});

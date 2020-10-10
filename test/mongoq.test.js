@@ -59,8 +59,15 @@ describe('testMakeMongoDomain', () => {
   });
 
 
-
-
+  //exports.testMakeQuery = function (test) {
+  //  getModel().then((theModel) => {
+  it('testTablesInDomainn', (done) => {
+    var r = MongoQ.prepareQueries('Tables in Domain IUPAC',
+      theModel, []);
+    expect(r.queries).toEqual( [undefined, undefined, undefined ]); 
+    done();
+  });
+    
   //exports.testMakeQuery = function (test) {
   //  getModel().then((theModel) => {
   it('testMakeMongoDomain', async () => {
@@ -482,7 +489,7 @@ describe('testMakeMongoDomain', () => {
     };
   };
 
-  exports.testQueryInternal = function (test) {
+  it('testQueryInternal', done => {
     getModel().then((theModel) => {
       var handle = new FakeHandle([{ 'object_name': 'abc' }]);
       MongoQ.queryInternal('object name', theModel, handle).then(res => {
@@ -554,18 +561,18 @@ describe('testMakeMongoDomain', () => {
             auxcolumns: [],
             results: []
           }];
-        test.deepEqual(res[0].aux, expected[0].aux, 'first aux ok' + JSON.stringify(res));
-        test.deepEqual(res[1], expected[1], '2nd ok');
-        test.deepEqual(res[0], expected[0], 'first ok \n ' + JSON.stringify(res));
+        expect(res[0].aux).toEqual(expected[0].aux);
+        expect(res[1]).toEqual(expected[1]);
+        expect(res[0]).toEqual(expected[0]);
 
-        test.deepEqual(res, expected);
-        test.done();
+        expect(res).toEqual(expected);
+        done();
         Model.releaseModel(theModel);
       });
     });
-  };
+  });
 
-  exports.testMakeQuery2 = function (test) {
+  it('testMakeQuery2', done => {
     getModel().then((theModel) => {
       var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
       var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
@@ -576,13 +583,19 @@ describe('testMakeMongoDomain', () => {
       var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
       var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], mongoMap);
       var categoryList = mQ.getCategoryList([], nodeFieldList, r.sentences[0]);
-      test.deepEqual(match, { $match: { ApplicationComponent: 'CO-FIO', appId: 'W0052', 'TechnicalCatalog': 'SAP_TC_FIN_CO_COMMON' } });
+      expect(match).toEqual(
+        { $match: { ApplicationComponent: 'CO-FIO', appId: 'W0052', 'TechnicalCatalog': 'SAP_TC_FIN_CO_COMMON' } }
+      );
       var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
-      test.deepEqual(proj, { $project: { _id: 0, SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } });
+      expect(proj).toEqual(
+        { $project: { _id: 0, SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } }
+      );
       var sort = mQ.makeMongoSortFromAst(categoryList, mongoMap);
-      test.deepEqual(sort, { $sort: { SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } });
+      expect(sort).toEqual(
+        { $sort: { SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } }
+      );
       var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
-      test.deepEqual(group, {
+      expect(group).toEqual({
         $group: {
           _id: { SemanticObject: '$SemanticObject', SemanticAction: '$SemanticAction', BSPName: '$BSPName', ApplicationComponent: '$ApplicationComponent' },
           SemanticObject: { $first: '$SemanticObject' }, SemanticAction: { $first: '$SemanticAction' }, BSPName: { $first: '$BSPName' }, ApplicationComponent: { $first: '$ApplicationComponent' }
@@ -590,160 +603,152 @@ describe('testMakeMongoDomain', () => {
       });
       // console.log(JSON.stringify(r)); // how to get domain?
       var domain = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0], mongoMap);
-      test.deepEqual(domain, { collectionName: 'fioriapps', domain: 'FioriBOM', modelName: 'fioriapps' }, ' got domain');
+      expect(domain).toEqual(
+        { collectionName: 'fioriapps', domain: 'FioriBOM', modelName: 'fioriapps' }
+      );
       var query = [match, group, proj];
       debuglog(() => query);
-      test.done();
+      done();
       Model.releaseModel(theModel);
     });
-  };
+  });
 
 
-  exports.testCategoriesInBOM = function (test) {
+  it('testCategoriesInBOM', done => {
     getModel().then((theModel) => {
       var s = 'categories in  Fiori BOM';
       var r = MongoQ.prepareQueries(s, theModel, []);
       debuglog(() => JSON.stringify(r, undefined, 2));
       var query0 = r.queries[0];
-      test.deepEqual(r.queries.length, 2);
-      test.deepEqual(r.queries.filter(q => !!q).length, 1);
-      test.deepEqual(query0.query,
-        [{ '$match': { domain: 'FioriBOM' } },
-          { '$unwind': { path: '$_categories', preserveNullAndEmptyArrays: true } },
-          { '$match': { domain: 'FioriBOM' } },
-          {
-            '$group':
-          {
-            _id: { _categories: '$_categories' },
-            _categories: { '$first': '$_categories' }
-          }
-          },
-          { '$project': { _id: 0, category: '$_categories.category' } },
-          { '$sort': { category: 1 } }]
-      );
-      test.deepEqual(query0.columns,
-        ['category']
-      );
-      test.deepEqual(query0.reverseMap,
-        {}
-      );
-      test.done();
+      expect(r.queries.length).toEqual(2);
+      expect(r.queries.filter(q => !!q).length).toEqual(1);
+      expect(query0.query).toEqual([{ '$match': { domain: 'FioriBOM' } },
+        { '$unwind': { path: '$_categories', preserveNullAndEmptyArrays: true } },
+        { '$match': { domain: 'FioriBOM' } },
+        {
+          '$group':
+        {
+          _id: { _categories: '$_categories' },
+          _categories: { '$first': '$_categories' }
+        }
+        },
+        { '$project': { _id: 0, category: '$_categories.category' } },
+        { '$sort': { category: 1 } }]);
+      expect(query0.columns).toEqual(['category']);
+      expect(query0.reverseMap).toEqual({});
+      done();
       Model.releaseModel(theModel);
     });
-  };
+  });
 
 
 
-  exports.testPrepareQuery2 = function (test) {
+  it('testPrepareQuery2', done => {
     getModel().then((theModel) => {
       var s = 'categories starting with elem';
       var r = MongoQ.prepareQueries(s, theModel, []);
       var query0 = r.queries[0];
 
-      test.deepEqual(query0.query,
-        [
-          {
-            '$match': {
-              '_categories.category': {
-                '$regex': /^elem/i
-              }
-            }
-          },
-          {
-            '$unwind': {
-              'path': '$_categories',
-              'preserveNullAndEmptyArrays': true
-            }
-          },
-          {
-            '$match': {
-              '_categories.category': {
-                '$regex': /^elem/i
-              }
-            }
-          },
-          {
-            '$group': {
-              '_id': {
-                '_categories': '$_categories'
-              },
-              '_categories': {
-                '$first': '$_categories'
-              }
-            }
-          },
-          {
-            '$project': {
-              '_id': 0,
-              'category': '$_categories.category'
-            }
-          },
-          {
-            '$sort': {
-              'category': 1
+      expect(query0.query).toEqual([
+        {
+          '$match': {
+            '_categories.category': {
+              '$regex': /^elem/i
             }
           }
-        ]);
-      test.deepEqual(query0.columns,
-        ['category']
-      );
-      test.deepEqual(query0.reverseMap,
-        {}
-      );
-      test.done();
+        },
+        {
+          '$unwind': {
+            'path': '$_categories',
+            'preserveNullAndEmptyArrays': true
+          }
+        },
+        {
+          '$match': {
+            '_categories.category': {
+              '$regex': /^elem/i
+            }
+          }
+        },
+        {
+          '$group': {
+            '_id': {
+              '_categories': '$_categories'
+            },
+            '_categories': {
+              '$first': '$_categories'
+            }
+          }
+        },
+        {
+          '$project': {
+            '_id': 0,
+            'category': '$_categories.category'
+          }
+        },
+        {
+          '$sort': {
+            'category': 1
+          }
+        }
+      ]);
+      expect(query0.columns).toEqual(['category']);
+      expect(query0.reverseMap).toEqual({});
+      done();
       Model.releaseModel(theModel);
     });
-  };
+  });
 
-  exports.testGetDomainsForSentence = function (test) {
+  it('testGetDomainsForSentence', done => {
     getModel().then((theModel) => {
       var s = 'SemanticObject';
       var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
       var domain = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0]);
-      test.deepEqual(domain, { domain: 'FioriBOM', collectionName: 'fioriapps', modelName: 'fioriapps' }, ' got domain');
+      expect(domain).toEqual(
+        { domain: 'FioriBOM', collectionName: 'fioriapps', modelName: 'fioriapps' }
+      );
       var domain2 = MongoQ.getDomainInfoForSentence(theModel, r.sentences[1]);
-      test.deepEqual(domain2, {
+      expect(domain2).toEqual({
         domain: 'Fiori Backend Catalogs',
         collectionName: 'fioribecatalogs',
         modelName: 'fioribecatalogs'
-      }, ' got domain');
-      test.done();
+      });
+      done();
       Model.releaseModel(theModel);
     });
-  };
+  });
 
 
-  exports.testContainsFixedCategories = function (test) {
+  it('testContainsFixedCategories', done => {
     getModel().then((theModel) => {
-      test.deepEqual(MongoQ.containsFixedCategories(theModel, 'Cosmos', []), true, 'empty is always ok');
-      test.deepEqual(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['nocat']), false, ' missing ');
-      test.deepEqual(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits']), true, ' missing ');
-      test.deepEqual(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits', 'nocat']), false, ' missing ');
+      expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', [])).toEqual(true);
+      expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['nocat'])).toEqual(false);
+      expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits'])).toEqual(true);
+      expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits', 'nocat'])).toEqual(false);
 
-      // now a hidden category
-      test.deepEqual(MongoQ.containsFixedCategories(theModel, 'FioriBOM', ['uri', 'uri_rank']), true, ' uri present ');
+      expect(MongoQ.containsFixedCategories(theModel, 'FioriBOM', ['uri', 'uri_rank'])).toEqual(true);
 
-      test.done();
+      done();
       Model.releaseModel(theModel);
     });
-  };
+  });
 
-  exports.testCustomStringif = function (test) {
+  it('testCustomStringif', done => {
     var a = { a: /abc/i };
     var r = MongoQ.JSONStringify(a);
-    test.deepEqual(r, '{\n  "a": "/abc/i"\n}');
-    test.done();
-  };
+    expect(r).toEqual('{\n  "a": "/abc/i"\n}');
+    done();
+  });
 
 
-  exports.testGetDomainForSentenceSafe = function (test) {
+  it('testGetDomainForSentenceSafe', done => {
     getModel().then((theModel) => {
       var domain = MongoQ.getDomainForSentenceSafe(theModel, []);
-      test.deepEqual(domain, undefined);
-      test.done();
+      expect(domain).toEqual(undefined);
+      done();
       Model.releaseModel(theModel);
     });
-  };
+  });
 
   // exports.testGetDomainsForSentence = function (test) {
   //   getModel().then((theModel) 
@@ -820,26 +825,25 @@ describe('testMakeMongoDomain', () => {
     });
   });
 
-  exports.testQueryWithAux = function (test) {
+  it('testQueryWithAux', done => {
     getModel().then((theModel) => {
       MongoQ.queryWithAuxCategories('orbits', theModel, ['_url']).then((res) => {
-        test.deepEqual(res.length, 2);
+        expect(res.length).toEqual(2);
         debuglog(() => JSON.stringify(res, undefined, 2));
-        test.deepEqual(MongoQ.projectResultToArray(res[0]),
-          [[null, null],
-            [null, 'n/a'],
-            ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
-            ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
-            ['https://en.wikipedia.org/wiki/Proxima_Centauri_b',
-              'Alpha Centauri C'],
-            ['https://en.wikipedia.org/wiki/Sun', null]]);
+        expect(MongoQ.projectResultToArray(res[0])).toEqual([[null, null],
+          [null, 'n/a'],
+          ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
+          ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
+          ['https://en.wikipedia.org/wiki/Proxima_Centauri_b',
+            'Alpha Centauri C'],
+          ['https://en.wikipedia.org/wiki/Sun', null]]);
 
-        test.deepEqual(res[1].results, []);
-        test.done();
+        expect(res[1].results).toEqual([]);
+        done();
         Model.releaseModel(theModel);
       });
     });
-  };
+  });
 
 
   it('testQueryWithURI2', async () => {

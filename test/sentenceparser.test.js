@@ -37,24 +37,22 @@ var getModel = require('mgnlq_testmodel_replay').getTestModel;
 
 var words = {};
 
-exports.testTokenizeStringOrbitWhatis = function (test) {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-
-  test.expect(1);
+it('testTokenizeStringOrbitWhatis', done => {
+  expect.assertions(1);
   getModel().then((theModel) => {
     var res = Erbase.processString('orbit of the earth', theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'of', 'the', 'FACT']);
-    test.done();
+    expect(sStrings).toEqual(['CAT', 'of', 'the', 'FACT']);
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testTokenizeNumber = function (test) {
-  test.expect(1);
+it('testTokenizeNumber', done => {
+  expect.assertions(1);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
@@ -64,41 +62,41 @@ exports.testTokenizeNumber = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'with', 'more than', 'NUMBER', 'CAT']);
-    test.done();
+    expect(sStrings).toEqual(['CAT', 'with', 'more than', 'NUMBER', 'CAT']);
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testTokenizeNumberOrElement = function (test) {
-  test.expect(3);
+it('testTokenizeNumberOrElement', done => {
+  expect.assertions(3);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
     var s = 'sender with more than 12 standort';
     var res = Erbase.processString(s, theModel.rules, words);
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
-    test.deepEqual( 2, res.sentences.length );
+    expect(2).toEqual(res.sentences.length);
     {
       var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
       var sStrings = lexingResult.map(t => t.image);
       debuglog(sStrings.join('\n'));
-      test.deepEqual(sStrings, ['CAT',  'with', 'more than', 'NUMBER', 'CAT']);
+      expect(sStrings).toEqual(['CAT',  'with', 'more than', 'NUMBER', 'CAT']);
     }
     {
       lexingResult = SentenceParser.getLexer().tokenize(res.sentences[1]);
       sStrings = lexingResult.map(t => t.image);
       debuglog(sStrings.join('\n'));
-      test.deepEqual(sStrings, ['FACT', 'with', 'more than', 'NUMBER', 'FACT']);
+      expect(sStrings).toEqual(['FACT', 'with', 'more than', 'NUMBER', 'FACT']);
     }
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
-exports.testTokenizeCatCatCat = function (test) {
-  test.expect(1);
+it('testTokenizeCatCatCat', done => {
+  expect.assertions(1);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
@@ -108,16 +106,14 @@ exports.testTokenizeCatCatCat = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT']);
-    test.done();
+    expect(sStrings).toEqual(['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT']);
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testTokenizeCatCatCatParse = function (test) {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-
-  test.expect(2);
+it('testTokenizeCatCatCatParse', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var res = Erbase.processString(s, theModel.rules, words);
@@ -125,126 +121,120 @@ exports.testTokenizeCatCatCatParse = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT']);
+    expect(sStrings).toEqual(['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
-    // /test.deepEqual(parsingResult, {})
-    //console.log('here the ouptut ' + JSON.stringify(Ast.dumpNodeNice(parsingResult),undefined,2));
-    test.deepEqual(Ast.dumpNodeNice(parsingResult),
-      {
-        'type': 'BINOP',
-        'index': -1,
-        'children': [
-          {
-            'type': 'OPAll',
-            'index': -1,
-            'children': [
-              {
-                'type': 'LIST',
-                'index': -1,
-                'children': [
-                  {
-                    'type': 'CAT',
-                    'index': 0
-                  },
-                  {
-                    'type': 'CAT',
-                    'index': 1
-                  },
-                  {
-                    'type': 'CAT',
-                    'index': 2
-                  },
-                  {
-                    'type': 'CAT',
-                    'index': 3
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            'type': 'LIST',
-            'index': -1,
-            'children': [
-              {
-                'type': 'OPEqIn',
-                'index': -1,
-                'children': [
-                  {
-                    'type': 'CAT',
-                    'index': 5
-                  },
-                  {
-                    'type': 'FACT',
-                    'index': 6
-                  }
-                ]
-              },
-              {
-                'type': 'OPEqIn',
-                'index': -1,
-                'children': [
-                  {
-                    'type': 'CAT',
-                    'index': 7
-                  },
-                  {
-                    'type': 'FACT',
-                    'index': 8
-                  }
-                ]
-              },
-              {
-                'type': 'OPEqIn',
-                'index': -1,
-                'children': [
-                  {
-                    'type': 'CATPH',
-                    'index': -1
-                  },
-                  {
-                    'type': 'FACT',
-                    'index': 9
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    );
-    test.done();
+    expect(Ast.dumpNodeNice(parsingResult)).toEqual({
+      'type': 'BINOP',
+      'index': -1,
+      'children': [
+        {
+          'type': 'OPAll',
+          'index': -1,
+          'children': [
+            {
+              'type': 'LIST',
+              'index': -1,
+              'children': [
+                {
+                  'type': 'CAT',
+                  'index': 0
+                },
+                {
+                  'type': 'CAT',
+                  'index': 1
+                },
+                {
+                  'type': 'CAT',
+                  'index': 2
+                },
+                {
+                  'type': 'CAT',
+                  'index': 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          'type': 'LIST',
+          'index': -1,
+          'children': [
+            {
+              'type': 'OPEqIn',
+              'index': -1,
+              'children': [
+                {
+                  'type': 'CAT',
+                  'index': 5
+                },
+                {
+                  'type': 'FACT',
+                  'index': 6
+                }
+              ]
+            },
+            {
+              'type': 'OPEqIn',
+              'index': -1,
+              'children': [
+                {
+                  'type': 'CAT',
+                  'index': 7
+                },
+                {
+                  'type': 'FACT',
+                  'index': 8
+                }
+              ]
+            },
+            {
+              'type': 'OPEqIn',
+              'index': -1,
+              'children': [
+                {
+                  'type': 'CATPH',
+                  'index': -1
+                },
+                {
+                  'type': 'FACT',
+                  'index': 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testTokenizeCatCatCatParseText = function (test) {
-  // debuglog(JSON.stringify(ifr, undefined, 2))
-
-  test.expect(3);
+it('testTokenizeCatCatCatParseText', done => {
+  expect.assertions(3);
   getModel().then((theModel) => {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var res = Erbase.processString(s, theModel.rules, words);
-    test.equal(res.sentences.length, 1);
+    expect(res.sentences.length).toEqual(1);
     //console.log(JSON.stringify(res.sentences,undefined,2));
     debuglog('res > ' + JSON.stringify(res, undefined, 2));
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT']);
+    expect(sStrings).toEqual(['CAT', 'CAT', 'CAT', 'CAT', 'with', 'CAT', 'FACT', 'CAT', 'FACT', 'FACT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
-    test.deepEqual(Ast.astToText(parsingResult),
+    expect(Ast.astToText(parsingResult)).toEqual(
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testTokenizeDomain = function (test) {
-  test.expect(1);
+it('testTokenizeDomain', done => {
+  expect.assertions(1);
   getModel().then((theModel) => {
     var s = 'domain FioriBOM';
     var res = Erbase.processString(s, theModel.rules, words);
@@ -252,14 +242,14 @@ exports.testTokenizeDomain = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['domain', 'DOM']);
-    test.done();
+    expect(sStrings).toEqual(['domain', 'DOM']);
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testParseInDomain = function (test) {
-  test.expect(2);
+it('testParseInDomain', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
@@ -269,20 +259,19 @@ exports.testParseInDomain = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'CAT', 'in', 'domain', 'DOM']);
+    expect(sStrings).toEqual(['CAT', 'CAT', 'in', 'domain', 'DOM']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
-    // /test.deepEqual(parsingResult, {})
-    // console.log('\n' + Ast.astToText(parsingResult));
-    test.deepEqual(Ast.astToText(parsingResult),
-      'BINOP -1(3)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  undefined\n  DOM 4\n');
-    test.done();
+    expect(Ast.astToText(parsingResult)).toEqual(
+      'BINOP -1(3)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  undefined\n  DOM 4\n'
+    );
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
-exports.testParseEndingWith = function (test) {
-  test.expect(2);
+it('testParseEndingWith', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
@@ -292,23 +281,21 @@ exports.testParseEndingWith = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'ending with', 'ANY']);
+    expect(sStrings).toEqual(['CAT', 'ending with', 'ANY']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
-    // /test.deepEqual(parsingResult, {})
-    // console.log('\n' + Ast.astToText(parsingResult));
-    test.deepEqual(Ast.astToText(parsingResult),
+    expect(Ast.astToText(parsingResult)).toEqual(
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEndsWith 1(2)\n      CAT 0\n      ANY 2\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
 
 
-exports.testParseAndContains2x = function (test) {
-  test.expect(2);
+it('testParseAndContains2x', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
@@ -318,7 +305,7 @@ exports.testParseAndContains2x = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings,[ 'CAT',
+    expect(sStrings).toEqual([ 'CAT',
       'CAT',
       'with',
       'CAT',
@@ -331,17 +318,17 @@ exports.testParseAndContains2x = function (test) {
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
-    test.deepEqual(Ast.astToText(parsingResult),
+    expect(Ast.astToText(parsingResult)).toEqual(
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  LIST -1(2)\n    OPContains 4(2)\n      CAT 3\n      ANY 5\n    OPContains 8(2)\n      CAT 7\n      ANY 9\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
-exports.testParseSimpleEndingWith = function (test) {
-  test.expect(2);
+it('testParseSimpleEndingWith', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
@@ -351,20 +338,20 @@ exports.testParseSimpleEndingWith = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings, ['CAT', 'ending with', 'ANY']);
+    expect(sStrings).toEqual(['CAT', 'ending with', 'ANY']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
-    test.deepEqual(Ast.astToText(parsingResult),
+    expect(Ast.astToText(parsingResult)).toEqual(
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEndsWith 1(2)\n      CAT 0\n      ANY 2\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testParseWithEndingWith = function (test) {
-  test.expect(2);
+it('testParseWithEndingWith', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
@@ -374,21 +361,21 @@ exports.testParseWithEndingWith = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'CAT', 'with', 'CAT', 'ending with', 'ANY' ]);
+    expect(sStrings).toEqual([ 'CAT', 'CAT', 'with', 'CAT', 'ending with', 'ANY' ]);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
 
-    test.deepEqual(Ast.astToText(parsingResult),
+    expect(Ast.astToText(parsingResult)).toEqual(
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  LIST -1(1)\n    OPEndsWith 4(2)\n      CAT 3\n      ANY 5\n'
-      , 'proper ast' );
-    test.done();
+    );
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testParseWithEndingWithOne = function (test) {
-  test.expect(2);
+it('testParseWithEndingWithOne', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
@@ -398,18 +385,16 @@ exports.testParseWithEndingWithOne = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'ending with', 'ANY' ]);
+    expect(sStrings).toEqual([ 'CAT', 'ending with', 'ANY' ]);
     var parsingResult = SentenceParser.parse(lexingResult.slice(1), 'opFactAny');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
 
-    test.deepEqual(Ast.astToText(parsingResult),
-      'OPEndsWith 1(2)\n  undefined\n  ANY 2\n'
-      , 'proper ast' );
-    test.done();
+    expect(Ast.astToText(parsingResult)).toEqual('OPEndsWith 1(2)\n  undefined\n  ANY 2\n');
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
 var testDataOperators = [
@@ -446,8 +431,8 @@ var testDataOperators = [
 ];
 
 
-exports.testParseOperators = function (test) {
-  test.expect(2 * testDataOperators.length);
+it('testParseOperators', done => {
+  expect.assertions(2 * testDataOperators.length);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
     testDataOperators.forEach( (d,index) => {
@@ -457,27 +442,25 @@ exports.testParseOperators = function (test) {
       var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
       var sStrings = lexingResult.map(t => t.image);
       debuglog(sStrings.join('\n'));
-      test.deepEqual(sStrings, d.cattokens, ' cattokens for ' + index + ' ' + d.sentence);
+      expect(sStrings).toEqual(d.cattokens);
       //  [ 'more than', 'NUMBER', 'CAT' ]);
       var parsingResult = SentenceParser.parse(lexingResult.slice(0),
         d.startrule ); // 'MoreThanLessThanExactly');
       // /test.deepEqual(parsingResult, {})
       debuglog('\n' + Ast.astToText(parsingResult));
 
-      test.deepEqual(Ast.astToText(parsingResult),
-        d.ast
-        // 'OPMoreThan 0(2)\n  NUMBER 1\n  CAT 2\n'
-        , 'proper ast for ' + index + ' ' + d.sentence );
+      expect(Ast.astToText(parsingResult)).toEqual(// 'OPMoreThan 0(2)\n  NUMBER 1\n  CAT 2\n'
+        d.ast);
     });
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
 
-exports.testParseMoreThanS = function (test) {
-  test.expect(2);
+it('testParseMoreThanS', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     // debuglog(JSON.stringify(ifr, undefined, 2))
 
@@ -487,21 +470,19 @@ exports.testParseMoreThanS = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'more than', 'NUMBER', 'CAT' ]);
+    expect(sStrings).toEqual([ 'more than', 'NUMBER', 'CAT' ]);
     var parsingResult = SentenceParser.parse(lexingResult.slice(0), 'MoreThanLessThanExactly');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
 
-    test.deepEqual(Ast.astToText(parsingResult),
-      'OPMoreThan 0(2)\n  NUMBER 1\n  CAT 2\n'
-      , 'proper ast' );
-    test.done();
+    expect(Ast.astToText(parsingResult)).toEqual('OPMoreThan 0(2)\n  NUMBER 1\n  CAT 2\n');
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testParseMoreThanXXOK = function (test) {
-  test.expect(2);
+it('testParseMoreThanXXOK', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     var s = 'sender with less than 3 standort BFBS';
     var res = Erbase.processString(s, theModel.rules, words);
@@ -509,22 +490,21 @@ exports.testParseMoreThanXXOK = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    //console.log( sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'less than', 'NUMBER', 'CAT', 'FACT']);
+    expect(sStrings).toEqual([ 'CAT', 'with', 'less than', 'NUMBER', 'CAT', 'FACT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
 
-    test.deepEqual(Ast.astToText(parsingResult),
+    expect(Ast.astToText(parsingResult)).toEqual(
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPLessThan 2(2)\n      NUMBER 3\n      CAT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testParseMoreThanXX = function (test) {
-  test.expect(2);
+it('testParseMoreThanXX', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     var s = 'sender with more than 3 standort';
     var res = Erbase.processString(s, theModel.rules, words);
@@ -532,21 +512,21 @@ exports.testParseMoreThanXX = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT']);
+    expect(sStrings).toEqual([ 'CAT', 'with', 'more than', 'NUMBER', 'CAT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
 
-    test.deepEqual(Ast.astToText(parsingResult),
+    expect(Ast.astToText(parsingResult)).toEqual(
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testParseMoreThanXX1 = function (test) {
-  test.expect(2);
+it('testParseMoreThanXX1', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     var s = 'sender with more than 3 standort';
     var res = Erbase.processString(s, theModel.rules, words);
@@ -554,22 +534,23 @@ exports.testParseMoreThanXX1 = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT']);
+    expect(sStrings).toEqual([ 'CAT', 'with', 'more than', 'NUMBER', 'CAT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
 
-    test.deepEqual(Ast.astToText(parsingResult),
-      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n' );
-    test.done();
+    expect(Ast.astToText(parsingResult)).toEqual(
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n'
+    );
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
 // TODO SAME WITH AND!
-exports.testParseMoreThanMT_MT = function (test) {
-  test.expect(2);
+it('testParseMoreThanMT_MT', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     var s = 'sender with more than 3 standort , less than 2 sender';
     var res = Erbase.processString(s, theModel.rules, words);
@@ -577,23 +558,23 @@ exports.testParseMoreThanMT_MT = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT',
+    expect(sStrings).toEqual([ 'CAT', 'with', 'more than', 'NUMBER', 'CAT',
       'less than' ,
       'NUMBER', 'CAT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
 
-    test.deepEqual(Ast.astToText(parsingResult),
+    expect(Ast.astToText(parsingResult)).toEqual(
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n    OPLessThan 5(2)\n      NUMBER 6\n      CAT 7\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testParseMoreThan_MT = function (test) {
-  test.expect(2);
+it('testParseMoreThan_MT', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     var s = 'sender with more than 3 standort';
     var res = Erbase.processString(s, theModel.rules, words);
@@ -601,20 +582,21 @@ exports.testParseMoreThan_MT = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT']);
+    expect(sStrings).toEqual([ 'CAT', 'with', 'more than', 'NUMBER', 'CAT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
 
-    test.deepEqual(Ast.astToText(parsingResult),
-      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n');
-    test.done();
+    expect(Ast.astToText(parsingResult)).toEqual(
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n'
+    );
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testParseMoreThan_MT_F = function (test) {
-  test.expect(2);
+it('testParseMoreThan_MT_F', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     var s = 'sender with more than 3 standort, bfbs';
     var res = Erbase.processString(s, theModel.rules, words);
@@ -622,21 +604,21 @@ exports.testParseMoreThan_MT_F = function (test) {
     var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
     var sStrings = lexingResult.map(t => t.image);
     debuglog(sStrings.join('\n'));
-    test.deepEqual(sStrings,  [ 'CAT', 'with', 'more than', 'NUMBER', 'CAT', 'FACT']);
+    expect(sStrings).toEqual([ 'CAT', 'with', 'more than', 'NUMBER', 'CAT', 'FACT']);
     var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
     // /test.deepEqual(parsingResult, {})
     debuglog('\n' + Ast.astToText(parsingResult));
 
-    test.deepEqual(Ast.astToText(parsingResult),
+    expect(Ast.astToText(parsingResult)).toEqual(
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
-exports.testcategoriesStartingWith = function (test) {
-  test.expect(8);
+it('testcategoriesStartingWith', done => {
+  expect.assertions(8);
   getModel().then((theModel) => {
     var s = 'categories starting with "elem" in domain IUPAC';
     var res = Erbase.processString(s, theModel.rules, words);
@@ -644,139 +626,142 @@ exports.testcategoriesStartingWith = function (test) {
     //  test.deepEqual(Ast.astToText(parsingResult),
     //  'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEndsWith 1(2)\n      CAT 0\n      ANY 2\n'
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    test.deepEqual(r.sentences.length, 6, 'sentence length');
-    test.deepEqual(r.asts.length, 6, 'asts length');
-    test.deepEqual(r.errors.length, 6, 'error');
-    test.deepEqual(r.asts.map((r, index) => (r) ? index : undefined).filter(a => a !== undefined).join('-'), '0-2', 'asts');
-    test.deepEqual(r.errors.map((r, index) => (r) ? index : undefined).filter(a => a !== undefined).join('-'), '1-3-4-5', 'asts');
+    expect(r.sentences.length).toEqual(6);
+    expect(r.asts.length).toEqual(6);
+    expect(r.errors.length).toEqual(6);
+    expect(
+      r.asts.map((r, index) => (r) ? index : undefined).filter(a => a !== undefined).join('-')
+    ).toEqual('0-2');
+    expect(
+      r.errors.map((r, index) => (r) ? index : undefined).filter(a => a !== undefined).join('-')
+    ).toEqual('1-3-4-5');
     debuglog(r.sentences[0]);
-    test.deepEqual(Sentence.simplifyStringsWithBitIndex(r.sentences[0]).join('\n'),
+    expect(Sentence.simplifyStringsWithBitIndex(r.sentences[0]).join('\n')).toEqual(
       'categories=>category/category C32\nstarting with=>starting with/operator/2 O512\nelem=>elem/any A4096\nin=>in/filler I512\ndomain=>domain/category C32\nIUPAC=>IUPAC/domain F32'
-      , 'sentence');
-    test.deepEqual(Ast.astToText(r.asts[0]),
+    );
+    expect(Ast.astToText(r.asts[0])).toEqual(
       //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
-      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CAT 4\n      FACT 5\n', 'ast flat');
-    test.deepEqual(Ast.astToText(r.asts[2]),
-      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CAT 4\n      FACT 5\n'
+    );
+    expect(Ast.astToText(r.asts[2])).toEqual(
       //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 5\n'
-      , 'ast 2 flat');
-    test.done();
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPStartsWith 1(2)\n      CAT 0\n      ANY 2\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+    );
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
-exports.testparseSentenceToAstsCatCatCatParseText = function (test) {
-  test.expect(1);
+it('testparseSentenceToAstsCatCatCatParseText', done => {
+  expect.assertions(1);
   getModel().then((theModel) => {
     var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    test.deepEqual(Ast.astToText(r.asts[0]),
+    expect(Ast.astToText(r.asts[0])).toEqual(
       //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 9\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
 
-exports.testparseCategoriesInDomainAlias = function (test) {
-  test.expect(1);
+it('testparseCategoriesInDomainAlias', done => {
+  expect.assertions(1);
   getModel().then((theModel) => {
     var s = 'categories in  Fiori BOM';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     debuglog(()=> JSON.stringify(r));
 
-    test.deepEqual(Ast.astToText(r.asts[0]),
-    //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
+    expect(Ast.astToText(r.asts[0])).toEqual(
+      //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 2\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
 
-exports.testparseSentenceToAstsCatAndCatForSthText = function (test) {
-  test.expect(1);
+it('testparseSentenceToAstsCatAndCatForSthText', done => {
+  expect.assertions(1);
   getModel().then((theModel) => {
     var s = 'element symbol and atomic weight for gold';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    test.deepEqual(Ast.astToText(r.asts[0]),
+    expect(Ast.astToText(r.asts[0])).toEqual(
       //'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(4)\n      CAT 0\n      CAT 1\n      CAT 2\n      CAT 3\n  LIST -1(3)\n    OPEqIn -1(2)\n      CAT 5\n      FACT 6\n    OPEqIn -1(2)\n      CAT 7\n      FACT 8\n    OPEqIn -1(2)\n      CATPH -1\n      FACT 9\n'
 
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 2\n  LIST -1(1)\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 4\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
 //"list all SemanticObject  for FI-FIO-GL with ApplicationType "FPM/WEbDynpro" Maintain',
 
 
-exports.testparseSentenceForFact1WithCatFact = function (test) {
-  test.expect(2);
+it('testparseSentenceForFact1WithCatFact', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     var s = 'SemanticObject  for FI-FIO-GL with ApplicationType "FPM/WEbDynpro" Maintain';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    test.deepEqual(r.errors[0],false);
-    test.deepEqual(Ast.astToText(r.asts[0]),
-      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 2\n    OPEqIn -1(2)\n      CAT 4\n      FACT 5\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 6\n',
-      'correct ast'  );
-    test.done();
+    expect(r.errors[0]).toEqual(false);
+    expect(Ast.astToText(r.asts[0])).toEqual(
+      'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(3)\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 2\n    OPEqIn -1(2)\n      CAT 4\n      FACT 5\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 6\n'
+    );
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
-exports.testparseSentenceStartingWith = function (test) {
-  test.expect(2);
+it('testparseSentenceStartingWith', done => {
+  expect.assertions(2);
   getModel().then((theModel) => {
     var s = 'SemanticObject, SemanticAction with SemanticObject starting with Sup';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    test.deepEqual(r.errors[0],false);
-    test.deepEqual(Ast.astToText(r.asts[0]),
+    expect(r.errors[0]).toEqual(false);
+    expect(Ast.astToText(r.asts[0])).toEqual(
       'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(2)\n      CAT 0\n      CAT 1\n  LIST -1(1)\n    OPStartsWith 4(2)\n      CAT 3\n      ANY 5\n'
     );
-    test.done();
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
-exports.testparseSentenceToAstssError = function (test) {
-  test.expect(1);
+it('testparseSentenceToAstssError', done => {
+  expect.assertions(1);
   getModel().then((theModel) => {
     var s = 'semanticObject, SemanticAction, BSPName with UI5';
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-    test.deepEqual(r.errors,
-      [
-        {
-          'err_code': 'NO_KNOWN_WORD',
-          'text': 'I do not understand "UI5".',
-          'context': {
-            'tokens': [
-              'semanticObject',
-              'SemanticAction',
-              'BSPName',
-              'with',
-              'UI5'
-            ],
-            'token': 'UI5',
-            'index': 4
-          }
+    expect(r.errors).toEqual([
+      {
+        'err_code': 'NO_KNOWN_WORD',
+        'text': 'I do not understand "UI5".',
+        'context': {
+          'tokens': [
+            'semanticObject',
+            'SemanticAction',
+            'BSPName',
+            'with',
+            'UI5'
+          ],
+          'token': 'UI5',
+          'index': 4
         }
-      ]
-    );
-    test.done();
+      }
+    ]);
+    done();
     Model.releaseModel(theModel);
   });
-};
+});
 
 
 /*
