@@ -1473,7 +1473,7 @@ it("testCategorizeAFioriWordWithOffset", done => {
        lowercaseword: 'fiori',
        _ranking: 0.95,
        range:
-        { low: -0,
+        { low: 0,
           high: 1,
           rule:
            { category: 'category',
@@ -1500,7 +1500,7 @@ it("testCategorizeAFioriWordWithOffset", done => {
        lowercaseword: 'fiori',
        _ranking: 0.95,
        range:
-        { low: -0,
+        { low: 0,
           high: 1,
           rule:
            { category: 'category',
@@ -1527,7 +1527,7 @@ it("testCategorizeAFioriWordWithOffset", done => {
        lowercaseword: 'fiori',
        _ranking: 0.95,
        range:
-        { low: -0,
+        { low: 0,
           high: 1,
           rule:
            { category: 'domain',
@@ -1554,7 +1554,7 @@ it("testCategorizeAFioriWordWithOffset", done => {
        lowercaseword: 'fiori',
        _ranking: 0.95,
        range:
-        { low: -0,
+        { low: 0,
           high: 1,
           rule:
            { category: 'domain',
