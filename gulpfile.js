@@ -1,4 +1,4 @@
-/* standard_v1.0.0*/
+/* standard_v1.0.1*/
 
 var gulp = require('gulp');
 
@@ -12,14 +12,12 @@ var sourcemaps = require('gulp-sourcemaps');
 var srcDir = 'src';
 var testDir = 'test';
 
-//var sourcemaproot = './';
-
 gulp.task('watch', function () {
   return gulp.watch([srcDir + '/**/*.js', testDir + '/**/*.js', srcDir + '/**/*.tsx',  srcDir + '/**/*.ts', 'gulpfile.js'],
     gulp.series('tsc', 'eslint', 'test'));
 });
 
-
+/* ################ proprietary extensions 1 ################# */
 var makeToken = require('./src/makeToken.js');
 
 gulp.task('makeToken' , function(cb) {
@@ -27,43 +25,16 @@ gulp.task('makeToken' , function(cb) {
   cb();
 });
 
+/* ^^^^^^ proprietary extensions 1 */
 
-var merge = require('merge-stream');
-/**
- * compile tsc (with external srcmaps)
- * @input srcDir
- * @output js
- */
-gulp.task('tsce', function () {
-  var tsProject = ts.createProject('tsconfig.json', { declaration: true, sourceMap : false, inlineSourceMap: true });
-  var tsResult = tsProject.src() // gulp.src('lib/*.ts')
-    .pipe(sourcemaps.init()) // This means sourcemaps will be generated
-    .pipe(tsProject());
-  return merge(tsResult, tsResult.js)
-    .pipe(sourcemaps.write('.', {
-      sourceRoot: function (file) {
-        //file.sourceMap.sources[0] = /*sourcemaproot + 'src/' +*/ file.sourceMap.sources[0];
-        console.log('here is************* file' + JSON.stringify(file.sourceMap, undefined, 2));
-        return 'src';
-      },
-      mapSources: function (src) {
-        //console.log('here we remap' + src);
-        return src;
-      }}
-    )) // ,  { sourceRoot: './' } ))
-    // Now the sourcemaps are added to the .js file
-    .pipe(gulp.dest('js'));
-});
 
-// write inlineSourceMaps  ( this should be same as plain tsc execution on commandline)
+// compile with inlineSourceMaps  ( this should be same as plain tsc execution on commandline)
 gulp.task('tsc', function () {
   var tsProject = ts.createProject('tsconfig.json', { declaration: true, sourceMap : false, inlineSourceMap: true });
   return tsProject.src() // gulp.src('lib/*.ts')
     .pipe(sourcemaps.init()) // This means sourcemaps will be generated
     .pipe(tsProject())
-  // return merge(tsResult, tsResult.js)
-    .pipe(sourcemaps.write()) // ,  { sourceRoot: './' } ))
-    // Now the sourcemaps are added to the .js file
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest('js'));
 });
 
@@ -73,6 +44,8 @@ gulp.task('clean:models', function () {
   return del([
     'test/data/mongoose_record_replay/testmodel/data/*',
     'test/data/mongoose_record_replay/testmodel/queries.json',
+    'test/data/mongoose_record_replay/testmodel2/data/*',
+    'test/data/mongoose_record_replay/testmodel2/queries.json',
     'sensitive/_cachefalse.js.zip',
     'testmodel2/_cachefalse.js.zip',
     'node_modules/mgnlq_testmodel/testmodel/_cache.js.zip',
@@ -80,16 +53,16 @@ gulp.task('clean:models', function () {
     'node_modules/abot_testmodel/testmodel/_cachefalse.js.zip',
     'node_modules/abot_testmodel/testmodel/_cachetrue.js.zip',
     'testmodel/_cachefalse.js.zip',
+    'mgrecrep2/data/*',
+    'testmodel2/_cache.js.zip',
+    'mgrecrep2/_cache.js.zip',
+    'testmodel2/_cache.js.zip',
     'sensitive/_cachetrue.js.zip',
     'testmodel2/_cachetrue.js.zip',
     'testmodel/_cachetrue.js.zip',
     'testmodel2/_cache.js.zip',
-    'testmodel/_cache.js.zip',
-    // here we use a globbing pattern to match everything inside the `mobile` folder
-    //  'dist/mobile/**/*',
-    // we don't want to clean this file though so we negate the pattern
-    //    '!dist/mobile/deploy.json'
-  ]);
+    'testmodel/_cache.js.zip'
+  ], { force : true});
 });
 
 gulp.task('clean', gulp.series('clean:models'));
@@ -128,11 +101,13 @@ gulp.task('eslint', () => {
 
 gulp.task('test', gulp.series('tsc', 'jestonly')); 
 
+/*
 const gulpRun = require('gulp-run');
 
 gulp.task('pack', () => {
   return gulpRun('npm pack').exec().pipe(gulp.dest('outpu'));
 });
+*/
 
 var jsdoc = require('gulp-jsdoc3');
 

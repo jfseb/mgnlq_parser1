@@ -11,7 +11,7 @@ var mongoQ = require(root + '/mongoq.js');
 var debuglog = require('debugf')('ast2MQuery');
 const Model = require('mgnlq_model').Model;
 
-var getModel = require('mgnlq_testmodel_replay').getTestModel;
+var getModel = require('mgnlq_testmodel2').getTestModel1;
 
 process.on('unhandledRejection', function onError(err) {
   console.log(err);

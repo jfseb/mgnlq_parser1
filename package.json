@@ -4,6 +4,9 @@
   "description": "query parsing conversion to mongoose queries",
   "main": "js/index.js",
   "typings": "js/index.d.ts",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "scripts": {
     "build": "gulp && tsc",
     "test": "gulp test",
@@ -29,31 +32,31 @@
   "homepage": "https://github.com/jfseb/mgnlq_parser1#readme",
   "devDependencies": {
     "@types/debug": "^4.1.5",
-    "@types/lodash": "^4.14.61",
+    "@types/lodash": "^4.14.161",
     "@types/mongoose": "^5.5.23",
     "@types/node": "^8.10.59",
     "abot_utils": "^1.0.3",
     "del": "^5.1.0",
+    "eslint": "^6.8.0",
     "eslint-plugin-jest": "^24.1.0",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
     "gulp-jest": "https://registry.npmjs.org/@jacobq/gulp-jest/-/gulp-jest-4.0.3-PR65.tgz",
     "gulp-jsdoc3": "^2.0.0",
-    "gulp-nodeunit": "^0.1.0",
     "gulp-run": "^1.7.1",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
     "jest": "^26.5.2",
     "jest-cli": "^26.5.2",
-    "merge-stream": "^2.0.0",
+    "mgnlq_testmodel2": "^0.0.9",
     "mgnlq_testmodel_replay": "^0.1.9",
     "typescript": "^4.0.3"
   },
   "dependencies": {
     "chevrotain": "^0.27.3",
     "debugf": "^0.1.2",
-    "lodash": "^4.17.4",
-    "mgnlq_model": "^0.0.23",
+    "lodash": "^4.17.20",
+    "mgnlq_model": "^0.0.24",
     "mongoose": "^5.7.7"
   }
 }

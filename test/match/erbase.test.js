@@ -24,7 +24,8 @@ const Model = require('mgnlq_model').Model;
 const MongoUtils = require('mgnlq_model').MongoUtils;
 
 
-var getModel = require('mgnlq_testmodel_replay').getTestModel;
+//var getModel = require('mgnlq_testmodel_replay').getTestModel;
+var getModel = require('mgnlq_testmodel2').getTestModel1;
 
 /*
 var mongoose = require('mongoose_record_replay').instrumentMongoose(require('mongoose'),
@@ -879,8 +880,8 @@ it("testProcessStringContainsOK", done => {
   [ 'SemanticObject=>SemanticObject/category F32',
     'contains=>containing/operator O512',
     'Sup=>Sup/any A4096' ] ]);
-    done();
     releaseRules(mongoose);
+    done();
   });
 });
 
@@ -902,8 +903,8 @@ it("testProcessStringContainingOK", done => {
   [ 'SemanticObject=>SemanticObject/category F32',
     'containing=>containing/operator O512',
     'Sup=>Sup/any A4096' ] ]);
-    done();
     releaseRules(mongoose);
+    done();
   });
 });
 
@@ -935,8 +936,8 @@ it("testProcessStringContains", done => {
     'SemanticObject=>SemanticObject/category F32',
     'containing=>containing/operator O512',
     'Sup=>Sup/any A4096' ] ]);
-      done();
     releaseRules(mongoose);
+    done();
   });
 });
 

@@ -1,4 +1,5 @@
 var process = require('process');
+//const { JsxEmit } = require('typescript');
 var root = (process.env.FSD_COVERAGE) ? '../js_cov' : '../js';
 var mQ = require(root + '/ast2query/ast2MQuery.js');
 var MongoQ = require(root + '/mongoq.js');
@@ -8,8 +9,8 @@ var SentenceParser = require(root + '/sentenceparser.js');
 var debuglog = require('debug')('mongoq.nunit');
 const Model = require('mgnlq_model').Model;
 
-
-var getModel = require('mgnlq_testmodel_replay').getTestModel;
+//var getModel = require('mgnlq_testmodel_replay').getTestModel;
+var getModel = require('mgnlq_testmodel2').getTestModel1;
 
 var words = {};
 
@@ -490,6 +491,7 @@ describe('testMakeMongoDomain', () => {
   };
 
   it('testQueryInternal', done => {
+    jest.setTimeout(200000);
     getModel().then((theModel) => {
       var handle = new FakeHandle([{ 'object_name': 'abc' }]);
       MongoQ.queryInternal('object name', theModel, handle).then(res => {
