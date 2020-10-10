@@ -48,7 +48,7 @@
     "gulp-typescript": "^5.0.1",
     "jest": "^26.5.2",
     "jest-cli": "^26.5.2",
-    "mgnlq_testmodel2": "^0.0.9",
+    "mgnlq_testmodel2": "^0.0.11",
     "mgnlq_testmodel_replay": "^0.1.9",
     "typescript": "^4.0.3"
   },
@@ -56,7 +56,7 @@
     "chevrotain": "^0.27.3",
     "debugf": "^0.1.2",
     "lodash": "^4.17.20",
-    "mgnlq_model": "^0.0.24",
+    "mgnlq_model": "^0.0.25",
     "mongoose": "^5.7.7"
   }
 }
