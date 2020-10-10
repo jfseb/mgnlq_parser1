@@ -83,6 +83,8 @@ gulp.task('clean:models', function () {
     'sensitive/_cachetrue.js.zip',
     'testmodel2/_cachetrue.js.zip',
     'testmodel/_cachetrue.js.zip',
+    'testmodel2/_cache.js.zip',
+    'testmodel/_cache.js.zip',
     // here we use a globbing pattern to match everything inside the `mobile` folder
     //  'dist/mobile/**/*',
     // we don't want to clean this file though so we negate the pattern
@@ -91,19 +93,6 @@ gulp.task('clean:models', function () {
 });
 
 gulp.task('clean', gulp.series('clean:models'));
-
-var nodeunit = require('gulp-nodeunit');
-
-gulp.task('testold', gulp.series('tsc', function () {
-  return gulp.src(['test/**/*.js'])
-    .pipe(nodeunit({
-      reporter: 'minimal'
-      // reporterOptions: {
-      //  output: 'testcov'
-      // }
-    })).on('error', function (err) { console.log('This is weird: ' + err.message); })
-    .pipe(gulp.dest('./out/lcov.info'));
-}));
 
 
 var jest = require('gulp-jest').default;
