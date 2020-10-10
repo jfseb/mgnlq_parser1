@@ -14,7 +14,8 @@ var abot_erbase = require(root + '/match/er_index.js');
 var Erbase = abot_erbase.ErBase;
 
 const Model = require('mgnlq_model').Model;
-var getModel = require('mgnlq_testmodel_replay').getTestModel;
+//var getModel = require('mgnlq_testmodel_replay').getTestModel;
+var getModel = require('mgnlq_testmodel2').getTestModel1;
 
 var words = {};
 

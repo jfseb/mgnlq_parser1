@@ -33,7 +33,7 @@ if(!debuglog.enabled) {
   setMockDebug();
 }
 
-var getModel = require('mgnlq_testmodel_replay').getTestModel;
+var getModel = require('mgnlq_testmodel2').getTestModel1;
 
 function getRules() {
   return getModel().then(

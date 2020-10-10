@@ -23,8 +23,6 @@ const InputFilter = require(root + '/match/inputFilter.js');
 const Model = require('mgnlq_model').Model;
 const MongoUtils = require('mgnlq_model').MongoUtils;
 
-
-//var getModel = require('mgnlq_testmodel_replay').getTestModel;
 var getModel = require('mgnlq_testmodel2').getTestModel1;
 
 /*

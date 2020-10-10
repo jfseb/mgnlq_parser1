@@ -1,6 +1,6 @@
 /**
  * @file ererror.nunit
- * @copyright (c) 2016-2016 Gerd Forstmann
+ * @copyright (c) 2016-2020 Gerd Forstmann
  */
 
 
