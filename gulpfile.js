@@ -56,7 +56,6 @@ gulp.task('clean:models', function () {
     'mgrecrep2/data/*',
     'testmodel2/_cache.js.zip',
     'mgrecrep2/_cache.js.zip',
-    'testmodel2/_cache.js.zip',
     'sensitive/_cachetrue.js.zip',
     'testmodel2/_cachetrue.js.zip',
     'testmodel/_cachetrue.js.zip',

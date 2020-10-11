@@ -1,6 +1,6 @@
 {
   "name": "mgnlq_parser1",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "query parsing conversion to mongoose queries",
   "main": "js/index.js",
   "typings": "js/index.d.ts",
@@ -34,7 +34,7 @@
     "@types/debug": "^4.1.5",
     "@types/lodash": "^4.14.161",
     "@types/mongoose": "^5.5.23",
-    "@types/node": "^8.10.59",
+    "@types/node": "^8.10.64",
     "abot_utils": "^1.0.3",
     "del": "^5.1.0",
     "eslint": "^6.8.0",
@@ -48,14 +48,13 @@
     "gulp-typescript": "^5.0.1",
     "jest": "^26.5.2",
     "jest-cli": "^26.5.2",
-    "mgnlq_testmodel2": "^0.0.11",
+    "mgnlq_testmodel2": "^0.0.12",
     "typescript": "^4.0.3"
   },
   "dependencies": {
     "chevrotain": "^0.27.3",
     "debugf": "^0.1.2",
     "lodash": "^4.17.20",
-    "mgnlq_model": "^0.0.211",
-    "mongoose": "^5.7.7"
+    "mgnlq_model": "^0.0.212"
   }
 }

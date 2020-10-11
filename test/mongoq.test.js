@@ -14,6 +14,8 @@ var getModel = require('mgnlq_testmodel2').getTestModel1;
 
 var words = {};
 
+jest.setTimeout(600000);
+
 process.on('unhandledRejection', function (err) {
   console.log('wow, here you go' + err);
   console.log('  ' + err.stack);
@@ -23,10 +25,13 @@ describe('testMakeMongoDomain', () => {
   let theModel;
 
   beforeAll(async () => {
+    console.log('before all getModel');
     theModel = await getModel();
+    console.log('got beforeAll model');
   });
 
   afterAll(() => {
+    console.log('releasing model post');
     Model.releaseModel(theModel);
   });
 
@@ -225,12 +230,6 @@ describe('testMakeMongoDomain', () => {
         undefined]
     );
   });
-
-
-
-  //exports.testMakeQueryOrderBy = function (test) {
-
-  //getModel().then((theModel)
 
   it('testMakeQueryOrderBy', async () => {
     //var q0 = 'sender, standort order by gründungsjahr';
@@ -479,283 +478,47 @@ describe('testMakeMongoDomain', () => {
     );
   });
 
-  var FakeHandle = function (result) {
-    var that = this;
-    return {
-      query: function (domain, q) {
-        that.domain = domain;
-        that.query = q;
-        return Promise.resolve(result);
-      }
-    };
-  };
 
-  it('testQueryInternal', done => {
-    jest.setTimeout(200000);
-    getModel().then((theModel) => {
-      var handle = new FakeHandle([{ 'object_name': 'abc' }]);
-      MongoQ.queryInternal('object name', theModel, handle).then(res => {
-        var expected =
-          [{
-            domain: 'Cosmos',
-            aux:
-            {
-              sentence:
-                [{
-                  string: 'object name',
-                  matchedString: 'object name',
-                  category: 'category',
-                  rule:
-                  {
-                    category: 'category',
-                    matchedString: 'object name',
-                    type: 0,
-                    word: 'object name',
-                    lowercaseword: 'object name',
-                    bitindex: 1,
-                    wordType: 'C',
-                    bitSentenceAnd: 1,
-                    _ranking: 0.95
-                  },
-                  _ranking: 0.95,
-                  span: 2
-                }],
-              tokens: ['object', 'name']
-            },
-            errors: false,
-            columns: ['object name'],
-            auxcolumns: [],
-            results: [{ 'object name': 'abc' }]
-          },
-          {
-            domain: 'metamodel',
-            aux:
-            {
-              sentence:
-                [{
-                  string: 'object name',
-                  matchedString: 'object name',
-                  category: 'category',
-                  rule:
-                  {
-                    category: 'category',
-                    matchedString: 'object name',
-                    type: 0,
-                    word: 'object name',
-                    bitindex: 32,
-                    bitSentenceAnd: 32,
-                    exactOnly: false,
-                    wordType: 'F',
-                    _ranking: 0.95,
-                    lowercaseword: 'object name'
-                  },
-                  _ranking: 0.95,
-                  span: 2
-                }],
-              tokens: ['object', 'name']
-            },
-            errors:
-            {
-              err_code: undefined,
-              text: 'Error: EarlyExitException: expecting at least one iteration which starts with one of these possible Token sequences::\n  <[Comma] ,[and] ,[CAT]> but found: \'FACT\''
-            },
-            columns: [],
-            auxcolumns: [],
-            results: []
-          }];
-        expect(res[0].aux).toEqual(expected[0].aux);
-        expect(res[1]).toEqual(expected[1]);
-        expect(res[0]).toEqual(expected[0]);
-
-        expect(res).toEqual(expected);
-        done();
-        Model.releaseModel(theModel);
-      });
+  
+  it('testQueryWithURI2', async () => {
+    expect.assertions(3);
+    return MongoQ.queryWithURI('orbits', theModel).then((res) => {
+      expect(res.length).toEqual(2);
+      debuglog(() => JSON.stringify(res, undefined, 2));
+      expect(MongoQ.projectResultToArray(res[0])).toEqual(
+        [[null, null],
+          [null, 'n/a'],
+          ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
+          ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
+          ['https://en.wikipedia.org/wiki/Proxima_Centauri_b',
+            'Alpha Centauri C'],
+          ['https://en.wikipedia.org/wiki/Sun', null]]);
+      expect(res[1].results).toEqual([]);
     });
   });
-
-  it('testMakeQuery2', done => {
-    getModel().then((theModel) => {
-      var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
-      var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-      var node = r.asts[0];
-      var nodeFieldList = node.children[0].children[0];
-      var nodeFilter = node.children[1];
-      var domainPick = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0]);
-      var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
-      var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], mongoMap);
-      var categoryList = mQ.getCategoryList([], nodeFieldList, r.sentences[0]);
-      expect(match).toEqual(
-        { $match: { ApplicationComponent: 'CO-FIO', appId: 'W0052', 'TechnicalCatalog': 'SAP_TC_FIN_CO_COMMON' } }
-      );
-      var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
-      expect(proj).toEqual(
-        { $project: { _id: 0, SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } }
-      );
-      var sort = mQ.makeMongoSortFromAst(categoryList, mongoMap);
-      expect(sort).toEqual(
-        { $sort: { SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } }
-      );
-      var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
-      expect(group).toEqual({
-        $group: {
-          _id: { SemanticObject: '$SemanticObject', SemanticAction: '$SemanticAction', BSPName: '$BSPName', ApplicationComponent: '$ApplicationComponent' },
-          SemanticObject: { $first: '$SemanticObject' }, SemanticAction: { $first: '$SemanticAction' }, BSPName: { $first: '$BSPName' }, ApplicationComponent: { $first: '$ApplicationComponent' }
-        }
-      });
-      // console.log(JSON.stringify(r)); // how to get domain?
-      var domain = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0], mongoMap);
-      expect(domain).toEqual(
-        { collectionName: 'fioriapps', domain: 'FioriBOM', modelName: 'fioriapps' }
-      );
-      var query = [match, group, proj];
-      debuglog(() => query);
-      done();
-      Model.releaseModel(theModel);
-    });
+  
+  it('testQueryWithURI', async () => {
+    var res = await MongoQ.queryWithURI('orbits', theModel); // .then((res) => {
+    expect(res.length).toEqual(2);
+    debuglog(() => JSON.stringify(res, undefined, 2));
+    expect(MongoQ.projectResultToArray(res[0])).toEqual(
+      [[null, null],
+        [null, 'n/a'],
+        ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
+        ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
+        ['https://en.wikipedia.org/wiki/Proxima_Centauri_b',
+          'Alpha Centauri C'],
+        ['https://en.wikipedia.org/wiki/Sun', null]]);
+  
+    expect(res[1].results).toEqual([]);
+  
   });
-
-
-  it('testCategoriesInBOM', done => {
-    getModel().then((theModel) => {
-      var s = 'categories in  Fiori BOM';
-      var r = MongoQ.prepareQueries(s, theModel, []);
-      debuglog(() => JSON.stringify(r, undefined, 2));
-      var query0 = r.queries[0];
-      expect(r.queries.length).toEqual(2);
-      expect(r.queries.filter(q => !!q).length).toEqual(1);
-      expect(query0.query).toEqual([{ '$match': { domain: 'FioriBOM' } },
-        { '$unwind': { path: '$_categories', preserveNullAndEmptyArrays: true } },
-        { '$match': { domain: 'FioriBOM' } },
-        {
-          '$group':
-        {
-          _id: { _categories: '$_categories' },
-          _categories: { '$first': '$_categories' }
-        }
-        },
-        { '$project': { _id: 0, category: '$_categories.category' } },
-        { '$sort': { category: 1 } }]);
-      expect(query0.columns).toEqual(['category']);
-      expect(query0.reverseMap).toEqual({});
-      done();
-      Model.releaseModel(theModel);
-    });
-  });
-
-
-
-  it('testPrepareQuery2', done => {
-    getModel().then((theModel) => {
-      var s = 'categories starting with elem';
-      var r = MongoQ.prepareQueries(s, theModel, []);
-      var query0 = r.queries[0];
-
-      expect(query0.query).toEqual([
-        {
-          '$match': {
-            '_categories.category': {
-              '$regex': /^elem/i
-            }
-          }
-        },
-        {
-          '$unwind': {
-            'path': '$_categories',
-            'preserveNullAndEmptyArrays': true
-          }
-        },
-        {
-          '$match': {
-            '_categories.category': {
-              '$regex': /^elem/i
-            }
-          }
-        },
-        {
-          '$group': {
-            '_id': {
-              '_categories': '$_categories'
-            },
-            '_categories': {
-              '$first': '$_categories'
-            }
-          }
-        },
-        {
-          '$project': {
-            '_id': 0,
-            'category': '$_categories.category'
-          }
-        },
-        {
-          '$sort': {
-            'category': 1
-          }
-        }
-      ]);
-      expect(query0.columns).toEqual(['category']);
-      expect(query0.reverseMap).toEqual({});
-      done();
-      Model.releaseModel(theModel);
-    });
-  });
-
-  it('testGetDomainsForSentence', done => {
-    getModel().then((theModel) => {
-      var s = 'SemanticObject';
-      var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
-      var domain = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0]);
-      expect(domain).toEqual(
-        { domain: 'FioriBOM', collectionName: 'fioriapps', modelName: 'fioriapps' }
-      );
-      var domain2 = MongoQ.getDomainInfoForSentence(theModel, r.sentences[1]);
-      expect(domain2).toEqual({
-        domain: 'Fiori Backend Catalogs',
-        collectionName: 'fioribecatalogs',
-        modelName: 'fioribecatalogs'
-      });
-      done();
-      Model.releaseModel(theModel);
-    });
-  });
-
-
-  it('testContainsFixedCategories', done => {
-    getModel().then((theModel) => {
-      expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', [])).toEqual(true);
-      expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['nocat'])).toEqual(false);
-      expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits'])).toEqual(true);
-      expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits', 'nocat'])).toEqual(false);
-
-      expect(MongoQ.containsFixedCategories(theModel, 'FioriBOM', ['uri', 'uri_rank'])).toEqual(true);
-
-      done();
-      Model.releaseModel(theModel);
-    });
-  });
-
-  it('testCustomStringif', done => {
-    var a = { a: /abc/i };
-    var r = MongoQ.JSONStringify(a);
-    expect(r).toEqual('{\n  "a": "/abc/i"\n}');
-    done();
-  });
-
-
-  it('testGetDomainForSentenceSafe', done => {
-    getModel().then((theModel) => {
-      var domain = MongoQ.getDomainForSentenceSafe(theModel, []);
-      expect(domain).toEqual(undefined);
-      done();
-      Model.releaseModel(theModel);
-    });
-  });
-
+  
   // exports.testGetDomainsForSentence = function (test) {
   //   getModel().then((theModel) 
-  it('testGetDomainsForSentence', async () => {
+  it('testGetDomainsForSentence',  (done) => {
     var s = 'SemanticObject';
+     
     expect.assertions(4);
     var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
     var domain = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0]);
@@ -806,7 +569,7 @@ describe('testMakeMongoDomain', () => {
             'WBSElement'
           ]
         ]);
-
+  
       expect(res[1].results).toEqual([
         {
           'SemanticObject': 'Customer'
@@ -824,53 +587,294 @@ describe('testMakeMongoDomain', () => {
           'SemanticObject': 'WBSElement'
         }
       ]);
+      done();
     });
   });
+});
 
-  it('testQueryWithAux', done => {
-    getModel().then((theModel) => {
-      MongoQ.queryWithAuxCategories('orbits', theModel, ['_url']).then((res) => {
-        expect(res.length).toEqual(2);
-        debuglog(() => JSON.stringify(res, undefined, 2));
-        expect(MongoQ.projectResultToArray(res[0])).toEqual([[null, null],
-          [null, 'n/a'],
-          ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
-          ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
-          ['https://en.wikipedia.org/wiki/Proxima_Centauri_b',
-            'Alpha Centauri C'],
-          ['https://en.wikipedia.org/wiki/Sun', null]]);
+//////// explicit model instantiation 
 
-        expect(res[1].results).toEqual([]);
-        done();
-        Model.releaseModel(theModel);
-      });
+var FakeHandle = function (result) {
+  var that = this;
+  return {
+    query: function (domain, q) {
+      that.domain = domain;
+      that.query = q;
+      return Promise.resolve(result);
+    }
+  };
+};
+
+it('testQueryInternal', done => {
+  jest.setTimeout(200000);
+  getModel().then((theModel) => {
+    var handle = new FakeHandle([{ 'object_name': 'abc' }]);
+    MongoQ.queryInternal('object name', theModel, handle).then(res => {
+      var expected =
+        [{
+          domain: 'Cosmos',
+          aux:
+          {
+            sentence:
+              [{
+                string: 'object name',
+                matchedString: 'object name',
+                category: 'category',
+                rule:
+                {
+                  category: 'category',
+                  matchedString: 'object name',
+                  type: 0,
+                  word: 'object name',
+                  lowercaseword: 'object name',
+                  bitindex: 1,
+                  wordType: 'C',
+                  bitSentenceAnd: 1,
+                  _ranking: 0.95
+                },
+                _ranking: 0.95,
+                span: 2
+              }],
+            tokens: ['object', 'name']
+          },
+          errors: false,
+          columns: ['object name'],
+          auxcolumns: [],
+          results: [{ 'object name': 'abc' }]
+        },
+        {
+          domain: 'metamodel',
+          aux:
+          {
+            sentence:
+              [{
+                string: 'object name',
+                matchedString: 'object name',
+                category: 'category',
+                rule:
+                {
+                  category: 'category',
+                  matchedString: 'object name',
+                  type: 0,
+                  word: 'object name',
+                  bitindex: 32,
+                  bitSentenceAnd: 32,
+                  exactOnly: false,
+                  wordType: 'F',
+                  _ranking: 0.95,
+                  lowercaseword: 'object name'
+                },
+                _ranking: 0.95,
+                span: 2
+              }],
+            tokens: ['object', 'name']
+          },
+          errors:
+          {
+            err_code: undefined,
+            text: 'Error: EarlyExitException: expecting at least one iteration which starts with one of these possible Token sequences::\n  <[Comma] ,[and] ,[CAT]> but found: \'FACT\''
+          },
+          columns: [],
+          auxcolumns: [],
+          results: []
+        }];
+      expect(res[0].aux).toEqual(expected[0].aux);
+      expect(res[1]).toEqual(expected[1]);
+      expect(res[0]).toEqual(expected[0]);
+
+      expect(res).toEqual(expected);
+      Model.releaseModel(theModel);
+      done();
     });
   });
+});
+
+it('testMakeQuery2', done => {
+  getModel().then((theModel) => {
+    var s = 'SemanticObject, SemanticAction, BSPName, ApplicationComponent with ApplicaitonComponent CO-FIO,  appId W0052,SAP_TC_FIN_CO_COMMON';
+    var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
+    var node = r.asts[0];
+    var nodeFieldList = node.children[0].children[0];
+    var nodeFilter = node.children[1];
+    var domainPick = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0]);
+    var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], mongoMap);
+    var categoryList = mQ.getCategoryList([], nodeFieldList, r.sentences[0]);
+    expect(match).toEqual(
+      { $match: { ApplicationComponent: 'CO-FIO', appId: 'W0052', 'TechnicalCatalog': 'SAP_TC_FIN_CO_COMMON' } }
+    );
+    var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
+    expect(proj).toEqual(
+      { $project: { _id: 0, SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } }
+    );
+    var sort = mQ.makeMongoSortFromAst(categoryList, mongoMap);
+    expect(sort).toEqual(
+      { $sort: { SemanticObject: 1, SemanticAction: 1, BSPName: 1, ApplicationComponent: 1 } }
+    );
+    var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
+    expect(group).toEqual({
+      $group: {
+        _id: { SemanticObject: '$SemanticObject', SemanticAction: '$SemanticAction', BSPName: '$BSPName', ApplicationComponent: '$ApplicationComponent' },
+        SemanticObject: { $first: '$SemanticObject' }, SemanticAction: { $first: '$SemanticAction' }, BSPName: { $first: '$BSPName' }, ApplicationComponent: { $first: '$ApplicationComponent' }
+      }
+    });
+    // console.log(JSON.stringify(r)); // how to get domain?
+    var domain = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0], mongoMap);
+    expect(domain).toEqual(
+      { collectionName: 'fioriapps', domain: 'FioriBOM', modelName: 'fioriapps' }
+    );
+    var query = [match, group, proj];
+    debuglog(() => query);
+    Model.releaseModel(theModel);
+    done();
+  });
+});
 
 
-  it('testQueryWithURI2', async () => {
-    expect.assertions(3);
-    return MongoQ.queryWithURI('orbits', theModel).then((res) => {
+it('testCategoriesInBOM', done => {
+  getModel().then((theModel) => {
+    var s = 'categories in  Fiori BOM';
+    var r = MongoQ.prepareQueries(s, theModel, []);
+    debuglog(() => JSON.stringify(r, undefined, 2));
+    var query0 = r.queries[0];
+    expect(r.queries.length).toEqual(2);
+    expect(r.queries.filter(q => !!q).length).toEqual(1);
+    expect(query0.query).toEqual([{ '$match': { domain: 'FioriBOM' } },
+      { '$unwind': { path: '$_categories', preserveNullAndEmptyArrays: true } },
+      { '$match': { domain: 'FioriBOM' } },
+      {
+        '$group':
+      {
+        _id: { _categories: '$_categories' },
+        _categories: { '$first': '$_categories' }
+      }
+      },
+      { '$project': { _id: 0, category: '$_categories.category' } },
+      { '$sort': { category: 1 } }]);
+    expect(query0.columns).toEqual(['category']);
+    expect(query0.reverseMap).toEqual({});
+    Model.releaseModel(theModel);
+    done();
+  });
+});
+
+
+
+it('testPrepareQuery2', done => {
+  getModel().then((theModel) => {
+    var s = 'categories starting with elem';
+    var r = MongoQ.prepareQueries(s, theModel, []);
+    var query0 = r.queries[0];
+
+    expect(query0.query).toEqual([
+      {
+        '$match': {
+          '_categories.category': {
+            '$regex': /^elem/i
+          }
+        }
+      },
+      {
+        '$unwind': {
+          'path': '$_categories',
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+      {
+        '$match': {
+          '_categories.category': {
+            '$regex': /^elem/i
+          }
+        }
+      },
+      {
+        '$group': {
+          '_id': {
+            '_categories': '$_categories'
+          },
+          '_categories': {
+            '$first': '$_categories'
+          }
+        }
+      },
+      {
+        '$project': {
+          '_id': 0,
+          'category': '$_categories.category'
+        }
+      },
+      {
+        '$sort': {
+          'category': 1
+        }
+      }
+    ]);
+    expect(query0.columns).toEqual(['category']);
+    expect(query0.reverseMap).toEqual({});
+    Model.releaseModel(theModel);
+    done();
+  });
+});
+
+
+it('testGetDomainsForSentence2', done => {
+  getModel().then((theModel) => {
+    var s = 'SemanticObject';
+    var r = SentenceParser.parseSentenceToAsts(s, theModel, words);
+    var domain = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0]);
+    expect(domain).toEqual(
+      { domain: 'FioriBOM', collectionName: 'fioriapps', modelName: 'fioriapps' }
+    );
+    var domain2 = MongoQ.getDomainInfoForSentence(theModel, r.sentences[1]);
+    expect(domain2).toEqual({
+      domain: 'Fiori Backend Catalogs',
+      collectionName: 'fioribecatalogs',
+      modelName: 'fioribecatalogs'
+    });
+    Model.releaseModel(theModel);
+    done();
+  });
+});
+
+
+it('testContainsFixedCategories', done => {
+  getModel().then((theModel) => {
+    expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', [])).toEqual(true);
+    expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['nocat'])).toEqual(false);
+    expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits'])).toEqual(true);
+    expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits', 'nocat'])).toEqual(false);
+
+    expect(MongoQ.containsFixedCategories(theModel, 'FioriBOM', ['uri', 'uri_rank'])).toEqual(true);
+
+    done();
+    Model.releaseModel(theModel);
+  });
+});
+
+it('testCustomStringif', done => {
+  var a = { a: /abc/i };
+  var r = MongoQ.JSONStringify(a);
+  expect(r).toEqual('{\n  "a": "/abc/i"\n}');
+  done();
+});
+
+
+it('testGetDomainForSentenceSafe', done => {
+  getModel().then((theModel) => {
+    var domain = MongoQ.getDomainForSentenceSafe(theModel, []);
+    expect(domain).toEqual(undefined);
+    Model.releaseModel(theModel);
+    done();
+  });
+});
+
+
+it('testQueryWithAux', done => {
+  getModel().then((theModel) => {
+    MongoQ.queryWithAuxCategories('orbits', theModel, ['_url']).then((res) => {
       expect(res.length).toEqual(2);
       debuglog(() => JSON.stringify(res, undefined, 2));
-      expect(MongoQ.projectResultToArray(res[0])).toEqual(
-        [[null, null],
-          [null, 'n/a'],
-          ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
-          ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
-          ['https://en.wikipedia.org/wiki/Proxima_Centauri_b',
-            'Alpha Centauri C'],
-          ['https://en.wikipedia.org/wiki/Sun', null]]);
-      expect(res[1].results).toEqual([]);
-    });
-  });
-
-  it('testQueryWithURI', async () => {
-    var res = await MongoQ.queryWithURI('orbits', theModel); // .then((res) => {
-    expect(res.length).toEqual(2);
-    debuglog(() => JSON.stringify(res, undefined, 2));
-    expect(MongoQ.projectResultToArray(res[0])).toEqual(
-      [[null, null],
+      expect(MongoQ.projectResultToArray(res[0])).toEqual([[null, null],
         [null, 'n/a'],
         ['https://en.wikipedia.org/wiki/Earth', 'Sun'],
         ['https://en.wikipedia.org/wiki/Mars', 'Sun'],
@@ -878,9 +882,10 @@ describe('testMakeMongoDomain', () => {
           'Alpha Centauri C'],
         ['https://en.wikipedia.org/wiki/Sun', null]]);
 
-    expect(res[1].results).toEqual([]);
-
+      expect(res[1].results).toEqual([]);
+      Model.releaseModel(theModel);
+      done();
+    });
   });
-
 });
 
