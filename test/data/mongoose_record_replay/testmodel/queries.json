@@ -1,4 +1,369 @@
 {
+  "f2c8b7829da0ea6e751544b636e5b8a5": {
+    "op": "distinct",
+    "name": "iupacs",
+    "digest": "f2c8b7829da0ea6e751544b636e5b8a5",
+    "query": "element_symbol",
+    "res": 118
+  },
+  "638308122dadbf237e8d5c7d17a0a0e7": {
+    "op": "aggregate",
+    "name": "metamodels",
+    "digest": "638308122dadbf237e8d5c7d17a0a0e7",
+    "query": [
+      [
+        {
+          "$match": {
+            "_synonyms.0": {
+              "$exists": true
+            }
+          }
+        },
+        {
+          "$project": {
+            "_synonyms": 1
+          }
+        },
+        {
+          "$unwind": "$_synonyms"
+        },
+        {
+          "$project": {
+            "category": "$_synonyms.category",
+            "fact": "$_synonyms.fact",
+            "synonyms": "$_synonyms.synonyms"
+          }
+        }
+      ]
+    ],
+    "res": 0
+  },
+  "d7f270ba3e08f3ad6be2bb468fe4de80": {
+    "op": "distinct",
+    "name": "metamodels",
+    "digest": "d7f270ba3e08f3ad6be2bb468fe4de80",
+    "query": "_categories.category",
+    "res": 88
+  },
+  "26e5f3e977c1f707f509e1b7103e4d04": {
+    "op": "aggregate",
+    "name": "iupacs",
+    "digest": "26e5f3e977c1f707f509e1b7103e4d04",
+    "query": [
+      [
+        {
+          "$match": {
+            "_synonyms.0": {
+              "$exists": true
+            }
+          }
+        },
+        {
+          "$project": {
+            "_synonyms": 1
+          }
+        },
+        {
+          "$unwind": "$_synonyms"
+        },
+        {
+          "$project": {
+            "category": "$_synonyms.category",
+            "fact": "$_synonyms.fact",
+            "synonyms": "$_synonyms.synonyms"
+          }
+        }
+      ]
+    ],
+    "res": 2
+  },
+  "8f434c3fdb7291894b559500688f3371": {
+    "op": "distinct",
+    "name": "iupacs",
+    "digest": "8f434c3fdb7291894b559500688f3371",
+    "query": "element_number",
+    "res": 118
+  },
+  "faf73080c5a6737ef15e4470437a8222": {
+    "op": "aggregate",
+    "name": "r3trans",
+    "digest": "faf73080c5a6737ef15e4470437a8222",
+    "query": [
+      [
+        {
+          "$match": {
+            "_synonyms.0": {
+              "$exists": true
+            }
+          }
+        },
+        {
+          "$project": {
+            "_synonyms": 1
+          }
+        },
+        {
+          "$unwind": "$_synonyms"
+        },
+        {
+          "$project": {
+            "category": "$_synonyms.category",
+            "fact": "$_synonyms.fact",
+            "synonyms": "$_synonyms.synonyms"
+          }
+        }
+      ]
+    ],
+    "res": 0
+  },
+  "b65a79682b47c66a79ee3f84749b5631": {
+    "op": "aggregate",
+    "name": "sobj_tables",
+    "digest": "b65a79682b47c66a79ee3f84749b5631",
+    "query": [
+      [
+        {
+          "$match": {
+            "_synonyms.0": {
+              "$exists": true
+            }
+          }
+        },
+        {
+          "$project": {
+            "_synonyms": 1
+          }
+        },
+        {
+          "$unwind": "$_synonyms"
+        },
+        {
+          "$project": {
+            "category": "$_synonyms.category",
+            "fact": "$_synonyms.fact",
+            "synonyms": "$_synonyms.synonyms"
+          }
+        }
+      ]
+    ],
+    "res": 0
+  },
+  "7e61af540847e03b9b257cffd8c376e5": {
+    "op": "find",
+    "name": "fillers",
+    "digest": "7e61af540847e03b9b257cffd8c376e5",
+    "query": {},
+    "res": 1
+  },
+  "6afd67c2d559c1557ad33448f6fdf851": {
+    "op": "find",
+    "name": "operators",
+    "digest": "6afd67c2d559c1557ad33448f6fdf851",
+    "query": {},
+    "res": 1
+  },
+  "820acb4495e80b5a325b3972e4af787d": {
+    "op": "distinct",
+    "name": "r3trans",
+    "digest": "820acb4495e80b5a325b3972e4af787d",
+    "query": "tcode",
+    "res": 4
+  },
+  "645fd0203f92a3c85a7b562a84392281": {
+    "op": "distinct",
+    "name": "r3trans",
+    "digest": "645fd0203f92a3c85a7b562a84392281",
+    "query": "devclass",
+    "res": 4
+  },
+  "2fc9cefd1f2d711c440a4a5348413d94": {
+    "op": "distinct",
+    "name": "sobj_tables",
+    "digest": "2fc9cefd1f2d711c440a4a5348413d94",
+    "query": "_tables.PrimaryTable",
+    "res": 3
+  },
+  "94333b5ee872827a8f1eefe8e2d64b61": {
+    "op": "distinct",
+    "name": "sobj_tables",
+    "digest": "94333b5ee872827a8f1eefe8e2d64b61",
+    "query": "_tables.Table",
+    "res": 20
+  },
+  "516222f42ce7b65c1d51958d06604c47": {
+    "op": "distinct",
+    "name": "sobj_tables",
+    "digest": "516222f42ce7b65c1d51958d06604c47",
+    "query": "clientSpecific",
+    "res": 2
+  },
+  "9d58dcef4e28ea886de158d8f36e0341": {
+    "op": "distinct",
+    "name": "sobj_tables",
+    "digest": "9d58dcef4e28ea886de158d8f36e0341",
+    "query": "TranslationRelevant",
+    "res": 2
+  },
+  "1b37f765bb305fe72fb085a2bd62d4a2": {
+    "op": "aggregate",
+    "name": "cosmos",
+    "digest": "1b37f765bb305fe72fb085a2bd62d4a2",
+    "query": [
+      [
+        {
+          "$match": {
+            "_synonyms.0": {
+              "$exists": true
+            }
+          }
+        },
+        {
+          "$project": {
+            "_synonyms": 1
+          }
+        },
+        {
+          "$unwind": "$_synonyms"
+        },
+        {
+          "$project": {
+            "category": "$_synonyms.category",
+            "fact": "$_synonyms.fact",
+            "synonyms": "$_synonyms.synonyms"
+          }
+        }
+      ]
+    ],
+    "res": 5
+  },
+  "20ac4fe8037163e82fb8d0dcfc8a6ee3": {
+    "op": "aggregate",
+    "name": "demomdls",
+    "digest": "20ac4fe8037163e82fb8d0dcfc8a6ee3",
+    "query": [
+      [
+        {
+          "$match": {
+            "_synonyms.0": {
+              "$exists": true
+            }
+          }
+        },
+        {
+          "$project": {
+            "_synonyms": 1
+          }
+        },
+        {
+          "$unwind": "$_synonyms"
+        },
+        {
+          "$project": {
+            "category": "$_synonyms.category",
+            "fact": "$_synonyms.fact",
+            "synonyms": "$_synonyms.synonyms"
+          }
+        }
+      ]
+    ],
+    "res": 0
+  },
+  "549c520503aa2d42569f12b8cd9feef4": {
+    "op": "aggregate",
+    "name": "fioriapps",
+    "digest": "549c520503aa2d42569f12b8cd9feef4",
+    "query": [
+      [
+        {
+          "$match": {
+            "_synonyms.0": {
+              "$exists": true
+            }
+          }
+        },
+        {
+          "$project": {
+            "_synonyms": 1
+          }
+        },
+        {
+          "$unwind": "$_synonyms"
+        },
+        {
+          "$project": {
+            "category": "$_synonyms.category",
+            "fact": "$_synonyms.fact",
+            "synonyms": "$_synonyms.synonyms"
+          }
+        }
+      ]
+    ],
+    "res": 0
+  },
+  "b28c3306dbf74ad2d904f89fe67c5ce8": {
+    "op": "aggregate",
+    "name": "fioribecatalogs",
+    "digest": "b28c3306dbf74ad2d904f89fe67c5ce8",
+    "query": [
+      [
+        {
+          "$match": {
+            "_synonyms.0": {
+              "$exists": true
+            }
+          }
+        },
+        {
+          "$project": {
+            "_synonyms": 1
+          }
+        },
+        {
+          "$unwind": "$_synonyms"
+        },
+        {
+          "$project": {
+            "category": "$_synonyms.category",
+            "fact": "$_synonyms.fact",
+            "synonyms": "$_synonyms.synonyms"
+          }
+        }
+      ]
+    ],
+    "res": 0
+  },
+  "a7fc80661525561b0e57a601ddcc4fc7": {
+    "op": "aggregate",
+    "name": "philoelements",
+    "digest": "a7fc80661525561b0e57a601ddcc4fc7",
+    "query": [
+      [
+        {
+          "$match": {
+            "_synonyms.0": {
+              "$exists": true
+            }
+          }
+        },
+        {
+          "$project": {
+            "_synonyms": 1
+          }
+        },
+        {
+          "$unwind": "$_synonyms"
+        },
+        {
+          "$project": {
+            "category": "$_synonyms.category",
+            "fact": "$_synonyms.fact",
+            "synonyms": "$_synonyms.synonyms"
+          }
+        }
+      ]
+    ],
+    "res": 0
+  },
   "807d3ce983c2f3f55bca0f31c3601ec1": {
     "op": "distinct",
     "name": "mongonlq_eschemas",
@@ -12,15 +377,6 @@
     "digest": "14b25941dee0e239c366de17213c8fc7",
     "query": {
       "modelname": "cosmos"
-    },
-    "res": 1
-  },
-  "9500a309933f286947c6717653aeb3ae": {
-    "op": "find",
-    "name": "mongonlq_eschemas",
-    "digest": "9500a309933f286947c6717653aeb3ae",
-    "query": {
-      "modelname": "metamodels"
     },
     "res": 1
   },
@@ -57,6 +413,15 @@
     "digest": "d3a144c5b5e202138174d75a7914ec0b",
     "query": {
       "modelname": "iupacs"
+    },
+    "res": 1
+  },
+  "9500a309933f286947c6717653aeb3ae": {
+    "op": "find",
+    "name": "mongonlq_eschemas",
+    "digest": "9500a309933f286947c6717653aeb3ae",
+    "query": {
+      "modelname": "metamodels"
     },
     "res": 1
   },
@@ -483,13 +848,6 @@
     "query": "element_name",
     "res": 118
   },
-  "f2c8b7829da0ea6e751544b636e5b8a5": {
-    "op": "distinct",
-    "name": "iupacs",
-    "digest": "f2c8b7829da0ea6e751544b636e5b8a5",
-    "query": "element_symbol",
-    "res": 118
-  },
   "ee1e238d09baade11389e033b882e02d": {
     "op": "distinct",
     "name": "metamodels",
@@ -497,477 +855,11 @@
     "query": "domain",
     "res": 9
   },
-  "8f434c3fdb7291894b559500688f3371": {
-    "op": "distinct",
-    "name": "iupacs",
-    "digest": "8f434c3fdb7291894b559500688f3371",
-    "query": "element_number",
-    "res": 118
-  },
-  "d7f270ba3e08f3ad6be2bb468fe4de80": {
-    "op": "distinct",
-    "name": "metamodels",
-    "digest": "d7f270ba3e08f3ad6be2bb468fe4de80",
-    "query": "_categories.category",
-    "res": 88
-  },
   "92accef96c73d16b0d76316fa7012f24": {
     "op": "distinct",
     "name": "philoelements",
     "digest": "92accef96c73d16b0d76316fa7012f24",
     "query": "element_name",
     "res": 4
-  },
-  "820acb4495e80b5a325b3972e4af787d": {
-    "op": "distinct",
-    "name": "r3trans",
-    "digest": "820acb4495e80b5a325b3972e4af787d",
-    "query": "tcode",
-    "res": 4
-  },
-  "645fd0203f92a3c85a7b562a84392281": {
-    "op": "distinct",
-    "name": "r3trans",
-    "digest": "645fd0203f92a3c85a7b562a84392281",
-    "query": "devclass",
-    "res": 4
-  },
-  "94333b5ee872827a8f1eefe8e2d64b61": {
-    "op": "distinct",
-    "name": "sobj_tables",
-    "digest": "94333b5ee872827a8f1eefe8e2d64b61",
-    "query": "_tables.Table",
-    "res": 20
-  },
-  "2fc9cefd1f2d711c440a4a5348413d94": {
-    "op": "distinct",
-    "name": "sobj_tables",
-    "digest": "2fc9cefd1f2d711c440a4a5348413d94",
-    "query": "_tables.PrimaryTable",
-    "res": 3
-  },
-  "516222f42ce7b65c1d51958d06604c47": {
-    "op": "distinct",
-    "name": "sobj_tables",
-    "digest": "516222f42ce7b65c1d51958d06604c47",
-    "query": "clientSpecific",
-    "res": 2
-  },
-  "9d58dcef4e28ea886de158d8f36e0341": {
-    "op": "distinct",
-    "name": "sobj_tables",
-    "digest": "9d58dcef4e28ea886de158d8f36e0341",
-    "query": "TranslationRelevant",
-    "res": 2
-  },
-  "1b37f765bb305fe72fb085a2bd62d4a2": {
-    "op": "aggregate",
-    "name": "cosmos",
-    "digest": "1b37f765bb305fe72fb085a2bd62d4a2",
-    "query": [
-      [
-        {
-          "$match": {
-            "_synonyms.0": {
-              "$exists": true
-            }
-          }
-        },
-        {
-          "$project": {
-            "_synonyms": 1
-          }
-        },
-        {
-          "$unwind": "$_synonyms"
-        },
-        {
-          "$project": {
-            "category": "$_synonyms.category",
-            "fact": "$_synonyms.fact",
-            "synonyms": "$_synonyms.synonyms"
-          }
-        }
-      ]
-    ],
-    "res": 5
-  },
-  "20ac4fe8037163e82fb8d0dcfc8a6ee3": {
-    "op": "aggregate",
-    "name": "demomdls",
-    "digest": "20ac4fe8037163e82fb8d0dcfc8a6ee3",
-    "query": [
-      [
-        {
-          "$match": {
-            "_synonyms.0": {
-              "$exists": true
-            }
-          }
-        },
-        {
-          "$project": {
-            "_synonyms": 1
-          }
-        },
-        {
-          "$unwind": "$_synonyms"
-        },
-        {
-          "$project": {
-            "category": "$_synonyms.category",
-            "fact": "$_synonyms.fact",
-            "synonyms": "$_synonyms.synonyms"
-          }
-        }
-      ]
-    ],
-    "res": 0
-  },
-  "549c520503aa2d42569f12b8cd9feef4": {
-    "op": "aggregate",
-    "name": "fioriapps",
-    "digest": "549c520503aa2d42569f12b8cd9feef4",
-    "query": [
-      [
-        {
-          "$match": {
-            "_synonyms.0": {
-              "$exists": true
-            }
-          }
-        },
-        {
-          "$project": {
-            "_synonyms": 1
-          }
-        },
-        {
-          "$unwind": "$_synonyms"
-        },
-        {
-          "$project": {
-            "category": "$_synonyms.category",
-            "fact": "$_synonyms.fact",
-            "synonyms": "$_synonyms.synonyms"
-          }
-        }
-      ]
-    ],
-    "res": 0
-  },
-  "b28c3306dbf74ad2d904f89fe67c5ce8": {
-    "op": "aggregate",
-    "name": "fioribecatalogs",
-    "digest": "b28c3306dbf74ad2d904f89fe67c5ce8",
-    "query": [
-      [
-        {
-          "$match": {
-            "_synonyms.0": {
-              "$exists": true
-            }
-          }
-        },
-        {
-          "$project": {
-            "_synonyms": 1
-          }
-        },
-        {
-          "$unwind": "$_synonyms"
-        },
-        {
-          "$project": {
-            "category": "$_synonyms.category",
-            "fact": "$_synonyms.fact",
-            "synonyms": "$_synonyms.synonyms"
-          }
-        }
-      ]
-    ],
-    "res": 0
-  },
-  "26e5f3e977c1f707f509e1b7103e4d04": {
-    "op": "aggregate",
-    "name": "iupacs",
-    "digest": "26e5f3e977c1f707f509e1b7103e4d04",
-    "query": [
-      [
-        {
-          "$match": {
-            "_synonyms.0": {
-              "$exists": true
-            }
-          }
-        },
-        {
-          "$project": {
-            "_synonyms": 1
-          }
-        },
-        {
-          "$unwind": "$_synonyms"
-        },
-        {
-          "$project": {
-            "category": "$_synonyms.category",
-            "fact": "$_synonyms.fact",
-            "synonyms": "$_synonyms.synonyms"
-          }
-        }
-      ]
-    ],
-    "res": 2
-  },
-  "638308122dadbf237e8d5c7d17a0a0e7": {
-    "op": "aggregate",
-    "name": "metamodels",
-    "digest": "638308122dadbf237e8d5c7d17a0a0e7",
-    "query": [
-      [
-        {
-          "$match": {
-            "_synonyms.0": {
-              "$exists": true
-            }
-          }
-        },
-        {
-          "$project": {
-            "_synonyms": 1
-          }
-        },
-        {
-          "$unwind": "$_synonyms"
-        },
-        {
-          "$project": {
-            "category": "$_synonyms.category",
-            "fact": "$_synonyms.fact",
-            "synonyms": "$_synonyms.synonyms"
-          }
-        }
-      ]
-    ],
-    "res": 0
-  },
-  "a7fc80661525561b0e57a601ddcc4fc7": {
-    "op": "aggregate",
-    "name": "philoelements",
-    "digest": "a7fc80661525561b0e57a601ddcc4fc7",
-    "query": [
-      [
-        {
-          "$match": {
-            "_synonyms.0": {
-              "$exists": true
-            }
-          }
-        },
-        {
-          "$project": {
-            "_synonyms": 1
-          }
-        },
-        {
-          "$unwind": "$_synonyms"
-        },
-        {
-          "$project": {
-            "category": "$_synonyms.category",
-            "fact": "$_synonyms.fact",
-            "synonyms": "$_synonyms.synonyms"
-          }
-        }
-      ]
-    ],
-    "res": 0
-  },
-  "faf73080c5a6737ef15e4470437a8222": {
-    "op": "aggregate",
-    "name": "r3trans",
-    "digest": "faf73080c5a6737ef15e4470437a8222",
-    "query": [
-      [
-        {
-          "$match": {
-            "_synonyms.0": {
-              "$exists": true
-            }
-          }
-        },
-        {
-          "$project": {
-            "_synonyms": 1
-          }
-        },
-        {
-          "$unwind": "$_synonyms"
-        },
-        {
-          "$project": {
-            "category": "$_synonyms.category",
-            "fact": "$_synonyms.fact",
-            "synonyms": "$_synonyms.synonyms"
-          }
-        }
-      ]
-    ],
-    "res": 0
-  },
-  "b65a79682b47c66a79ee3f84749b5631": {
-    "op": "aggregate",
-    "name": "sobj_tables",
-    "digest": "b65a79682b47c66a79ee3f84749b5631",
-    "query": [
-      [
-        {
-          "$match": {
-            "_synonyms.0": {
-              "$exists": true
-            }
-          }
-        },
-        {
-          "$project": {
-            "_synonyms": 1
-          }
-        },
-        {
-          "$unwind": "$_synonyms"
-        },
-        {
-          "$project": {
-            "category": "$_synonyms.category",
-            "fact": "$_synonyms.fact",
-            "synonyms": "$_synonyms.synonyms"
-          }
-        }
-      ]
-    ],
-    "res": 0
-  },
-  "7e61af540847e03b9b257cffd8c376e5": {
-    "op": "find",
-    "name": "fillers",
-    "digest": "7e61af540847e03b9b257cffd8c376e5",
-    "query": {},
-    "res": 1
-  },
-  "6afd67c2d559c1557ad33448f6fdf851": {
-    "op": "find",
-    "name": "operators",
-    "digest": "6afd67c2d559c1557ad33448f6fdf851",
-    "query": {},
-    "res": 1
-  },
-  "588b41252e0825c3482979093d724ca7": {
-    "op": "aggregate",
-    "name": "cosmos",
-    "digest": "588b41252e0825c3482979093d724ca7",
-    "query": [
-      [
-        {
-          "$match": {}
-        },
-        {
-          "$group": {
-            "_id": {
-              "_url": "$_url",
-              "orbits": "$orbits"
-            },
-            "_url": {
-              "$first": "$_url"
-            },
-            "orbits": {
-              "$first": "$orbits"
-            }
-          }
-        },
-        {
-          "$project": {
-            "_id": 0,
-            "_url": 1,
-            "orbits": 1
-          }
-        },
-        {
-          "$sort": {
-            "_url": 1,
-            "orbits": 1
-          }
-        }
-      ]
-    ],
-    "res": 6
-  },
-  "98ca9864bc5d3185cbddbfaa85d10533": {
-    "op": "aggregate",
-    "name": "fioriapps",
-    "digest": "98ca9864bc5d3185cbddbfaa85d10533",
-    "query": [
-      [
-        {
-          "$match": {}
-        },
-        {
-          "$group": {
-            "_id": {
-              "SemanticObject": "$SemanticObject"
-            },
-            "SemanticObject": {
-              "$first": "$SemanticObject"
-            }
-          }
-        },
-        {
-          "$project": {
-            "_id": 0,
-            "SemanticObject": 1
-          }
-        },
-        {
-          "$sort": {
-            "SemanticObject": 1
-          }
-        }
-      ]
-    ],
-    "res": 12
-  },
-  "d320d3ef097d8a328bab048fbf332c23": {
-    "op": "aggregate",
-    "name": "fioribecatalogs",
-    "digest": "d320d3ef097d8a328bab048fbf332c23",
-    "query": [
-      [
-        {
-          "$match": {}
-        },
-        {
-          "$group": {
-            "_id": {
-              "SemanticObject": "$SemanticObject"
-            },
-            "SemanticObject": {
-              "$first": "$SemanticObject"
-            }
-          }
-        },
-        {
-          "$project": {
-            "_id": 0,
-            "SemanticObject": 1
-          }
-        },
-        {
-          "$sort": {
-            "SemanticObject": 1
-          }
-        }
-      ]
-    ],
-    "res": 5
   }
 }
