@@ -270,23 +270,23 @@ describe('testMakeMongoDomain', () => {
                 ]
             }
           },
-          { '$sort': { 'gründungsjahr': -1, sender: 1, standort: 1 } },
+          { '$sort': { 'gr_ndungsjahr': -1, sender: 1, standort: 1 } },
           {
             '$group':
             {
               _id:
               {
-                'gründungsjahr': '$gründungsjahr',
+                'gr_ndungsjahr': '$gr_ndungsjahr',
                 sender: '$sender',
                 standort: '$standort'
               },
-              'gründungsjahr': { '$first': '$gründungsjahr' },
+              'gr_ndungsjahr': { '$first': '$gr_ndungsjahr' },
               sender: { '$first': '$sender' },
               standort: { '$first': '$standort' }
             }
           },
-          { '$project': { _id: 0, 'gründungsjahr': 1, sender: 1, standort: 1 } },
-          { '$sort': { 'gründungsjahr': -1, sender: 1, standort: 1 } },
+          { '$project': { _id: 0, 'gr_ndungsjahr': 1, sender: 1, standort: 1 } },
+          { '$sort': { 'gr_ndungsjahr': -1, sender: 1, standort: 1 } },
           { '$project': { _id: 0, sender: 1, standort: 1 } }]
       },
       undefined]
@@ -434,7 +434,7 @@ describe('testMakeMongoDomain', () => {
         auxcolumns: [],
         reverseMap: { element_name: 'element name' },
         query:
-          [{ '$match': { element_name: { '$regex': /rium/i }, element_number: '10' } },
+          [{ '$match': { element_name: { '$regex': /rium/i }, element_number: 10 } },
             {
               '$group':
             {
@@ -460,7 +460,7 @@ describe('testMakeMongoDomain', () => {
             {
               '$and':
                 [{ element_number: { '$regex': /rium/i } },
-                  { element_number: '10' }]
+                  { element_number: 10 }]
             }
           },
           {

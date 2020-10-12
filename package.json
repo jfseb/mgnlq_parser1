@@ -4,9 +4,6 @@
   "description": "query parsing conversion to mongoose queries",
   "main": "js/index.js",
   "typings": "js/index.d.ts",
-  "jest": {
-    "testEnvironment": "node"
-  },
   "scripts": {
     "build": "gulp && tsc",
     "test": "gulp test",
@@ -30,6 +27,9 @@
     "url": "https://github.com/jfseb/mgnlq_parser1/issues"
   },
   "homepage": "https://github.com/jfseb/mgnlq_parser1#readme",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/lodash": "^4.14.161",

@@ -48,7 +48,7 @@ it('testIsNumericTypeOrHasNumericType', done => {
   getModel().then( (theModel) => {
     var mongoHandleRaw = theModel.mongoHandle;
     expect(mQ.isNumericTypeOrHasNumericType(mongoHandleRaw, 'iupacs', 'element number')).toEqual(true);
-    expect(mQ.isNumericTypeOrHasNumericType(mongoHandleRaw, 'iupacs', 'element name')).toEqual(true);
+    expect(mQ.isNumericTypeOrHasNumericType(mongoHandleRaw, 'iupacs', 'element name')).toEqual(false);
     done();
   });
 });
@@ -140,8 +140,7 @@ it('testAstToMQuerySentenceToAstsCatCatCatParseText', done => {
     debuglog(() => Object.keys(theModel.mongoHandle.mongoMaps).join('\n'));
     debuglog(() =>'collectionname ' + domainPick.collectionName);
     var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
-
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap, domainPick.collectionName, theModel.mongoHandle);
     expect(match).toEqual(
       { $match : { ApplicationComponent : 'CO-FIO', appId : 'W0052', 'TechnicalCatalog' : 'SAP_TC_FIN_CO_COMMON' }}
     );
@@ -164,7 +163,7 @@ it('testAstToMQuerySentenceToAstsCatCatCatParseText', done => {
       expect(1).toEqual(0);
     }
     try {
-      mQ.makeMongoMatchFromAst(nodeNoList,r.sentences[0],mongoMap);
+      mQ.makeMongoMatchFromAst(nodeNoList,r.sentences[0],mongoMap, domainPick.collectionName, theModel.mongoHandle);
       expect(1).toEqual(0);
     } catch(e) {
       expect(1).toEqual(1);
@@ -192,7 +191,7 @@ it('testAstToMQueryMultiArray', done => {
     var node = r.asts[0];
     var nodeFieldList = node.children[0].children[0];
     var nodeFilter = node.children[1];
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], theModel.mongoHandle.mongoMaps['metamodels']);
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], theModel.mongoHandle.mongoMaps['metamodels'], 'metamodels',theModel.mongoHandle);
     expect(match).toEqual({ $match : { '_categories.category' : { '$regex': /^elem/i } }});
     var categoryList = mQ.getCategoryList([], nodeFieldList, r.sentences[0] );
     var proj = mQ.makeMongoProjectionFromAst(categoryList,  theModel.mongoHandle.mongoMaps['metamodels']);
@@ -247,7 +246,7 @@ it('testMakeMongoQueryMoreThan', done => {
     var domainPick = mongoQ.getDomainInfoForSentence(theModel, sentence);
     var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
     var categoryList = mQ.getCategoryList([], nodeFieldList, sentence );
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap, domainPick, theModel.mongoHandle);
     expect(match).toEqual({ '$match':
     { '$and':
        [ { '$expr':
@@ -327,12 +326,8 @@ it('testParseSomeQueries1', done => {
         console.log('Actual************ ' + actual.match_json); 
       }
       expect(actual.match_json).toEqual(testrun.match_json);
-
-      //test.deepEqual(match ,{ '$match': { domain: { '$regex': /abc$/i } } });
       actual.projection = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
       expect(actual.projection).toEqual(testrun.projection);
-      //  ,{ '$project': { _id: 0, domain: 1 } });
-
       var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
       actual.group = group;
       expect(testrun.group).toEqual(actual.group);

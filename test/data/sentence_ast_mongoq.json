@@ -336,12 +336,11 @@
         "3"
       ],
       {
-        "gründungsjahr": "4"
+        "gr_ndungsjahr": "4"
       },
       {
-        "$lt": "5"
-      },
-      "1972"
+        "$lt": 1972
+      }
     ],
     "projection": {
       "$project": {
@@ -379,12 +378,11 @@
         "3"
       ],
       {
-        "gründungsjahr": "4"
+        "gr_ndungsjahr": "4"
       },
       {
-        "$lte": "5"
-      },
-      "1972"
+        "$lte": 1972
+      }
     ],
     "projection": {
       "$project": {
@@ -422,12 +420,11 @@
         "3"
       ],
       {
-        "gründungsjahr": "4"
+        "gr_ndungsjahr": "4"
       },
       {
-        "$eq": "5"
-      },
-      "1972"
+        "$eq": 1972
+      }
     ],
     "projection": {
       "$project": {
@@ -465,12 +462,11 @@
         "3"
       ],
       {
-        "gründungsjahr": "4"
+        "gr_ndungsjahr": "4"
       },
       {
-        "$gt": "5"
-      },
-      "1972"
+        "$gt": 1972
+      }
     ],
     "projection": {
       "$project": {
@@ -508,12 +504,11 @@
         "3"
       ],
       {
-        "gründungsjahr": "4"
+        "gr_ndungsjahr": "4"
       },
       {
-        "$gte": "5"
-      },
-      "1972"
+        "$gte": 1972
+      }
     ],
     "projection": {
       "$project": {
@@ -551,12 +546,11 @@
         "3"
       ],
       {
-        "gründungsjahr": "4"
+        "gr_ndungsjahr": "4"
       },
       {
-        "$eq": "5"
-      },
-      "1972"
+        "$eq": 1972
+      }
     ],
     "projection": {
       "$project": {
@@ -946,8 +940,9 @@
         "standort": "4"
       },
       {
-        "$lt": "5"
+        "$elemMatch": "5"
       },
+      { "$lt" : "6"},
       "Mue"
     ],
     "projection": {
@@ -1186,9 +1181,8 @@
         "$match": "1"
       },
       {
-        "element_number": "2"
-      },
-      "11"
+        "element_number": 11
+      }
     ],
     "projection": {
       "$project": {
@@ -1215,9 +1209,8 @@
         "$match": "1"
       },
       {
-        "element_number": "2"
-      },
-      "11"
+        "element_number": 11
+      }
     ],
     "projection": {
       "$project": {
@@ -1244,9 +1237,8 @@
         "$match": "1"
       },
       {
-        "element_number": "2"
-      },
-      "11"
+        "element_number": 11
+      }
     ],
     "projection": {
       "$project": {
@@ -1282,9 +1274,8 @@
         "element_number": "4"
       },
       {
-        "$lt": "5"
-      },
-      "11"
+        "$lt": 11
+      }
     ],
     "projection": {
       "$project": {
@@ -1320,9 +1311,8 @@
         "element_number": "4"
       },
       {
-        "$lt": "5"
-      },
-      "1111"
+        "$lt": 1111
+      }
     ],
     "projection": {
       "$project": {
