@@ -16,7 +16,7 @@ function parseGivenTokens(tokens, startrule) {
   var res = parser[startrule]();
   console.log('here res: ' + JSON.stringify(res));
   if (parser.errors.length > 0) {
-    throw new Error('parsing error in  intput' + JSON.stringify(parser.errors));
+    throw new Error('parsing error in  input' + JSON.stringify(parser.errors));
   }
   return res;
 }

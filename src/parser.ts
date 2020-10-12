@@ -333,6 +333,26 @@ function SelectParser(input) {
     ])
   );
 
+  this.factOrAnyOrInteger = $.RULE("factOrAnyOrInteger", () =>
+  $.OR([
+      {
+        ALT: function () {
+          return AST.makeNodeForFact($.CONSUME1(T.FACT));
+        }
+      },
+      {
+        ALT: function () {
+          return AST.makeNodeForAny($.CONSUME2(T.AnANY));
+        }
+      },
+      {
+        ALT: function () {
+          return AST.makeNodeForAny($.CONSUME3(T.Integer));
+        }
+      }
+  ])
+);
+
   this.ppFactAny = $.RULE("opFactAny", function (head) {
     return $.OR([
               {
@@ -356,8 +376,8 @@ function SelectParser(input) {
                 ALT: () => {
                   var op = $.SUBRULE4($.binaryFragOp);
                   op.children = [head];
-                  var factOrAny = $.SUBRULE5($.factOrAny);
-                  op.children.push(factOrAny);
+                  var factOrAnyOrInteger = $.SUBRULE5($.factOrAnyOrInteger);
+                  op.children.push(factOrAnyOrInteger);
                   return op;
                 }
               }
@@ -591,12 +611,12 @@ function SelectParser(input) {
        return $.OR([
         {
           ALT: function () {
-            $.CONSUME3(T.equals);
+            return AST.makeNodeForToken(NT.OPEQ, $.CONSUME1(T.equals));
           }
         },
         {
           ALT: function () {
-            $.CONSUME4(T.is);
+            return AST.makeNodeForToken(NT.OPEQ, $.CONSUME2(T.is));
           }
         }
     ]);
@@ -671,7 +691,19 @@ $.RULE("opBinaryCompare", function() {
   },
   {
     ALT: function () {
-      return AST.makeNodeForToken(NT.OPNE, $.CONSUME6(T.NE));
+      // deliberate recast,( ( not less than 3 CAT  )
+      return AST.makeNodeForToken(NT.OPLT, $.CONSUME3(T.less_than));
+    }
+  },
+  {
+    ALT: function () {
+      // deliberate recast!
+      return AST.makeNodeForToken(NT.OPGT, $.CONSUME4(T.more_than));
+    }
+  },
+  {
+    ALT: function () {
+      return AST.makeNodeForToken(NT.OPNE, $.CONSUME5(T.NE));
     }
   }
   ]);

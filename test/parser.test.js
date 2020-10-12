@@ -7,6 +7,7 @@ var Parser = require(root + '/parser.js');
 
 function parseInput(text,startrule) {
   var lexingResult = Parser.SelectLexer.tokenize(text);
+  console.log(JSON.stringify(lexingResult));
   const parser = new Parser.SelectParser(lexingResult.tokens);
   if(typeof parser[startrule] !== 'function') {
     console.log('where is the startrule '+ startrule);
@@ -14,7 +15,7 @@ function parseInput(text,startrule) {
   var res = parser[startrule]();
   //console.log('here res: ' + JSON.stringify(res));
   if (parser.errors.length > 0) {
-    throw new Error('parsing error in  intput' + JSON.stringify(parser.errors));
+    throw new Error('parsing error in  input' + JSON.stringify(parser.errors));
   }
   return res;
 }
@@ -225,6 +226,47 @@ it('testCatListMoreInFactCFCFFnocomma', done => {
   expect(1).toEqual(1);
   done();
 });
+
+it('testCatListCFopF', done => {
+  var inputText =  [  'CAT with CAT is FACT', 
+    'CAT with CAT less_than 0123',
+    'CAT with less_than 0123 CAT',
+    'CAT with CAT > 0123',
+    'CAT with CAT more_than 0123',
+    'CAT with CAT > 0123 or CAT < 0123',
+    'CAT with CAT > 0123 and CAT contains 0123',
+    'CAT with CAT > 0123 and CAT more_than 0123',
+    'CAT with CAT < 0123',  'CAT with CAT = FACT',
+    'CAT with CAT < AnANY'];
+  inputText.forEach( a => { 
+    try {
+      parseInput(a,'catListOpMore');
+      expect(1).toEqual(1);
+    } catch( e) {
+      console.log('Expected this to succeed  ' + a + ' ' + e + e.stack);
+      expect(a).toEqual(0);
+    }
+  });
+  done();
+});
+
+it('testCatListCFinvalids', done => {
+  var inputText = ['CAT with CAT AnANY', 
+    'CAT with CAT is 0123', // questionable
+    'CAT with CAT <  < AnANY', ];
+  inputText.forEach( a => { 
+    try {
+      parseInput(a,'catListOpMore');
+      console.log('Expected this to fail ' + a);
+      expect(a).toEqual(0);
+    } catch( e) {
+      expect(1).toEqual(1);
+    }
+  });
+  done();
+});
+
+
 
 /*
 exports.testCatSEtExpression = function (test) {

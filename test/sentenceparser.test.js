@@ -6,7 +6,7 @@ var SentenceParser = require(root + '/sentenceparser.js');
 
 var Ast = require(root + '/ast.js');
 
-var debuglog = require('debug')('sentenceparser.nunit');
+var debuglog = require('debug')('sentenceparser.test');
 
 var mgnlq_er = require(root + '/match/er_index.js');
 
@@ -763,6 +763,74 @@ it('testparseSentenceToAstssError', done => {
     Model.releaseModel(theModel);
   });
 });
+
+
+var testNumberVs = [
+  {
+    index : 0,
+    sentence : 'element_name with less than 4444 element_number',
+    res :[ {  strng : 'CAT with less than NUMBER CAT',
+      ast:  'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPLessThan 2(2)\n      NUMBER 3\n      CAT 4\n'
+    },
+    {  strng : 'CAT with less than NUMBER CAT',
+      ast:  'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(1)\n    OPLessThan 2(2)\n      NUMBER 3\n      CAT 4\n'
+    }]
+  },
+  {
+    index : 1,
+    sentence : 'element_name with less than 4 element_number',
+    res :[ {  strng : 'CAT with less than FACT CAT',
+      parseError : 'found',
+      ast: 'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+    },
+    {  strng : 'CAT with less than FACT CAT',
+      parseError : 'Integer',
+      ast: 'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+    }
+    ,
+    {  strng : 'CAT with less than FACT CAT',
+      parseError : 'Integer',
+      ast: 'BINOP -1(2)\n  OPAll -1(1)\n    LIST -1(1)\n      CAT 0\n  LIST -1(2)\n    OPMoreThan 2(2)\n      NUMBER 3\n      CAT 4\n    OPEqIn -1(2)\n      CATPH -1(0)\n      FACT 5\n'
+    }]
+  }
+];
+
+it('testNumberVsFact2', done => {
+  expect.assertions(15);
+  getModel().then((theModel) => {
+    testNumberVs.forEach(( tst,index) => {
+      var s = tst.sentence; //'element_name with less than 4 element_number';
+      debuglog(s);
+      var res = Erbase.processString(s, theModel.rules, words);
+      debuglog('res > ' + JSON.stringify(res, undefined, 2));
+      expect(res.sentences.length).toEqual(tst.res.length);
+      for(var i = 0; i < tst.res.length; ++i) {
+        var tstid = ''  + index + ' ' + tst.index + '/' + i ;
+        var tsti = tst.res[i];
+        s = res.sentences[i];
+        var lexingResult = SentenceParser.getLexer().tokenize(res.sentences[0]);
+        var sStrings = lexingResult.map(t => t.image);
+        debuglog(tstid + ' strng : ' + sStrings.join('\n'));
+        expect(sStrings.join(' ')).toEqual(tsti.strng);
+        try { 
+          var parsingResult = SentenceParser.parse(lexingResult, 'catListOpMore');
+          // /test.deepEqual(parsingResult, {})
+      
+          debuglog(index + ' ' +  tst.index + '/' + i  + ' \n ast: ' + JSON.stringify(Ast.astToText(parsingResult)));
+          expect(Ast.astToText(parsingResult)).toEqual( tsti.ast
+          );
+        } catch( e) {
+          debuglog(index + ' ' +  tst.index + '/' + i  + ' \n ast err : ' + e  + ' contains ? ' + tsti.parseError);
+          expect(!!e).toEqual(!!tsti.parseError);
+          expect(JSON.stringify(e).indexOf(tsti.parseError) >= 0).toEqual(true);
+        }
+      }
+      Model.releaseModel(theModel);
+      done();
+    });
+  });
+});
+    
 
 
 /*

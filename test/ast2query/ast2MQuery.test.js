@@ -32,6 +32,27 @@ it('testGetCategoryForNodePairEasy', done => {
   done();
 });
 
+
+
+it('testCoerceFactLiteralToType', done => {
+  expect(mQ.coerceFactLiteralToType(true, '123')).toEqual(123);
+  expect(mQ.coerceFactLiteralToType(true, '-123.A')).toEqual(-123);
+  expect(mQ.coerceFactLiteralToType(false, '123')).toEqual('123');
+  expect(mQ.coerceFactLiteralToType(true, 'abc123')).toEqual('abc123');
+  expect(mQ.coerceFactLiteralToType(false, '123')).toEqual('123');
+  done();
+});
+
+it('testIsNumericTypeOrHasNumericType', done => {
+  expect.assertions(2);
+  getModel().then( (theModel) => {
+    var mongoHandleRaw = theModel.mongoHandle;
+    expect(mQ.isNumericTypeOrHasNumericType(mongoHandleRaw, 'iupacs', 'element number')).toEqual(true);
+    expect(mQ.isNumericTypeOrHasNumericType(mongoHandleRaw, 'iupacs', 'element name')).toEqual(true);
+    done();
+  });
+});
+
 var words = {};
 
 it('testGetCategoryForNodePairEasy', done => {
@@ -254,7 +275,7 @@ it('testMakeMongoQueryMoreThan', done => {
 var fs = require('fs');
 var JSONx = require('abot_utils');
 
-it('testParseSomeQueries', done => {
+it('testParseSomeQueries1', done => {
   getModel().then( (theModel) => {
     var filename = './test/data/sentence_ast_mongoq.json';
     var data = fs.readFileSync(filename, 'utf-8');
@@ -276,6 +297,9 @@ it('testParseSomeQueries', done => {
       console.log(testId);
       if ( !node )
       {
+        if ( !testrun.parseError ) {
+          console.log('parseError ' + JSON.stringify(r.errors));
+        }
         expect(true).toEqual(!!testrun.parseError);
         if (testrun.parseError !=='any'
          &&  JSON.stringify( r.errors).indexOf( testrun.parseError) == -1)
@@ -299,6 +323,9 @@ it('testParseSomeQueries', done => {
 
       var match_json = JSONx.stringify( actual.match , undefined, 2 ); // treat regexp
       actual.match_json = JSON.parse( match_json );
+      if( JSON.stringify(actual.match_json) != JSON.stringify(testrun.match_json)) {
+        console.log('Actual************ ' + actual.match_json); 
+      }
       expect(actual.match_json).toEqual(testrun.match_json);
 
       //test.deepEqual(match ,{ '$match': { domain: { '$regex': /abc$/i } } });

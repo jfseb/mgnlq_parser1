@@ -16,6 +16,8 @@ export declare function addObjectProp(src: any, key: string, value: any): any;
 export declare function addSortExpression(res: any, expr: any): any;
 export declare function getNumberArg(node: AST.ASTNode, sentence: IFErBase.ISentence): number;
 export declare function isArray(mongoHandleRaw: IFModel.IModelHandleRaw, domain: string, category: string): boolean;
+export declare function isNumericTypeOrHasNumericType(mongoHandleRaw: IFModel.IModelHandleRaw, domain: string, category: string): boolean;
+export declare function coerceFactLiteralToType(isNumeric: boolean, fact: string): number | string;
 export declare function amendCategoryList(extractSortResult: any[], catList: string[]): string[];
 export declare function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISentence, mongoMap: IFModel.CatMongoMap, domain: string, mongoHandleRaw: IFModel.IModelHandleRaw): {
     $match: {};

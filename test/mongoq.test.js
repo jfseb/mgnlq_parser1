@@ -816,7 +816,6 @@ it('testPrepareQuery2', done => {
   });
 });
 
-
 it('testGetDomainsForSentence2', done => {
   getModel().then((theModel) => {
     var s = 'SemanticObject';
@@ -843,11 +842,9 @@ it('testContainsFixedCategories', done => {
     expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['nocat'])).toEqual(false);
     expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits'])).toEqual(true);
     expect(MongoQ.containsFixedCategories(theModel, 'Cosmos', ['orbits', 'nocat'])).toEqual(false);
-
     expect(MongoQ.containsFixedCategories(theModel, 'FioriBOM', ['uri', 'uri_rank'])).toEqual(true);
-
-    done();
     Model.releaseModel(theModel);
+    done();
   });
 });
 

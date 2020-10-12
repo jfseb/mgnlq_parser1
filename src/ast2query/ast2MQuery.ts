@@ -20,6 +20,7 @@ import * as chevrotain from 'chevrotain';
 import * as AST from '../ast';
 
 import { ASTNodeType as NT } from '../ast';
+import { IMongooseBaseType } from 'mgnlq_model/js/match/ifmatch';
 
 // import * as Sentenceparser from '../sentenceparser';
 
@@ -43,13 +44,12 @@ export function makeMongoDistinctGroup(cols: string[]): any {
   return res;
 }
 
-export function getCategoryForNodePair(nodeCat : AST.ASTNode, nodeFact: AST.ASTNode, sentence: IFErBase.ISentence) {
+export function getCategoryForNodePair(nodeCat: AST.ASTNode, nodeFact: AST.ASTNode, sentence: IFErBase.ISentence) {
 
   //  either           <CAT> <FACT>
   //  or               undefined <FACT>
   //  or  More than    <number> <CAT>
-  if ( nodeCat && nodeCat.bearer && nodeCat.bearer.image === 'NUMBER' )
-  {
+  if (nodeCat && nodeCat.bearer && nodeCat.bearer.image === 'NUMBER') {
     return getCategoryForNodePair(nodeFact, nodeFact, sentence);
   }
   var startIndex = nodeCat && nodeCat.bearer && nodeCat.bearer.startOffset;
@@ -109,33 +109,30 @@ export function addFilterToMatch(res, cat, filter) {
   return res;
 };
 
-export function addFilterExpr(res, expr : any ) {
+export function addFilterExpr(res, expr: any) {
   if (res['$and']) {
     res['$and'].push(expr);
     return res;
   }
-  res['$and'] = [ expr ];
+  res['$and'] = [expr];
   return res;
 };
 
-export function addObjectProp( src, key : string, value : any) : any
-{
+export function addObjectProp(src, key: string, value: any): any {
   src[key] = value;
   return src;
 }
 
-export function addSortExpression( res, expr : any)
-{
+export function addSortExpression(res, expr: any) {
   if (res['$sort']) {
-    _.merge( res['$sort'], expr );
+    _.merge(res['$sort'], expr);
     return res;
   }
   res['$sort'] = expr;
   return res;
 }
 
-export function getNumberArg( node :AST.ASTNode , sentence: IFErBase.ISentence ) : number
-{
+export function getNumberArg(node: AST.ASTNode, sentence: IFErBase.ISentence): number { // !! returns a number 
   var startIndex = node && node.bearer && node.bearer.startOffset;
   if (node.type !== NT.NUMBER) {
     throw new Error(`Expected nodetype ${new AST.NodeType(NT.CAT).toString()} but was ${new AST.NodeType(node.type).toString()}`);
@@ -148,19 +145,35 @@ export function getNumberArg( node :AST.ASTNode , sentence: IFErBase.ISentence )
 };
 
 
-export function isArray( mongoHandleRaw: IFModel.IModelHandleRaw,  domain : string, category : string )
-{
-  var cat = Model.getCategoryRec( mongoHandleRaw, domain, category );
-  return _.isArray( cat.type );
+export function isArray(mongoHandleRaw: IFModel.IModelHandleRaw, domain: string, category: string) {
+  var cat = Model.getCategoryRec(mongoHandleRaw, domain, category);
+  return _.isArray(cat.type);
 }
 
+export function isNumericTypeOrHasNumericType(mongoHandleRaw: IFModel.IModelHandleRaw, domain: string, category: string) {
+  var cat = Model.getCategoryRec(mongoHandleRaw, domain, category);
+  console.log("category " + category + "  -> " + JSON.stringify(cat));
+  return (cat.type == IMongooseBaseType.Number) || (_.isArray(cat.type) && cat.type.indexOf(IMongooseBaseType.Number) >= 0)
+}
 
+export function coerceFactLiteralToType(isNumeric: boolean, fact: string): number | string {
+  if (isNumeric) {
+    try {
+      var r = parseInt(fact);
+      if (Number.isNaN(r)) {
+        return fact;
+      }
+      return r;
+    } catch (e) { }
+  }
+  return fact;
+}
 
-export function amendCategoryList( extractSortResult: any[], catList : string[]) : string[] {
+export function amendCategoryList(extractSortResult: any[], catList: string[]): string[] {
   var res = [];
-  extractSortResult.forEach( a => {
+  extractSortResult.forEach(a => {
     var name = a.categoryName;
-    if( !catList.includes(name)) {
+    if (!catList.includes(name)) {
       res.push(name);
     }
   });
@@ -168,7 +181,7 @@ export function amendCategoryList( extractSortResult: any[], catList : string[])
   return res;
 }
 
-export function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISentence, mongoMap: IFModel.CatMongoMap, domain: string, mongoHandleRaw : IFModel.IModelHandleRaw ) {
+export function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISentence, mongoMap: IFModel.CatMongoMap, domain: string, mongoHandleRaw: IFModel.IModelHandleRaw) {
   debug(AST.astToText(node));
   //console.log("making mongo match " + AST.astToText(node));
   if (!node) {
@@ -187,8 +200,10 @@ export function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISen
     var mongocatfullpath = mongoMap[category].fullpath; // Model.getMongoosePath(theModel, category); //makeMongoName(cat);
     debuglog(() => `here is the fullpath for ${category} is ${mongocatfullpath} `);
     var fact = (n.children.length > 1) && getFactForNode(n.children[1], sentence);
+    var catIsNumeric = isNumericTypeOrHasNumericType(mongoHandleRaw, domain, category);
+    var factCoerced = coerceFactLiteralToType(catIsNumeric, fact);
     if (n.type === NT.OPEqIn) {
-      res = addFilterToMatch(res, mongocatfullpath, fact);
+      res = addFilterToMatch(res, mongocatfullpath, factCoerced);
     } else if (n.type === NT.OPStartsWith) {
       res = addFilterToMatch(res, mongocatfullpath, { $regex: new RegExp(`^${fact.toLowerCase()}`, "i") });
     } else if (n.type === NT.OPEndsWith) {
@@ -218,17 +233,18 @@ export function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISen
 
     }*/
     else if (n.type === NT.OPLessThan || n.type === NT.OPMoreThan || n.type == NT.OPExactly) {
+      // flavours: 
+      // less_than 3 CAT    ( a count measure )
       var numberarg = getNumberArg(n.children[0], sentence);
-      debuglog(() => '!!!!adding more than ' + numberarg + ' for category ' + category );
+      debuglog(() => '!!!!adding more than ' + numberarg + ' for category ' + category);
       //TODO //res = addFilterToMatch(res, mongocatfullpath, { 'count' ( mongocatfullpath ) gt numberarg , "i") });
       var argpath = '$' + mongocatfullpath;
-      var extract = [ { $switch: { branches: [ { case: { $isArray : argpath }, then: { $size: argpath } }], default : 1 }}
-      , numberarg ];
-      switch(n.type)
-      {
-        case NT.OPLessThan:     res = addFilterExpr( res,  { $expr: { $lt: extract } } ); break;
-        case NT.OPMoreThan:     res = addFilterExpr( res,  { $expr: { $gt: extract } } ); break;
-        case NT.OPExactly:      res = addFilterExpr( res,  { $expr: { $eq: extract } } ); break;
+      var extract = [{ $switch: { branches: [{ case: { $isArray: argpath }, then: { $size: argpath } }], default: 1 } }
+        , numberarg];
+      switch (n.type) {
+        case NT.OPLessThan: res = addFilterExpr(res, { $expr: { $lt: extract } }); break;
+        case NT.OPMoreThan: res = addFilterExpr(res, { $expr: { $gt: extract } }); break;
+        case NT.OPExactly: res = addFilterExpr(res, { $expr: { $eq: extract } }); break;
       }
     }
     else if (n.type === NT.OPContains) {
@@ -236,58 +252,52 @@ export function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISen
     }
     else if (n.type === NT.OPGT || n.type === NT.OPLT
       || n.type == NT.OPEQ || n.type == NT.OPNE
-      || n.type == NT.OPGE || n.type == NT.OPLE )
-    {
+      || n.type == NT.OPGE || n.type == NT.OPLE) {
       var fact = getFactForNode(n.children[1], sentence);
+      var factCoerced = coerceFactLiteralToType(catIsNumeric, fact);
       var argpath = '$' + mongocatfullpath;
-      var extract2 = [ argpath, `${fact}` ];
+      var extract2 = [argpath, factCoerced];
       // $switch: { branches: [ { case: { $isArray : argpath }, then: { $size: argpath } }], default : 1 }}
 
       var opstr = '$lt';
-      switch(n.type)
-      {
-        case NT.OPLT:      opstr = '$lt'; break;
-        case NT.OPGT:      opstr = '$gt'; break;
-        case NT.OPEQ:      opstr = '$eq'; break;
-        case NT.OPNE:      opstr = '$ne'; break;
-        case NT.OPLE:      opstr = '$lte'; break;
-        case NT.OPGE:      opstr = '$gte'; break;
+      switch (n.type) {
+        case NT.OPLT: opstr = '$lt'; break;
+        case NT.OPGT: opstr = '$gt'; break;
+        case NT.OPEQ: opstr = '$eq'; break;
+        case NT.OPNE: opstr = '$ne'; break;
+        case NT.OPLE: opstr = '$lte'; break;
+        case NT.OPGE: opstr = '$gte'; break;
       }
 
-      if (isArray(mongoHandleRaw, domain, category))
-      {
+      if (isArray(mongoHandleRaw, domain, category)) {
         // db.demomdls.aggregate([ { $match: { standort : {  $elemMatch : { '$gte': 'M' }} }  }  ]);
-        var filterobj = makeFilterObj( mongocatfullpath, { $elemMatch : makeFilterObj( opstr, `${fact}` ) } );
-        res = addFilterExpr( res, filterobj );
+        var filterobj = makeFilterObj(mongocatfullpath, { $elemMatch: makeFilterObj(opstr, factCoerced) });
+        res = addFilterExpr(res, filterobj);
       }
-      else
-      {
-        var filterobj = makeFilterObj( mongocatfullpath, makeFilterObj( opstr, `${fact}` ));
-        res = addFilterExpr( res, filterobj );
+      else {
+        var filterobj = makeFilterObj(mongocatfullpath, makeFilterObj(opstr, factCoerced));
+        res = addFilterExpr(res, filterobj);
       }
       //var numberarg = getNumberArg(n.children[0], sentence);
     }
-    else if (n.type === NT.OPOrderBy || n.type === NT.OPOrderDescendingBy)
-    {
+    else if (n.type === NT.OPOrderBy || n.type === NT.OPOrderDescendingBy) {
       //var ascdesc = (n.type == NT.OPOrderDescendingBy) ? 1 : -1;
       // res = addSortExpression(res, addObjectProp( {}, mongocatfullpath, ascdesc ) );
-    // TODO  this may be added in the wrong position
-    //  one also has to assure the data is not projected out before
-    //   throw new Error('Expected nodetype NT.OPEqIn but was ' + n.type);
-    // { $sort : { sender : -1 } }`
+      // TODO  this may be added in the wrong position
+      //  one also has to assure the data is not projected out before
+      //   throw new Error('Expected nodetype NT.OPEqIn but was ' + n.type);
+      // { $sort : { sender : -1 } }`
     }
-    else if ( n.type === NT.OPNotExisting )
-    {
-       // { item : null }
-      var filterobj = makeFilterObj( mongocatfullpath, null );
-      res = addFilterExpr( res, filterobj );
-     //  throw new Error('Expected nodetype OPExisiting not supported here  NT.OPEqIn but was ' + n.type);
+    else if (n.type === NT.OPNotExisting) {
+      // { item : null }
+      var filterobj = makeFilterObj(mongocatfullpath, null);
+      res = addFilterExpr(res, filterobj);
+      //  throw new Error('Expected nodetype OPExisiting not supported here  NT.OPEqIn but was ' + n.type);
     }
-    else if (n.type === NT.OPExisting )
-    {
-      var filterobj = makeFilterObj( mongocatfullpath, { '$exists' : true} );
-      res = addFilterExpr( res, filterobj );
-     //  throw new Error('Expected nodetype OPExisiting not supported here  NT.OPEqIn but was ' + n.type);
+    else if (n.type === NT.OPExisting) {
+      var filterobj = makeFilterObj(mongocatfullpath, { '$exists': true });
+      res = addFilterExpr(res, filterobj);
+      //  throw new Error('Expected nodetype OPExisiting not supported here  NT.OPEqIn but was ' + n.type);
     }
     else {
       throw new Error('Expected nodetype NT.OPEqIn but was ' + n.type);
@@ -296,8 +306,8 @@ export function makeMongoMatchFromAst(node: AST.ASTNode, sentence: IFErBase.ISen
   return { $match: res };
 }
 
-export function extractExplicitSortFromAst(node: AST.ASTNode, sentence: IFErBase.ISentence, mongoMap: IFModel.CatMongoMap, domain: string, mongoHandleRaw : IFModel.IModelHandleRaw ) : ExplicitSort[] {
-// return an array
+export function extractExplicitSortFromAst(node: AST.ASTNode, sentence: IFErBase.ISentence, mongoMap: IFModel.CatMongoMap, domain: string, mongoHandleRaw: IFModel.IModelHandleRaw): ExplicitSort[] {
+  // return an array
   debug(AST.astToText(node));
   //console.log("making mongo match " + AST.astToText(node));
   if (!node) {
@@ -311,20 +321,19 @@ export function extractExplicitSortFromAst(node: AST.ASTNode, sentence: IFErBase
     var category = getCategoryForNodePair(n.children[0], n.children[1], sentence);
     var mongocatfullpath = mongoMap[category].fullpath; // Model.getMongoosePath(theModel, category); //makeMongoName(cat);
     var fact = (n.children.length > 1) && getFactForNode(n.children[1], sentence);
-    if (n.type === NT.OPOrderBy || n.type === NT.OPOrderDescendingBy)
-    {
+    if (n.type === NT.OPOrderBy || n.type === NT.OPOrderDescendingBy) {
       var ascdesc = (n.type == NT.OPOrderDescendingBy) ? 1 : -1;
-      res.push( {
-        categoryName : category,
-        mongocatfullpath : mongocatfullpath,
-        ascDesc : ascdesc
-       } as ExplicitSort);
+      res.push({
+        categoryName: category,
+        mongocatfullpath: mongocatfullpath,
+        ascDesc: ascdesc
+      } as ExplicitSort);
     }
   });
   return res;
 }
 
-export function makeMongoGroupFromAst(categoryList : string[], mongoMap: IFModel.CatMongoMap) {
+export function makeMongoGroupFromAst(categoryList: string[], mongoMap: IFModel.CatMongoMap) {
   var res = {};
   categoryList.forEach(category => {
     var mongocatfullpath = MongoMap.getFirstSegment(mongoMap[category].paths); // Model.getMongoosePath(theModel, category); //makeMongoName(cat);
@@ -337,7 +346,7 @@ export function makeMongoGroupFromAst(categoryList : string[], mongoMap: IFModel
   return r1;
 }
 
-export function makeMongoColumnsFromAst(categoryList : string[], mongoMap: IFModel.CatMongoMap)
+export function makeMongoColumnsFromAst(categoryList: string[], mongoMap: IFModel.CatMongoMap)
   : { columns: string[], reverseMap: { [key: string]: string } } {
   var res = {
     columns: [],
@@ -355,7 +364,7 @@ export function makeMongoColumnsFromAst(categoryList : string[], mongoMap: IFMod
 
 export function getCategoryList(fixedCategories: string[], node: AST.ASTNode, sentence: IFErBase.ISentence): string[] {
   var res = fixedCategories.slice();
-  while ( node.type !== NT.LIST )
+  while (node.type !== NT.LIST)
     node = node.children[0];
   debug(AST.astToText(node));
   if (node.type !== NT.LIST) {
@@ -400,20 +409,20 @@ export function makeMongoSortFromAst(categoryList: string[], mongoMap: IFModel.C
 }
 
 export interface ExplicitSort {
-  categoryName : string,
-  ascDesc : number,
-  mongocatfullpath : string
+  categoryName: string,
+  ascDesc: number,
+  mongocatfullpath: string
 };
 
-export function makeMongoExplicitSort(explicitSort : ExplicitSort[], categoryList: string[], mongoMap: IFModel.CatMongoMap) {
+export function makeMongoExplicitSort(explicitSort: ExplicitSort[], categoryList: string[], mongoMap: IFModel.CatMongoMap) {
   var res = {};
-  explicitSort.forEach( es => {
+  explicitSort.forEach(es => {
     var mongoCatName = es.mongocatfullpath;
     res[mongoCatName] = es.ascDesc;
   });
   categoryList.forEach(category => {
     var shortName = MongoMap.getShortProjectedName(mongoMap, category);
-    if( res[shortName] == undefined) {
+    if (res[shortName] == undefined) {
       res[shortName] = 1;
     }
   });
