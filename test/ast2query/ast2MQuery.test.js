@@ -221,7 +221,7 @@ it('testMakeMongoQueryEndingWith', done => {
     var domainPick = mongoQ.getDomainInfoForSentence(theModel, sentence);
     var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
     var categoryList = mQ.getCategoryList([], nodeFieldList, sentence );
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap);
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap, domainPick.collectionName, theModel.mongoHandle);
     expect(match).toEqual({ '$match': { domain: { '$regex': /abc$/i } } });
     var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
     expect(proj).toEqual({ '$project': { _id: 0, domain: 1 } });
@@ -246,7 +246,7 @@ it('testMakeMongoQueryMoreThan', done => {
     var domainPick = mongoQ.getDomainInfoForSentence(theModel, sentence);
     var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
     var categoryList = mQ.getCategoryList([], nodeFieldList, sentence );
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap, domainPick, theModel.mongoHandle);
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, sentence, mongoMap, domainPick.collectionName, theModel.mongoHandle);
     expect(match).toEqual({ '$match':
     { '$and':
        [ { '$expr':
@@ -258,12 +258,12 @@ it('testMakeMongoQueryMoreThan', done => {
                     default: 1 } },
                3 ] } } ] } });
     var proj = mQ.makeMongoProjectionFromAst(categoryList, mongoMap);
-    expect(proj).toEqual({ '$project': { _id: 0, sender: 1, 'gründungsjahr': 1 } });
+    expect(proj).toEqual({ '$project': { _id: 0, sender: 1, 'gr_ndungsjahr': 1 } });
     var group = mQ.makeMongoGroupFromAst(categoryList, mongoMap);
     expect(group).toEqual({  '$group':
-    { _id: { sender: '$sender', 'gründungsjahr': '$gründungsjahr' },
+    { _id: { sender: '$sender', 'gr_ndungsjahr': '$gr_ndungsjahr' },
       sender: { '$first': '$sender' },
-      'gründungsjahr': { '$first': '$gründungsjahr' } } });
+      'gr_ndungsjahr': { '$first': '$gr_ndungsjahr' } } });
     done();
     releaseModel(theModel);
   });

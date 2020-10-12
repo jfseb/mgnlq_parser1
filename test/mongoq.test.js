@@ -698,7 +698,7 @@ it('testMakeQuery2', done => {
     var nodeFilter = node.children[1];
     var domainPick = MongoQ.getDomainInfoForSentence(theModel, r.sentences[0]);
     var mongoMap = theModel.mongoHandle.mongoMaps[domainPick.modelName];
-    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], mongoMap);
+    var match = mQ.makeMongoMatchFromAst(nodeFilter, r.sentences[0], mongoMap, domainPick.collectionName, theModel.mongoHandle);
     var categoryList = mQ.getCategoryList([], nodeFieldList, r.sentences[0]);
     expect(match).toEqual(
       { $match: { ApplicationComponent: 'CO-FIO', appId: 'W0052', 'TechnicalCatalog': 'SAP_TC_FIN_CO_COMMON' } }
